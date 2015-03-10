@@ -1,7 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CheckMate", "CheckMate\CheckMate.vcxproj", "{8FDB667C-8358-479B-AA35-EBA4DE5CAADB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CMParser", "CheckMate\CheckMate.vcxproj", "{8FDB667C-8358-479B-AA35-EBA4DE5CAADB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CMLogic", "CMLogic\CMLogic.vcxproj", "{3019474C-7F91-45E6-9398-4F5B8CAFBA62}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CMStorage", "CMStorage\CMStorage.vcxproj", "{189715F3-229D-4F6B-A96B-0D0326C3B6EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +17,14 @@ Global
 		{8FDB667C-8358-479B-AA35-EBA4DE5CAADB}.Debug|Win32.Build.0 = Debug|Win32
 		{8FDB667C-8358-479B-AA35-EBA4DE5CAADB}.Release|Win32.ActiveCfg = Release|Win32
 		{8FDB667C-8358-479B-AA35-EBA4DE5CAADB}.Release|Win32.Build.0 = Release|Win32
+		{3019474C-7F91-45E6-9398-4F5B8CAFBA62}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3019474C-7F91-45E6-9398-4F5B8CAFBA62}.Debug|Win32.Build.0 = Debug|Win32
+		{3019474C-7F91-45E6-9398-4F5B8CAFBA62}.Release|Win32.ActiveCfg = Release|Win32
+		{3019474C-7F91-45E6-9398-4F5B8CAFBA62}.Release|Win32.Build.0 = Release|Win32
+		{189715F3-229D-4F6B-A96B-0D0326C3B6EA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{189715F3-229D-4F6B-A96B-0D0326C3B6EA}.Debug|Win32.Build.0 = Debug|Win32
+		{189715F3-229D-4F6B-A96B-0D0326C3B6EA}.Release|Win32.ActiveCfg = Release|Win32
+		{189715F3-229D-4F6B-A96B-0D0326C3B6EA}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
