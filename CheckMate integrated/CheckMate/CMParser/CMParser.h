@@ -12,16 +12,13 @@ using namespace boost::local_time;
 
 class CMParser {
 private:
-
+	ptime getDateAndTime(string str);
+		
 public:
-	string getDescription(string str);
-	string getStartDate(string str, string type);
-	string getStartTime(string str, string type);
-	string getEndDate(string str);
-	string getEndTime(string str);
+	string getDescription(string str, string type);
+	ptime getStart(string str, string type);
+	ptime getEnd(string str);
 	string getCategory(string str);
-
 };
-
 
 #endif
