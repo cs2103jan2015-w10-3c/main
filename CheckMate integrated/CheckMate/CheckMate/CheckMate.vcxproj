@@ -67,11 +67,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\..\..\Desktop\CMParser.h" />
+    <ClInclude Include="..\CMParser\CMParser.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\..\..\Desktop\CMParser.cpp" />
-    <ClCompile Include="..\..\..\..\..\..\..\Desktop\TestDriver.cpp" />
+    <ClCompile Include="..\CMParser\CMParser.cpp" />
+    <ClCompile Include="..\CMParser\TestDriver.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

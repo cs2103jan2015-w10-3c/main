@@ -15,15 +15,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\..\..\Desktop\CMParser.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\CMParser\CMParser.h">
+      <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\..\..\Desktop\CMParser.cpp">
+    <ClCompile Include="..\CMParser\CMParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\..\Desktop\TestDriver.cpp">
+    <ClCompile Include="..\CMParser\TestDriver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
