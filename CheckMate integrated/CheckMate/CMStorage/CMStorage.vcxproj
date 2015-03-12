@@ -64,6 +64,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CheckMateStorage.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CheckMateStorage.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

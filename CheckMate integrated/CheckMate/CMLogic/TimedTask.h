@@ -3,23 +3,26 @@
 
 class TimedTask : public Task
 {
-	string _Startdate;
-	string _Starttime;
-	string _Enddate;
-	string _Endtime;
+	string _StartDate;
+	string _StartTime;
+	string _EndDate;
+	string _EndTime;
 
 
 public:
 	TimedTask(string,string,string,string,string,string);
 	~TimedTask(void);
-	void editStartDate(string);
-	void editStartTime (string);
-	void editEndTime (string);
-	void editEndTime (string);
+	virtual void editStartDate(string);
+	virtual void editStartTime (string);
+	virtual void editEndDate (string);
+	virtual void editEndTime (string);
 
-	string getStartdate() const;
-	string getStartTime() const;
-	string getEndDate() const;
-	string getEndTime() const; 
+	virtual string getStartDate() const;
+	virtual string getStartTime() const;
+	virtual string getEndDate() const;
+	virtual string getEndTime() const; 
+
+	virtual string getInfo();
+	virtual bool isFound (string);
 };
 
