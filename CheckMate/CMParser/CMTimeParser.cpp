@@ -4,15 +4,15 @@ void CMTimeParser::parseTime(std::string timeStr) {
 	_hours=0;
 	_minutes=0;
 
+	//to remove the delimiter
 	int pos = timeStr.find_first_of(":");
 	if (pos!=timeStr.npos)
 		timeStr.erase(pos, 1);
 
-	int found = timeStr.find_first_of("ap");
-	
-	if (found!=timeStr.npos) {
-		std::string twelve_hour = (timeStr.substr(found, 1));
-		timeStr = timeStr.substr(0, found);
+	pos = timeStr.find_first_of("ap");
+	if (pos!=timeStr.npos) {
+		std::string twelve_hour = (timeStr.substr(pos, 1));
+		timeStr = timeStr.substr(0, pos);
 		
 		if (twelve_hour=="p") {
 			_hours+=12;

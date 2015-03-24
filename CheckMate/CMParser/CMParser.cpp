@@ -1,17 +1,75 @@
 #include "CMParser.h"
-#include "CMDateParser.h"
-#include "CMTimeParser.h"
+
+ptime CMParser::getDateAndTime(std::string str) {
+	std::string timeStr, dateStr;
+	date d;
+	int lastSpace = str.find_last_of(" ");
+
+	if (hasTime(str) && hasDate(str)){
+		std::cout <<"has both";
+		timeStr = str.substr(lastSpace+1);
+		dateStr = str.erase(lastSpace);
+		
+		timeParser.parseTime(timeStr);
+		
+		d = dateParser.getDate(dateStr);
+	}
+	else if (hasDate(str)) {
+		std::cout <<"has date";
+		dateStr = str;
+		
+		timeParser.setHour(23);
+		timeParser.setMin(59);
+		
+		d = dateParser.getDate(dateStr);
+	}
+	else if (hasTime(str)) {
+		std::cout <<"has time";
+		timeStr = str;
+		
+		timeParser.parseTime(timeStr);
+		
+		if (_start.date()==date())
+			_start = second_clock::local_time();
+
+		d = _start.date();
+	}
+	
+	return ptime(d ,hours(timeParser.getHour())+minutes(timeParser.getMin()));
+}
+
+bool CMParser::hasTime(std::string str) {
+	std::string timeAttributes[6] = {":", "am", "pm", "PM", "AM", "."};
+
+	for (int i=0; i<6; ++i) {
+		if (str.find(timeAttributes[i])!=str.npos) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool CMParser::hasDate(std::string str) {
+	std::string validDate[6] = {"today", "tdy", "tomorrow", "tmr", " ", "/"};
+	
+	for (int i=0; i<6; ++i) {
+		if (str.find(validDate[i])!=str.npos) {
+			return true;
+		}
+	}
+
+	return false;
+}
 
 std::string CMParser::getDescription(std::string str, std::string type) {
-	int pos;
-	
+	int pos = str.npos;
+
 	if (type=="timed") {
 		pos = str.rfind(" from ");
-	}
-	else if (type=="float") {
+	} else if (type=="float") {
 		pos = str.rfind(" cat ");
-	}
-	else if (type=="deadline") {
+	} else if (type=="deadline") {
 		pos = str.rfind(" by ");
 	}
 
@@ -23,13 +81,10 @@ std::string CMParser::getDescription(std::string str, std::string type) {
 std::string CMParser::getCategory (std::string str){
 	std::string str1;
 
-	if (str.find(" cat ")!=str.npos) {
+	if (str.find(" cat ")==str.npos) {
+		str1 = "-";
+	} else {
 		str1 = str.substr(str.find(" cat ")+5);
-		str1 = str1.substr(str1.find(" ")+1);
-	}
-
-	else {
-		str1 = "nil";
 	}
 
 	_category = str1;
@@ -38,126 +93,77 @@ std::string CMParser::getCategory (std::string str){
 }
 
 ptime CMParser::getStart(std::string str, std::string type) {
-	std::string str1;
+	//type cannot be float (use exception)
+	std::string startTimeAndDate;
 
 	if (type == "timed") {
-		str1 = str.substr(str.rfind(" from ")+6);
-	}
-	else {
-		str1 = str.substr(str.rfind(" by ")+4);
+		startTimeAndDate = str.substr(str.rfind(" from ")+6);
+		startTimeAndDate = startTimeAndDate.erase(startTimeAndDate.find(" to "));
+	} else if (type == "deadline") {
+		startTimeAndDate = str.substr(str.rfind(" by ")+4);
+		
+		int pos = startTimeAndDate.rfind(" cat ");
+		
+		if (pos!=startTimeAndDate.npos) {
+			startTimeAndDate = startTimeAndDate.erase(pos);
+		}
 	}
 
-	int pos = str1.find(" to ");
-	if (pos==str1.npos) {
-	str1.find(" cat ");
-	}
-	if (pos!=str1.npos)
-	str1.erase(pos);
+	startTimeAndDate.substr(1);
 
-	str1.substr(1);
+	_start = getDateAndTime(startTimeAndDate);
 
-	_start = getDateAndTime(str1);
 	return _start;
 }
 
 ptime CMParser::getEnd(std::string str) {
-	std::string str1;
+	std::string endTimeAndDate;
 
-	str1 = str.substr(str.rfind(" to ")+4);
+	endTimeAndDate = str.substr(str.rfind(" to ")+4);
 
-	int pos = str1.find(" cat ");
+	int pos = endTimeAndDate.find(" cat ");
 
-	if (pos!=str1.npos)
-	str1.erase(pos);
+	if (pos!=endTimeAndDate.npos)
+	endTimeAndDate.erase(pos);
 
-	_end = getDateAndTime(str1);
-	std::cout <<_end.time_of_day()<<std::endl;
-	time_duration td (16,0,0);
-	time_facet *facet = new time_facet("%d-%b-%Y %H:%M");
-	std::cout.imbue(std::locale(std::cout.getloc(), facet));
+	_end = getDateAndTime(endTimeAndDate);
 
 	return _end;
 }
 
-bool CMParser::hasTime(std::string str) {
-	int pos;
-	std::string timeAttributes[6] = {":", "am", "pm", "PM", "AM"};
+std::string CMParser::getToday() {
+	date today = day_clock::local_day();
+	date_facet* date_output = new date_facet();
 
-	for (int i=0; i<6; ++i) {
-		pos= str.find(timeAttributes[i]);
-		if (pos!=str.npos)
-			return true;
-	}
 
-	return false;
-}
-
-bool CMParser::hasDate(std::string str) {
-	if (str.find_last_of(" /")==str.npos)
-		return false;
-	else
-		return true;
-}
-
-ptime CMParser::getDateAndTime(std::string str) {
-
-	int lastSpace = str.find_last_of(" ");
-	std::string timeStr, dateStr;
-	CMDateParser dateParser;
-	CMTimeParser timeParser;
-	date d;
-
-	if (hasTime(str) && hasDate(str)){
-		timeStr = str.substr(lastSpace+1);
-		dateStr = str.erase(lastSpace);
-		timeParser.parseTime(timeStr);
-		d = dateParser.getDate(dateStr);
-	}
-	else if (hasDate(str)) {
-		dateStr = str;
-		timeParser.setHour(23);
-		timeParser.setMin(59);
-		d = dateParser.getDate(dateStr);
-	}
-	else if (hasTime(str)) {
-		timeStr = str;
-		timeParser.parseTime(timeStr);
-		d = _start.date();
-	}
+	std::ostringstream output;
+	output.imbue(std::locale(output.getloc(), date_output)); 
 	
-	return ptime(d ,hours(timeParser.getHour())+minutes(timeParser.getMin()));
+	output<<today;
+
+	return output.str();
 }
 
+std::string CMParser::getTomorrow() {
+	date tomorrow = day_clock::local_day()+date_duration(1);
+	date_facet* date_output = new date_facet();
+	date_output->format("%d %b %Y");
 
-/*ptime CMParser::getDateAndTime(string str) {
-	locale format[16] = {
-		locale(locale::classic(), new time_input_facet("%d/%m/%Y, %H:%M")),
-		locale(locale::classic(), new time_input_facet("%d/%m/%y, %H:%M")),
-		locale(locale::classic(), new time_input_facet("%d %B %Y, %H:%M")),
-		locale(locale::classic(), new time_input_facet("%d %B %y, %H:%M")),
-		locale(locale::classic(), new time_input_facet("%d %b %Y, %H:%M")),
-		locale(locale::classic(), new time_input_facet("%d %b %y, %H:%M")),
-		locale(locale::classic(), new time_input_facet("%d %B, %H:%M")),
-		locale(locale::classic(), new time_input_facet("%d %b, %H:%M")),
-		locale(locale::classic(), new time_input_facet("%d/%m/%Y")),
-		locale(locale::classic(), new time_input_facet("%d/%m/%y")),
-		locale(locale::classic(), new time_input_facet("%d %B %Y")),
-		locale(locale::classic(), new time_input_facet("%d %B %y")),
-		locale(locale::classic(), new time_input_facet("%d %b %Y")),
-		locale(locale::classic(), new time_input_facet("%d %b %y")),
-		locale(locale::classic(), new time_input_facet("%d %B")),
-		locale(locale::classic(), new time_input_facet("%d %b"))
-		};
-
-	ptime pt;
+	std::ostringstream output;
+	output.imbue(std::locale(output.getloc(), date_output)); 
 	
-	for (int i=0; i<16; ++i)
-	{
-		istringstream ss(str);
-		ss.imbue(format[i]);
-		ss>>pt;
-		if (pt!=ptime())
-			break;
-	}
-	return pt;
-}*/
+	output<<tomorrow;
+
+	return output.str();
+}
+
+ptime CMParser::changeTime (ptime current, std::string newTime) {
+	date currentDate = current.date();
+	timeParser.parseTime(newTime);
+	
+	return ptime(currentDate ,hours(timeParser.getHour())+minutes(timeParser.getMin()));
+}
+
+ptime CMParser::changeDate (ptime current, std::string newDate) {
+	return ptime(dateParser.getDate(newDate), hours(current.time_of_day().hours())+minutes(current.time_of_day().minutes()));
+}

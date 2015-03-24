@@ -2,14 +2,15 @@
 
 date CMDateParser::getDate(std::string str) {
 	date d, today = day_clock::local_day();
-	int pos;
 	std::string dateStr, monthStr, yearStr;
 	
 	if (str=="today" || str=="tdy") {
 		return today;
+	} else if (str=="tomorrow"||str=="tmr") {
+		return (today + date_duration(1));
 	}
 
-	pos = str.find_first_of(" /");
+	int pos = str.find_first_of(" /");
 	dateStr = str.substr(0, pos);
 	str.erase(0, pos+1);
 
@@ -30,7 +31,7 @@ date CMDateParser::getDate(std::string str) {
 		}
 		yearStr = std::to_string(yr);
 	}
-	
+
 	std::stringstream UKFormat;
 	UKFormat << dateStr <<" "<< monthStr <<" "<< yearStr;
 	d = from_uk_string(UKFormat.str());
