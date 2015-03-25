@@ -1,6 +1,7 @@
 #include "FloatingTask.h"
 #include <sstream>
 #include <iomanip>
+#include <string>
 
 
 
@@ -37,24 +38,28 @@ ptime FloatingTask:: getEnd() const{
 bool FloatingTask :: isFound(std::string keyword){
 	bool found = false;
 	size_t position;
-	position = _Description.find(keyword);
-	if(position!= std::string::npos)
-		found = true;
+	
 	position = _Category.find(keyword);
 	if(position!= std::string::npos)
-		found = true;
+	{return true;}
+	
+	position = _Description.find(keyword);
+	if(position!= std::string::npos)
+	{return true;}
+	
+
 	return found;
 }
 
 std::string FloatingTask:: getInfo() {
 	std::ostringstream information;
 	
-	information <<std::left << std::setw(15)<<_Description 
+	information <<std::left << std::setw(40)<<_Description
 				<<std::setw(10)<<"-"
-				<<std::setw(8)<<"-"
+				<<std::setw(20)<<"-"
 				<<std::setw(10)<<"-"
-				<<std::setw(8)<<"-"
-				<<std::setw(8)<< _Category;
+				<<std::setw(20)<<"-"
+				<<std::setw(30)<< _Category;
 				
 
 	return information.str();

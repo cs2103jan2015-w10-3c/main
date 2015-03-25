@@ -6,6 +6,7 @@ class TimedTask : public Task{
 
 	ptime _Start;
 	ptime _End;
+	
 
 
 public:

@@ -7,6 +7,7 @@ Task::Task(std::string Description, std::string Category)
 	_Description= Description;
 	_Category= Category;
 } 
+
 Task::~Task(void)
 {}
 
