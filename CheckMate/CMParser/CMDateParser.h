@@ -14,7 +14,7 @@ class CMDateParser {
 private:
 	
 public:
-	date getDate(std::string str);
+	date getDate(std::string);
 };
 
 #endif

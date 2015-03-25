@@ -134,7 +134,15 @@ ptime CMParser::getEnd(std::string str) {
 
 	return _end;
 }
-
+std::string CMParser::determineType(std::string str){
+	if (!(getEnd(str).is_not_a_date_time())){
+		return "timed";
+	} else if (getStart(str, "deadline").is_not_a_date_time()) {
+		return "float";
+	} else {
+		return "deadline";
+	}
+}
 std::string CMParser::getToday() {
 	date today = day_clock::local_day();
 	date_facet* date_output = new date_facet();

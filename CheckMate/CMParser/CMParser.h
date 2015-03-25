@@ -21,21 +21,24 @@ private:
 	CMDateParser dateParser;
 	CMTimeParser timeParser;
 
-	ptime getDateAndTime(std::string str);
-	bool hasTime(std::string str);
-	bool hasDate(std::string str);
+	ptime getDateAndTime(std::string);
+	bool hasTime(std::string);
+	bool hasDate(std::string);
 
 public:
-	std::string getDescription(std::string str, std::string type);
-	std::string getCategory(std::string str);
-	ptime getStart(std::string str, std::string type);
-	ptime getEnd(std::string str);
+	std::string getDescription(std::string, std::string);
+	std::string getCategory(std::string);
+	ptime getStart(std::string, std::string);
+	ptime getEnd(std::string);
+
+	std::string determineType(std::string);
 	
 	ptime changeTime (ptime, std::string);
 	ptime changeDate (ptime, std::string);
 	
 	std::string getToday();
 	std::string getTomorrow();
+	
 };
 
 #endif

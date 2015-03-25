@@ -16,9 +16,9 @@ private:
 	int _minutes;
 		
 public:
-	void parseTime(std::string str);
-	void setHour(int hours);
-	void setMin(int minutes);
+	void parseTime(std::string);
+	void setHour(int);
+	void setMin(int);
 	int getHour();
 	int getMin();
 	
