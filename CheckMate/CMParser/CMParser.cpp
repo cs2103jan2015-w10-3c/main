@@ -73,7 +73,11 @@ std::string CMParser::getDescription(std::string str, std::string type) {
 		pos = str.rfind(" by ");
 	}
 
-	_description = str.substr(0,pos);
+	if (pos!=str.npos) {
+		_description = str.substr(0,pos);
+	} else {
+		_description = "";
+	}
 
 	return _description;
 }
