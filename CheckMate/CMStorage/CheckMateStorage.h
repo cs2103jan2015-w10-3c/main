@@ -10,6 +10,7 @@
 #include "FloatingTask.h"
 #include "TimedTask.h"
 #include "Deadline.h" 
+#include "CMHistory.h"
 #include <windows.h>
 
 class CMStorage {
@@ -17,9 +18,9 @@ class CMStorage {
 	private:
 
 		std::vector<Task*> _allTasks; //all tasks as Task pointers
-		std::vector<std::string> _subTasks; //tasks being searched for in strings
 		std::vector<int> _subIndexes;
-
+		CMHistory history;
+		 
 	public:
 
 		void addDeadline (Deadline*);
@@ -27,15 +28,12 @@ class CMStorage {
 		void addFloatingTask (FloatingTask*);
 		std::string deleteTask (int);
 		std::vector<std::string> getDisplay();
-		/* void editStartDate (int, string);
-		void editStartTime (int, string);
-		void editEndDate (int, string);
-		void editEndTime (int, string);
-		void editDescription (int, string);
-		void editCategory (int, string); */
+		Task* getTask(int);
 		std::vector<std::string> searchTask (std::string);
 		void writeFile(std::string);   
 		void changeStorageLocation(const char*);
+		void undoAction();
+		void redoAction();
 
 };
 

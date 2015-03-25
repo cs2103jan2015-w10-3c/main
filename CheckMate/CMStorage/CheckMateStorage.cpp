@@ -2,28 +2,33 @@
 
 void CMStorage :: addDeadline (Deadline* NewDeadline) {
 	
+	history.updateCopy(_allTasks);
 	_allTasks.push_back(NewDeadline); 
 	
 }
 
 void CMStorage :: addTimedTask (TimedTask* NewTimedTask){
+	
+	history.updateCopy(_allTasks);
 	_allTasks.push_back(NewTimedTask);
 
 }
 
 void CMStorage :: addFloatingTask (FloatingTask* NewFloatingTask) {
 
+	history.updateCopy(_allTasks);
 	_allTasks.push_back(NewFloatingTask);
 
 }
 
 std:: string CMStorage :: deleteTask (int index) {
 
-	int realindex= _subIndexes[index-1];
-	std::string deletedTask= _allTasks[realindex]->getInfo();
-	_allTasks [realindex] =  NULL; 
-	delete _allTasks[realindex]; //deleting the pointer
-	_allTasks.erase(_allTasks.begin()+realindex); //erasing the vector item containing the pointer
+	history.updateCopy(_allTasks);
+	int realIndex= _subIndexes[index-1];
+	std::string deletedTask= _allTasks[realIndex]->getInfo();
+	_allTasks [realIndex] =  NULL; 
+	delete _allTasks[realIndex]; //deleting the pointer
+	_allTasks.erase(_allTasks.begin()+realIndex); //erasing the vector item containing the pointer
 	_subIndexes.clear();
 
 	return deletedTask;
@@ -32,54 +37,34 @@ std:: string CMStorage :: deleteTask (int index) {
 
 std::vector<std::string> CMStorage :: getDisplay (void) {
 
+	_subIndexes.clear();
 	std::vector<std::string> _displayTasks; 
 
-
-	for (size_t i = 0; i < _allTasks.size(); i++){
+	for (unsigned int i = 0; i < _allTasks.size(); i++){
 		_displayTasks.push_back(_allTasks[i] -> getInfo());
+		_subIndexes.push_back(i);
 	}
 
 	return _displayTasks;
 
 }
 
-/* void CMStorage :: editStartDate (int index, string NewStartDate) {
-
-	_allTasks[index] -> editStartDate (NewStartDate);
-
-}
-
-void CMStorage :: editStartTime (int index, string NewStartTime) {
-
-	_allTasks[index] -> editStartTime (NewStartTime);
+Task* CMStorage :: getTask(int index){ //linked to logic's edit function
+ 
+	history.updateCopy(_allTasks);
+	int realIndex= _subIndexes[index-1];
+	Task* taskPointer= _allTasks[realIndex];
+	_subIndexes.clear();
+	return taskPointer;
 
 }
 
-void CMStorage :: editEndDate (int index, string NewEndDate) {
-
-	_allTasks[index] -> editEndDate (NewEndDate);
-
-}
-
-void CMStorage :: editEndTime (int index, string NewEndTime) {
-
-	_allTasks[index] -> editEndTime (NewEndTime);
-
-}
-
-void CMStorage :: editDescription(int index, string NewDescription) {
-
-	_allTasks[index] -> editDescription (NewDescription);
-}
-
-void CMStorage :: editCategory(int index, string NewCategory) {
-
-	_allTasks[index] -> editCategory (NewCategory);
-} */
 
 std::vector<std::string> CMStorage :: searchTask (std::string Keyword) {
 
+	_subIndexes.clear();
 	int size = _allTasks.size();
+	std::vector<std::string>_subTasks;
 
 	for (int i = 0; i < size; i++ ) {
 		if (_allTasks[i]->isFound(Keyword)){
@@ -101,16 +86,13 @@ void CMStorage:: writeFile(std::string Filename) {
 	}
 	file.close();
 } 
+
 void CMStorage :: changeStorageLocation(const char* NewLocation) {
 	
 	const int bufferSize = MAX_PATH;
     char oldDir[bufferSize]; // store the current directory
     
     // get the current directory, and store it
-    if (!GetCurrentDirectory(bufferSize, oldDir)) {
-        std::cerr << "Error getting current directory: #" << GetLastError();
-        system ("pause"); // quit if it failed
-    }
     std::cout << "Current directory: " << oldDir << '\n';
 
     // new directory
@@ -120,4 +102,18 @@ void CMStorage :: changeStorageLocation(const char* NewLocation) {
 		system("pause"); // quit if we couldn't set the current directory
     }
     std::cout << "Set current directory to " << newDir << '\n';
+}
+
+void CMStorage:: undoAction() {
+	
+	std::vector<Task*> _newAllTasks;
+	_newAllTasks = history.swapCopy(_allTasks);
+	_allTasks = _newAllTasks;
+}
+
+void CMStorage:: redoAction() {
+	 
+	std::vector<Task*> _newAllTasks;
+	_newAllTasks = history.swapCopy(_allTasks);
+	_allTasks = _newAllTasks;
 }
