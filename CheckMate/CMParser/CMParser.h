@@ -14,22 +14,22 @@ using namespace boost::local_time;
 
 class CMParser {
 private:
+	CMDateParser dateParser;
+	CMTimeParser timeParser;
+
 	std::string _description;
 	std::string _category;
 	ptime _start;
 	ptime _end;
-	CMDateParser dateParser;
-	CMTimeParser timeParser;
 
 	ptime getDateAndTime(std::string);
 	bool hasTime(std::string);
 	bool hasDate(std::string);
 
 public:
-	std::string getDescription(std::string, std::string);
-	std::string getCategory(std::string);
-	ptime getStart(std::string, std::string);
-	ptime getEnd(std::string);
+	std::string getDescription();
+	ptime getStart();
+	ptime getEnd();
 
 	std::string determineType(std::string);
 	
@@ -38,7 +38,9 @@ public:
 	
 	std::string getToday();
 	std::string getTomorrow();
-	
+
+	void parseDataFromFile(std::string);
+	void parseData(std::string, std::string);
 };
 
 #endif
