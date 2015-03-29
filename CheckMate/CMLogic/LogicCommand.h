@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "C:\Users\Joseph\Desktop\V0.2\CheckMate\CMParser\CMParser.h"
+#include "CMParser.h"
 #include "CheckMateStorage.h"
 #include "Output.h"
 #include "Task.h"
