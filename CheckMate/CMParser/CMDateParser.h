@@ -12,9 +12,13 @@ using namespace boost::local_time;
 
 class CMDateParser {
 private:
-	
+	int getIndexFromWeekdayName (std::string);
+	date getDateFromWeekdayName(std::string);
+	date getDate(std::string);
+
 public:
-	date getDate(std::string str);
+	date parseDate(std::string);
+	bool isWeekdayName (std::string);
 };
 
 #endif

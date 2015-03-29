@@ -1,7 +1,9 @@
 #ifndef CMLOGIC_H
 #define CMLOGIC_H
+
 #include <vector>
 #include <iostream>
+
 #include "LogicCommand.h"
 #include "LogicRead.h"
 #include "Command.h"
@@ -16,15 +18,11 @@ class CMLogic
 {	private:
 		LogicCommand _CommandExecutor; //To execute actions
 		LogicRead _CommandReader;	//To interpret the user input
-		Output _Display;		//Contains feedback and Tasklist
 		bool _IsActive;  //Status of system
+		Output* _Display;
 
 public:
-	CMLogic(void);
-	~CMLogic(void);
-	void ExecuteCommand(std :: string);
-	Output getOutput() const;
-	bool IsActive();
-
+		void ExecuteCommand(std :: string);
+		Output* getDisplay();
 };
 #endif

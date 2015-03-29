@@ -7,18 +7,17 @@
 
 
 
-CMLogic::~CMLogic(void){
-	
-	_IsActive = false;
-}
+
 
 void CMLogic :: ExecuteCommand(std::string input){
+
 	Command* NewCommand = _CommandReader.interpretCommand(input);
+
 	switch(NewCommand->getCommandIndex()){
 		//AddFloatingTask
 	case ADDFLOATTASK :{ 
 		_Display= _CommandExecutor.addFloatTask(NewCommand->getCommandDescription()); 
-					  }
+					   }
 					   break;
 
 					   //Add Deadline
@@ -35,7 +34,7 @@ void CMLogic :: ExecuteCommand(std::string input){
 
 					  //Search Case
 	case INDEXSEARCH:{   
-		_Display = _CommandExecutor.searchTask(NewCommand->getCommandDescription());
+		_Display  = _CommandExecutor.searchTask(NewCommand->getCommandDescription());
 					 }
 					 break;
 
@@ -51,43 +50,47 @@ void CMLogic :: ExecuteCommand(std::string input){
 					 }
 					 break;
 
-					 /*	      //Search for task today
-					 case INDEXTODAY:{
-					 _Feedback = _CommandAction.DisplayToday();
-					 }
-					 break;
+					 //Search for task today
+	case INDEXTODAY:{
+		_Display = _CommandExecutor.DisplayToday();
+					}
+					break;
 
-					 //Search for task tommorrow
-					 case INDEXTOMMORROW:{
-					 _Feedback = _CommandAction.DisplayTommorrow();
-					 }
-					 break;
-					 //Undo previous action
-					 case INDEXUNDO	:{
+					//Search for task tommorrow
+	case INDEXTOMMORROW:{
+		_Display = _CommandExecutor.DisplayTomorrow();
+						}
+						break;
+						//Undo previous action
+	case INDEXUNDO	:{
+		_Display=_CommandExecutor.UndoAction();
 					 }
 					 break;
 					 // View help function commands
-					 case INDEXHELP	:{
+	/*case INDEXHELP	:{
 					 }
 					 break;
 					 */
 
-					 // Close Program
+						 // Close Program
 	case INDEXEXIT:{
 		_IsActive = false;
 		std::cout << GOODBYE << std::endl;}
-				   break;
+					 break;
 
-				   //Invalid Input
+					 //Invalid Input
 	default:{
 		std::cout << INVALID_INPUT << std::endl;
 			}
 			break;
 	}
 
+	return;
+
 }
 
-Output CMLogic:: getOutput() const{
-	return _Display; }
+Output*  CMLogic :: getDisplay(){
 
+	return _Display;
+}
 

@@ -15,7 +15,8 @@ Command* LogicRead :: interpretCommand(std::string input){
 	std::size_t FirstLetter = input.find_first_not_of(" ");
 	std::size_t LastLetter = input.find_first_of(" ",FirstLetter);
 	std::string FirstWord = input.substr(FirstLetter,LastLetter-FirstLetter);
-	Command* IndexedCommand = new Command(indexCommand(FirstWord),input.substr(LastLetter));
+	FirstLetter = input.find_first_not_of(" ",LastLetter);
+	Command* IndexedCommand = new Command(indexCommand(FirstWord),input.substr(FirstLetter));
 
 	return IndexedCommand;
 }

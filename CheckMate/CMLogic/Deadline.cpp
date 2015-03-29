@@ -2,11 +2,12 @@
 #include <iomanip>
 #include <sstream>
 #include <algorithm>
+#include <string>
 
 
 Deadline::Deadline(std::string Description,std::string Category ,ptime Start)
 	:Task( Description, Category){ 
-	_Start = Start;
+		_Start = Start;
 }
 
 Deadline::~Deadline(void){
@@ -40,27 +41,30 @@ bool Deadline:: isFound (std::string keyword){
 
 	bool found = false;
 	size_t position;
+
 	position = _Description.find(keyword);
 	if(position!= std::string::npos)
-		found = true;
+	{found = true;}
+
 	position = _Category.find(keyword);
 	if(position!= std::string::npos)
-		found = true;
+	{found = true;}
+
 	position = to_simple_string(_Start).find(keyword);
 	if(position!= std::string::npos)
-		found = true;
+	{found = true;}
 
 	return found;
 }
 
 std:: string Deadline:: getInfo() {
 	std::ostringstream information;
-	
-	information <<std::left<< std::setw(15)<<_Description 
-				<<std::setw(10)<<_Start
-				<<std::setw(10)<<"-"
-				<<std::setw(8)<<"-"
-				<<std::setw(8)<< _Category;
+
+	information <<std::left<< std::setw(40)<<_Description
+		<<std::setw(30)<<_Start
+		<<std::setw(10)<<"-"
+		<<std::setw(20)<<"-"
+		<<std::setw(30)<< _Category;
 
 	return information.str();
 }	

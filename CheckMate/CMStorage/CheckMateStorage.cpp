@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "checkmatestorage.h"
 
 void CMStorage :: addDeadline (Deadline* NewDeadline) {
@@ -35,13 +36,13 @@ std:: string CMStorage :: deleteTask (int index) {
 
 }
 
-std::vector<std::string> CMStorage :: getDisplay (void) {
+std::vector<Task*> CMStorage :: getDisplay (void) {
 
 	_subIndexes.clear();
-	std::vector<std::string> _displayTasks; 
+	std::vector<Task*> _displayTasks; 
 
 	for (unsigned int i = 0; i < _allTasks.size(); i++){
-		_displayTasks.push_back(_allTasks[i] -> getInfo());
+		_displayTasks.push_back(_allTasks[i]);
 		_subIndexes.push_back(i);
 	}
 
@@ -60,15 +61,15 @@ Task* CMStorage :: getTask(int index){ //linked to logic's edit function
 }
 
 
-std::vector<std::string> CMStorage :: searchTask (std::string Keyword) {
+std::vector<Task*> CMStorage :: searchTask (std::string Keyword) {
 
 	_subIndexes.clear();
 	int size = _allTasks.size();
-	std::vector<std::string>_subTasks;
+	std::vector<Task*>_subTasks;
 
 	for (int i = 0; i < size; i++ ) {
 		if (_allTasks[i]->isFound(Keyword)){
-			_subTasks.push_back(_allTasks[i]->getInfo());
+			_subTasks.push_back(_allTasks[i]);
 			_subIndexes.push_back(i);
 		}
 	}
@@ -87,7 +88,22 @@ void CMStorage:: writeFile(std::string Filename) {
 	file.close();
 } 
 
-void CMStorage :: changeStorageLocation(const char* NewLocation) {
+std::vector<std::string> CMStorage:: readFile (std::string Filename) {
+
+	std::vector<std::string> textFileStrings;
+	std::string line;
+
+	std::ifstream read;
+	read.open(Filename);
+	while (!read.eof()){
+		std::getline(read,line);
+		textFileStrings.push_back(line);
+	}
+
+	return textFileStrings;
+}
+
+void CMStorage :: changeStorageLocation(LPCWSTR NewLocation) {
 	
 	const int bufferSize = MAX_PATH;
     char oldDir[bufferSize]; // store the current directory
@@ -96,12 +112,13 @@ void CMStorage :: changeStorageLocation(const char* NewLocation) {
     std::cout << "Current directory: " << oldDir << '\n';
 
     // new directory
-    const char* newDir = NewLocation; //eg. C:\\Users\\Lai ling Yi\\Desktop
+    LPCWSTR newDir = NewLocation; //eg. C:\\Users\\Lai ling Yi\\Desktop
     if (!SetCurrentDirectory(newDir)) {
         std::cerr << "Error setting current directory: #" << GetLastError() <<std::endl;
 		system("pause"); // quit if we couldn't set the current directory
     }
     std::cout << "Set current directory to " << newDir << '\n';
+	
 }
 
 void CMStorage:: undoAction() {
