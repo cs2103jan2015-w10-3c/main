@@ -7,7 +7,7 @@
 class FloatingTask : public Task
 {
 public:
-	FloatingTask(std::string,std::string);
+	FloatingTask(std::string);
 	~FloatingTask(void);
 
 	virtual void editStartDate(ptime);

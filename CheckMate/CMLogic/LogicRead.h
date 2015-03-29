@@ -4,9 +4,7 @@
 #include <string>
 #include "Command.h"
 
-const std::string ADDF		= "addf";
-const std::string ADDT		= "addt";
-const std::string ADDD		= "addd";
+const std::string ADD		= "add";
 const std::string DEL	= "delete";
 const std::string EDIT		="edit";
 const std::string SEARCH		= "search";
@@ -16,17 +14,15 @@ const std::string UNDO		="undo";
 const std::string HELP		="help";
 const std::string EXIT		= "exit";
 
-const int ADDFLOATTASK	 = 1;
-const int ADDDEADLINE	 = 2;
-const int ADDTIMEDTASK	 = 3;
-const int INDEXSEARCH	 = 4;
-const int INDEXEDIT		 = 5;
-const int INDEXDELETE	 = 6;
-const int INDEXTODAY	 = 7;
-const int INDEXTOMMORROW = 8;
-const int INDEXUNDO		 = 9;
-const int INDEXHELP		 = 10;
-const int INDEXEXIT		 = 11;
+const int INDEXADD = 1;
+const int INDEXSEARCH	 = 2;
+const int INDEXEDIT		 = 3;
+const int INDEXDELETE	 = 4;
+const int INDEXTODAY	 = 5;
+const int INDEXTOMMORROW = 6;
+const int INDEXUNDO		 = 7;
+const int INDEXHELP		 = 8;
+const int INDEXEXIT		 = 9;
 const int INVALIDCOMMAND = 20;
 
 //Intepret the input into an index and  and return a Command Object

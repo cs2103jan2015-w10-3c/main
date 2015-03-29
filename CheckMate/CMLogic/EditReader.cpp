@@ -34,10 +34,7 @@ int EditReader::indexCategory(std::string categorystring){
 	if(categorystring==DESCRIPTION){
 		return DESCRIPTIONINDEX;}
 	else{
-		if(categorystring==CATEGORY){
-			return CATEGORYINDEX;}
-		else{
-			if(categorystring==STARTTIME){
+		if(categorystring==STARTTIME){
 				return STARTTIMEINDEX;}
 			else{
 				if(categorystring==ENDTIME){
@@ -50,7 +47,7 @@ int EditReader::indexCategory(std::string categorystring){
 							return ENDDATEINDEX;}
 						else{
 							return INVALIDINDEX;}
-					}}}}}
+					}}}}
 }
 
 int EditReader:: getTaskindex() const {

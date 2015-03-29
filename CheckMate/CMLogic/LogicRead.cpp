@@ -23,38 +23,32 @@ Command* LogicRead :: interpretCommand(std::string input){
 
 
 int LogicRead :: indexCommand(std::string command){
-	if(command==ADDF){
-		return ADDFLOATTASK;
-	}else{
-		if(command==ADDD){
-			return ADDDEADLINE;
+	if(command==ADD){
+		return ADDTASK;
+	}else {
+		if(command==SEARCH){
+			return  INDEXSEARCH;
 		}else{
-			if(command==ADDT){
-				return ADDTIMEDTASK;
-			}else {
-				if(command==SEARCH){
-					return  INDEXSEARCH;
+			if(command==EDIT){
+				return INDEXEDIT;
+			}else{
+				if(command==DEL){
+					return INDEXDELETE;
 				}else{
-					if(command==EDIT){
-						return INDEXEDIT;
+					if(command==TODAY){
+						return INDEXTODAY;
 					}else{
-						if(command==DEL){
-							return INDEXDELETE;
+						if(command==TOMMORROW){
+							return INDEXTOMMORROW;
 						}else{
-							if(command==TODAY){
-								return INDEXTODAY;
+							if(command==UNDO){
+								return INDEXUNDO;
 							}else{
-								if(command==TOMMORROW){
-									return INDEXTOMMORROW;
+								if(command==HELP){
+									return INDEXHELP;
 								}else{
-									if(command==UNDO){
-										return INDEXUNDO;
+									if(command==EXIT){
+										return INDEXEXIT;
 									}else{
-										if(command==HELP){
-											return INDEXHELP;
-										}else{
-											if(command==EXIT){
-											return INDEXEXIT;
-											}else{
-												return INVALIDCOMMAND;
-											}}}}}}}}}}}}
+										return INVALIDCOMMAND;
+									}}}}}}}}}}

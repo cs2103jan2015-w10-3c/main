@@ -29,7 +29,8 @@ const std::string DELETED = "was deleted!";
 const std::string EDITED = "Edit Done!";
 const std::string SEARCHFOUND = "The search has found ";
 const std::string TASKS = "tasks.";
-const std::string INVALIDTYPE ="InvalidCategoryChosen!";
+const std::string INVALIDTASKTYPE ="Invalid Task Type Chosen!";
+const std::string INVALIDTYPE ="Invalid Category Chosen!";
 const std::string UNDID = "Action was undone!";
 const std::string REDID = "Undo was redone!";
 
@@ -40,9 +41,11 @@ class LogicCommand{
 	std::vector <std::string> _toDisplay;
 
 public:
-	Output* addFloatTask(std::string);
-	Output* addTimeTask(std::string);
-	Output* addDeadlines(std::string);
+
+	Output* addTask (std::string);
+	Output* addFloatTask();
+	Output* addTimeTask();
+	Output* addDeadlines();
 	Output* deleteTask(std::string);
 	Output* searchTask (std::string);
 	Output* EditTask(std::string);

@@ -14,17 +14,17 @@ using namespace boost::local_time;
 class Task{
 protected:
 	std :: string _Description;		//Describes what the task is about
-	std :: string _Category;			//Categorises task as personal/school/work
+				
 
 public:
-	Task(std :: string,std :: string);
+	Task(std :: string);
 	~Task();
 	//For all three tasks
 	void editDescription(std :: string);
-	void editCategory(std :: string);
+	
 	
 	std :: string getDescription() const;
-	std :: string getCategory() const;
+
 
 	virtual void editStartDate(ptime)=0;
 	virtual void editStartTime (ptime)=0;

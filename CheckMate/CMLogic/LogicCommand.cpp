@@ -1,18 +1,41 @@
 #include "LogicCommand.h"
 
 
+Output*  LogicCommand :: addTask(std::string CommandInput){
+	Output* output;
+	
+	std::string TaskType = _Parser.determineType;
+	_Parser.ParseData(CommandInput,TaskType);
+	
+
+	if(TaskType==TIMEDTYPE){
+		output= addTimeTask();}
+	else{
+		if(TaskType==FLOATINGTYPE){
+			output= addFloatTask();}
+		else{
+			if(TaskType==DEADLINE){
+				output= addDeadlines();}
+			else{ 
+				std::string feedback = INVALIDTYPE;
+				std::vector <Task*> TaskList =_Storage.getDisplay();
+				output= new Output(feedback,Tasklist);}
+		}}
+
+	return output;
 
 
-Output* LogicCommand :: addFloatTask(std::string CommandInput){
-	std::string Description =_Parser.getDescription(CommandInput,FLOATINGTYPE);
-	std::string Category = _Parser.getCategory(CommandInput);
+}
 
-	FloatingTask* NewFloatingTask = new FloatingTask(Description,Category);
+Output* LogicCommand :: addFloatTask(){
+	std::string Description =_Parser.getDescription();
+
+	FloatingTask* NewFloatingTask = new FloatingTask(Description);
 
 	_Storage.addFloatingTask(NewFloatingTask);
 
-	std::string feedback = Description + " " + Category + " " + ADDED;
-	std::vector <std::string> TaskList =_Storage.getDisplay();
+	std::string feedback = Description + " " + " " + ADDED;
+	std::vector <std::Task*> TaskList =_Storage.getDisplay();
 
 	Output* output= new Output(feedback,TaskList);
 
@@ -20,36 +43,35 @@ Output* LogicCommand :: addFloatTask(std::string CommandInput){
 }
 
 
-Output* LogicCommand :: addDeadlines(std::string CommandInput){
-	std::string Description =_Parser.getDescription(CommandInput,DEADLINE);
-	std::string Category = _Parser.getCategory(CommandInput);
-	ptime Start = _Parser.getStart(CommandInput,DEADLINE);
+Output* LogicCommand :: addDeadlines(){
+	std::string Description =_Parser.getDescription();
+	ptime Start = _Parser.getStart();
 
-	Deadline* NewDeadline = new Deadline(Description,Category,Start);
+	Deadline* NewDeadline = new Deadline(Description,Start);
 
 	_Storage.addDeadline(NewDeadline);
 
-	std::string feedback = Description +  " " + to_simple_string(Start) +" " + Category + " " + ADDED;
-	std::vector <std::string> TaskList =_Storage.getDisplay();
+	std::string feedback = Description +  " " + to_simple_string(Start) +" " +  " " + ADDED;
+	std::vector <std::Task*> TaskList =_Storage.getDisplay();
 
 	Output* output= new Output(feedback,TaskList);
 
 	return output;
 }
 
-Output* LogicCommand :: addTimeTask(std::string CommandInput){
+Output* LogicCommand :: addTimeTask(){
 
-	std::string Description =_Parser.getDescription(CommandInput,TIMEDTYPE);
-	std::string Category = _Parser.getCategory(CommandInput);
-	ptime Start = _Parser.getStart(CommandInput,TIMEDTYPE); // To identify a deadline and TimedTask
-	ptime End = _Parser.getEnd(CommandInput);
+	std::string Description =_Parser.getDescription();
 
-	TimedTask* NewTimedTask = new TimedTask(Description,Category,Start,End);
+	ptime Start = _Parser.getStart(); // To identify a deadline and TimedTask
+	ptime End = _Parser.getEnd();
+
+	TimedTask* NewTimedTask = new TimedTask(Description,Start,End);
 
 	_Storage.addTimedTask(NewTimedTask);
 
-	std::string feedback = Description +  " " + to_simple_string(Start) + " " + to_simple_string(End) +  " " + Category + ADDED;
-	std :: vector <std :: string> TaskList =_Storage.getDisplay();
+	std::string feedback = Description +  " " + to_simple_string(Start) + " " + to_simple_string(End) +  " " + ADDED;
+	std :: vector <std :: Task*> TaskList =_Storage.getDisplay();
 
 	Output* output= new Output(feedback,TaskList);
 
@@ -58,7 +80,7 @@ Output* LogicCommand :: addTimeTask(std::string CommandInput){
 
 Output* LogicCommand :: searchTask (std::string CommandInput){
 
-	std::vector <std::string> TaskList = _Storage.searchTask(CommandInput);
+	std::vector <std::Task*> TaskList = _Storage.searchTask(CommandInput);
 	std::string feedback = SEARCHFOUND + " " + TASKS;
 
 	Output* output= new Output(feedback,TaskList);
@@ -71,7 +93,7 @@ Output* LogicCommand :: deleteTask(std::string CommandInput){
 	int index =atoi(CommandInput.c_str());
 
 	std::string feedback = _Storage.deleteTask(index);
-	std::vector <std::string> TaskList =_Storage.getDisplay();
+	std::vector <std::Task*> TaskList =_Storage.getDisplay();
 
 	Output* output= new Output(feedback,TaskList);
 
@@ -91,10 +113,6 @@ Output* LogicCommand :: EditTask(std::string CommandInput){
 		SelectedTask->editDescription(Editor.getNewInput());
 		feedback=EDITED;}
 						  break;
-	case CATEGORYINDEX:{
-		SelectedTask->editCategory(Editor.getNewInput());
-		feedback=EDITED;}
-					   break;
 	case STARTTIMEINDEX:{
 		ptime PreviousTime = SelectedTask->getStart();
 		ptime NewStart = _Parser.changeTime(PreviousTime,Editor.getNewInput());
@@ -126,7 +144,7 @@ Output* LogicCommand :: EditTask(std::string CommandInput){
 	}
 
 
-	std::vector <std::string> TaskList =_Storage.getDisplay();
+	std::vector <std::Task*> TaskList =_Storage.getDisplay();
 
 	Output* output= new Output(feedback,TaskList);
 
@@ -156,7 +174,7 @@ Output* LogicCommand ::  DisplayTomorrow(){
 Output* LogicCommand :: UndoAction(){
 	_Storage.undoAction();
 
-	std::vector <std::string> TaskList =_Storage.getDisplay();
+	std::vector <std::Task*> TaskList =_Storage.getDisplay();
 	std::string feedback= UNDID;
 	Output* output= new Output(feedback,TaskList);
 
@@ -166,7 +184,7 @@ Output* LogicCommand :: UndoAction(){
 Output* LogicCommand :: RedoAction(){
 	_Storage.redoAction();
 
-	std::vector <std::string> TaskList =_Storage.getDisplay();
+	std::vector <std::Task*> TaskList =_Storage.getDisplay();
 	std::string feedback= REDID;
 	Output* output= new Output(feedback,TaskList);
 

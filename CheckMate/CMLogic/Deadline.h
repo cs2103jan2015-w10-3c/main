@@ -9,7 +9,7 @@ class Deadline : public Task
 
 public:
 
-	Deadline(std::string,std::string,ptime);
+	Deadline(std::string,ptime);
 	~Deadline(void);
 	virtual void editStartDate(ptime);
 	virtual void editStartTime (ptime);

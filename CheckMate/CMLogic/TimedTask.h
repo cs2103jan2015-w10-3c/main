@@ -10,7 +10,7 @@ class TimedTask : public Task{
 
 
 public:
-	TimedTask(std::string,std::string,ptime,ptime);
+	TimedTask(std::string,ptime,ptime);
 	~TimedTask(void);
 
 	virtual void editStartDate(ptime);

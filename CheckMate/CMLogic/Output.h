@@ -3,14 +3,15 @@
 
 #include <iostream>
 #include <vector>
+#include "Task.h"
 
 class Output{
 	std::string _Feedback;
-	std::vector <std::string> _TaskList;
+	std::vector <Task*> _TaskList;
 public:
 	Output(void);
-	Output(std :: string, std :: vector<std ::string>);
+	Output(std :: string, std :: vector<Task*>);
 	std::string getFeedback() const;
-	std::vector <std::string> getDisplay() const;
+	std::vector <Task*> getDisplay() const;
 };
 #endif

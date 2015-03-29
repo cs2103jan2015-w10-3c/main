@@ -7,8 +7,8 @@
 
 
 
-TimedTask::TimedTask(std::string Description,std::string Category ,ptime start, ptime end)
-	:Task( Description, Category){ 
+TimedTask::TimedTask(std::string Description,ptime start, ptime end)
+	:Task( Description){ 
 		_Start=start;
 		_End =end;
 }
@@ -47,10 +47,7 @@ bool TimedTask:: isFound (std::string keyword){
 	bool found = false;
 	size_t position;
 
-	position = _Category.find(keyword);
-	if(position!= std::string::npos)
-	{return true;}
-	else{
+
 		position = _Description.find(keyword);
 		if(position!= std::string::npos)
 		{return true;}
@@ -63,7 +60,7 @@ bool TimedTask:: isFound (std::string keyword){
 				position = to_simple_string(_End).find(keyword);
 				if(position!= std::string::npos)
 				{return true;}
-			}}}
+			}}
 
 	return found;
 }
@@ -73,8 +70,7 @@ std::string TimedTask:: getInfo() {
 
 	information <<std::left << std::setw(40)<<_Description 
 		<<std::setw(40)<<to_simple_string(_Start)
-		<<std::setw(40)<<to_simple_string(_End)
-		<<std::setw(40)<< _Category;
+		<<std::setw(40)<<to_simple_string(_End);
 
 	return information.str();
 }
