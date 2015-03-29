@@ -8,7 +8,7 @@
 
 int main (void) {
 	std::string str;
-	std::vector<std::string> vStr;
+	std::vector<Task*> vStr;
 	CMLogic testSample;
 	 Output* testOutput;
 	getline(std::cin, str);

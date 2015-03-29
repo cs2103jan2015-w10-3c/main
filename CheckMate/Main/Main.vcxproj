@@ -60,7 +60,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Boost\1.57.0\VC\11.0\stage\lib;C:\Boost\1.57.0\VC\11.0;C:\Users\TITUS\Documents\Visual Studio 2012\Projects\CheckMate\CMStorage;C:\Users\TITUS\Documents\Visual Studio 2012\Projects\CheckMate\CMParser;C:\Users\TITUS\Documents\Visual Studio 2012\Projects\CheckMate\CMLogic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\TITUS\Documents\Visual Studio 2012\Projects\CheckMateint\CheckMate\CMParser;C:\Boost\1.57.0\VC\11.0\stage\lib;C:\Boost\1.57.0\VC\11.0;C:\Users\TITUS\Documents\Visual Studio 2012\Projects\CheckMateint\CheckMate\CMStorage;C:\Users\TITUS\Documents\Visual Studio 2012\Projects\CheckMateint\CheckMate;C:\Users\TITUS\Documents\Visual Studio 2012\Projects\CheckMateint\CheckMate\CMLogic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

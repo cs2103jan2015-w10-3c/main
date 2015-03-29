@@ -13,14 +13,13 @@
 #include "CMHistory.h"
 #include <windows.h>
 
+
 class CMStorage {
 
-	private:
+	public: //changed for testing purpose
 
 		std::vector<Task*> _allTasks; //all tasks as Task pointers
 		std::vector<int> _subIndexes;
-		std::string _filename;
-		LPCWSTR _location;
 		CMHistory history;
 		 
 	public:
@@ -29,19 +28,12 @@ class CMStorage {
 		void addTimedTask (TimedTask*);
 		void addFloatingTask (FloatingTask*);
 		std::string deleteTask (int);
-		std::vector<std::string> getDisplay();
+		std::vector<Task*> getDisplay();
 		Task* getTask(int);
-<<<<<<< HEAD
-		std::vector<std::string> searchTask (std::string);
-		void writeFile(std::string);   
-		void changeStorageLocation(const char*);
-=======
 		std::vector<Task*> searchTask (std::string);
-		void setFileName (std::string);
-		void writeFile();   
-		std::vector<std::string> readFile();
+		void writeFile(std::string);   
+		std::vector<std::string> readFile (std::string);
 		void changeStorageLocation(LPCWSTR);
->>>>>>> 92d2ce6a480266df894bd2ceee7de2a48730e5d2
 		void undoAction();
 		void redoAction();
 

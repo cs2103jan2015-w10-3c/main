@@ -1,6 +1,6 @@
 #ifndef FLOATINGTASK_H
 #define FLOATINGTASK_H
-#pragma once
+
 #include <iostream>
 #include "Task.h"
 

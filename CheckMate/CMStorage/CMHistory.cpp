@@ -1,7 +1,7 @@
 #include "CMHistory.h"
 
 
-CMHistory :: CMHistory(void) {
+CMHistory :: CMHistory() {
 }
 
 

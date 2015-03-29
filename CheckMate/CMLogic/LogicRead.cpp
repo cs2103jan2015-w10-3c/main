@@ -24,7 +24,7 @@ Command* LogicRead :: interpretCommand(std::string input){
 
 int LogicRead :: indexCommand(std::string command){
 	if(command==ADD){
-		return ADDTASK;
+		return INDEXADD;
 	}else {
 		if(command==SEARCH){
 			return  INDEXSEARCH;

@@ -14,23 +14,11 @@ void CMLogic :: ExecuteCommand(std::string input){
 	Command* NewCommand = _CommandReader.interpretCommand(input);
 
 	switch(NewCommand->getCommandIndex()){
-		//AddFloatingTask
-	case ADDFLOATTASK :{ 
-		_Display= _CommandExecutor.addFloatTask(NewCommand->getCommandDescription()); 
+		//AddTask
+	case INDEXADD :{ 
+		_Display= _CommandExecutor.addTask(NewCommand->getCommandDescription()); 
 					   }
 					   break;
-
-					   //Add Deadline
-	case ADDDEADLINE:{
-		_Display = _CommandExecutor.addDeadlines(NewCommand->getCommandDescription());
-					 }
-					 break;
-
-					 //Add TimedTasked
-	case ADDTIMEDTASK:{
-		_Display = _CommandExecutor.addTimeTask (NewCommand->getCommandDescription());
-					  }
-					  break;
 
 					  //Search Case
 	case INDEXSEARCH:{   
