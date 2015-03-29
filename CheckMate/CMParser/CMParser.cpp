@@ -4,7 +4,11 @@ ptime CMParser::getDateAndTime(std::string str) {
 	std::string timeStr, dateStr;
 	date d;
 	int lastSpace = str.find_last_of(" ");
-
+	
+	for (size_t i=0; i<str.length(); ++i) {
+		str[i]=tolower(str[i]);
+	}
+	
 	if (hasTime(str) && hasDate(str)){
 		std::cout <<"has both";
 		timeStr = str.substr(lastSpace+1);
@@ -12,7 +16,7 @@ ptime CMParser::getDateAndTime(std::string str) {
 		
 		timeParser.parseTime(timeStr);
 		
-		d = dateParser.getDate(dateStr);
+		d = dateParser.parseDate(dateStr);
 	}
 	else if (hasDate(str)) {
 		std::cout <<"has date";
@@ -21,7 +25,7 @@ ptime CMParser::getDateAndTime(std::string str) {
 		timeParser.setHour(23);
 		timeParser.setMin(59);
 		
-		d = dateParser.getDate(dateStr);
+		d = dateParser.parseDate(dateStr);
 	}
 	else if (hasTime(str)) {
 		std::cout <<"has time";
@@ -33,7 +37,9 @@ ptime CMParser::getDateAndTime(std::string str) {
 			_start = second_clock::local_time();
 
 		d = _start.date();
-	}
+	} else {
+		return ptime();
+	} 
 	
 	return ptime(d ,hours(timeParser.getHour())+minutes(timeParser.getMin()));
 }
@@ -53,6 +59,10 @@ bool CMParser::hasTime(std::string str) {
 bool CMParser::hasDate(std::string str) {
 	std::string validDate[6] = {"today", "tdy", "tomorrow", "tmr", " ", "/"};
 	
+	if (dateParser.isWeekdayName(str)) {
+		return true;
+	}
+
 	for (int i=0; i<6; ++i) {
 		if (str.find(validDate[i])!=str.npos) {
 			return true;
@@ -61,78 +71,92 @@ bool CMParser::hasDate(std::string str) {
 
 	return false;
 }
-
-std::string CMParser::getDescription(std::string str, std::string type) {
-	int pos = str.npos;
+void CMParser::parseData(std::string str, std::string type) {
+	int pos;
+	std::string startTimeAndDate;
+	std::string endTimeAndDate;
 
 	if (type=="timed") {
 		pos = str.rfind(" from ");
-	} else if (type=="float") {
-		pos = str.rfind(" cat ");
+		_description = str.substr(0,pos);
+
+		startTimeAndDate = str.substr(str.rfind(" from ")+6);
+		startTimeAndDate = startTimeAndDate.erase(startTimeAndDate.find(" to "));
+		_start = getDateAndTime(startTimeAndDate);
+
+		endTimeAndDate = str.substr(str.rfind(" to ")+4);
+		_end = getDateAndTime(endTimeAndDate);
 	} else if (type=="deadline") {
 		pos = str.rfind(" by ");
-	}
-
-	if (pos!=str.npos) {
 		_description = str.substr(0,pos);
-	} else {
-		_description = "";
-	}
 
+		startTimeAndDate = str.substr(str.rfind(" by ")+4);
+		_start = getDateAndTime(startTimeAndDate);
+
+		_end = ptime();
+	} else if (type=="float") {
+		_description = str;
+		_start = ptime();
+		_end = ptime();
+	} 
+	
+}
+
+void CMParser::parseDataFromFile(std::string str){
+	std::string startTimeAndDate;
+	std::string endTimeAndDate;
+	int pos = str.find_last_of(" ");
+
+	if (str[pos+1]=='-'){
+		_end = ptime();
+	} else {
+		pos = str.find_last_of(" ", pos-1);
+		endTimeAndDate = str.substr(pos+1);
+		_end = getDateAndTime(endTimeAndDate);
+	}
+	str.erase(pos);
+
+	pos = str.find_last_of(" ",pos-1);
+	if (str[pos+1]=='-'){
+		_start = ptime();
+	} else {
+		pos = str.find_last_of(" ", pos-1);
+		startTimeAndDate = str.substr(pos+1);
+		_start = getDateAndTime(startTimeAndDate);
+	}
+	str.erase(pos);
+
+	_description = str;
+}
+
+std::string CMParser::getDescription() {
 	return _description;
 }
 
-std::string CMParser::getCategory (std::string str){
-	std::string str1;
-
-	if (str.find(" cat ")==str.npos) {
-		str1 = "-";
-	} else {
-		str1 = str.substr(str.find(" cat ")+5);
-	}
-
-	_category = str1;
-
-	return _category;
-}
-
-ptime CMParser::getStart(std::string str, std::string type) {
-	//type cannot be float (use exception)
-	std::string startTimeAndDate;
-
-	if (type == "timed") {
-		startTimeAndDate = str.substr(str.rfind(" from ")+6);
-		startTimeAndDate = startTimeAndDate.erase(startTimeAndDate.find(" to "));
-	} else if (type == "deadline") {
-		startTimeAndDate = str.substr(str.rfind(" by ")+4);
-		
-		int pos = startTimeAndDate.rfind(" cat ");
-		
-		if (pos!=startTimeAndDate.npos) {
-			startTimeAndDate = startTimeAndDate.erase(pos);
-		}
-	}
-
-	startTimeAndDate.substr(1);
-
-	_start = getDateAndTime(startTimeAndDate);
-
+ptime CMParser::getStart() {
 	return _start;
 }
 
-ptime CMParser::getEnd(std::string str) {
-	std::string endTimeAndDate;
-
-	endTimeAndDate = str.substr(str.rfind(" to ")+4);
-
-	int pos = endTimeAndDate.find(" cat ");
-
-	if (pos!=endTimeAndDate.npos)
-	endTimeAndDate.erase(pos);
-
-	_end = getDateAndTime(endTimeAndDate);
-
+ptime CMParser::getEnd() {
 	return _end;
+}
+
+std::string CMParser::determineType(std::string str){
+	if ((str.find(" from ")!=str.npos)||(str.find(" to ")!=str.npos)) {
+		int pos = str.rfind(" to ")+4;
+		std::string buffer = str.substr(pos);
+		if ((buffer.find(" by ")==buffer.npos) && (hasDate(str.substr(pos)) || hasTime(str.substr(pos)))) {
+			return "timed";
+		}
+	}
+
+	if (str.find(" by ")!=str.npos) {
+		int pos = str.rfind(" by ") + 4;
+		if (hasDate(str.substr(pos))||hasTime(str.substr(pos))) {
+			return "deadline";
+		}
+	}
+	return "float";
 }
 
 std::string CMParser::getToday() {
@@ -169,5 +193,5 @@ ptime CMParser::changeTime (ptime current, std::string newTime) {
 }
 
 ptime CMParser::changeDate (ptime current, std::string newDate) {
-	return ptime(dateParser.getDate(newDate), hours(current.time_of_day().hours())+minutes(current.time_of_day().minutes()));
+	return ptime(dateParser.parseDate(newDate), hours(current.time_of_day().hours())+minutes(current.time_of_day().minutes()));
 }
