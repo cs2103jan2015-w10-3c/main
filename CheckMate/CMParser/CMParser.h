@@ -41,6 +41,11 @@ public:
 
 	void parseDataFromFile(std::string);
 	void parseData(std::string, std::string);
+
+	std::string showDate ();
+	std::string showTime ();
+
+	std::string editDirectoryString (std::string);
 };
 
 #endif

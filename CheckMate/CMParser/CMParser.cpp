@@ -77,15 +77,34 @@ void CMParser::parseData(std::string str, std::string type) {
 	std::string endTimeAndDate;
 
 	if (type=="timed") {
-		pos = str.rfind(" from ");
-		_description = str.substr(0,pos);
-
-		startTimeAndDate = str.substr(str.rfind(" from ")+6);
-		startTimeAndDate = startTimeAndDate.erase(startTimeAndDate.find(" to "));
-		_start = getDateAndTime(startTimeAndDate);
-
-		endTimeAndDate = str.substr(str.rfind(" to ")+4);
-		_end = getDateAndTime(endTimeAndDate);
+		if (str.rfind(" on ")==str.npos){
+			pos = str.rfind(" from ");
+			_description = str.substr(0, pos);
+			startTimeAndDate = str.substr(str.rfind(" from ")+6);
+		} else if (str.rfind(" from ")==str.npos) {
+			pos = str.rfind(" on ");
+			_description = str.substr(0, pos);
+			startTimeAndDate = str.substr(str.rfind(" on ")+4);
+		} else if (str.rfind(" from ")>str.rfind(" on ")) {
+			pos = str.rfind(" from ");
+			_description = str.substr(0, pos);
+			startTimeAndDate = str.substr(str.rfind(" from ")+6);
+		} else {
+			pos = str.rfind(" on ");
+			_description = str.substr(0, pos);
+			startTimeAndDate = str.substr(str.rfind(" on ")+4);
+		}
+			
+		if (startTimeAndDate.find(" to ")!=startTimeAndDate.npos) {
+			startTimeAndDate = startTimeAndDate.erase(startTimeAndDate.find(" to "));
+			_start = getDateAndTime(startTimeAndDate);
+	
+			endTimeAndDate = str.substr(str.rfind(" to ")+4);
+			_end = getDateAndTime(endTimeAndDate);
+		} else {
+			_start = getDateAndTime(startTimeAndDate);
+			_end = _start + hours(1);
+		}
 	} else if (type=="deadline") {
 		pos = str.rfind(" by ");
 		_description = str.substr(0,pos);
@@ -194,4 +213,39 @@ ptime CMParser::changeTime (ptime current, std::string newTime) {
 
 ptime CMParser::changeDate (ptime current, std::string newDate) {
 	return ptime(dateParser.parseDate(newDate), hours(current.time_of_day().hours())+minutes(current.time_of_day().minutes()));
+}
+
+std::string CMParser::editDirectoryString (std::string directory){
+	bool singleSlash = false;
+	bool doubleSlash = false;
+
+	for (size_t i=0; i<directory.length(); ++i) {
+		if (directory[i]=='/'){
+			if (!singleSlash){
+				singleSlash = true;
+			} else {
+				doubleSlash = true;
+				singleSlash = false;
+			}
+			if (doubleSlash) {
+				directory.erase(i, 1);
+			}
+		} else {
+			if (singleSlash) {
+				directory.insert(i, "/");
+			}
+			singleSlash = false;
+			doubleSlash = false;
+		}
+	}
+		/*
+
+	
+	size_t found = directory.find("/");
+	while (found!=directory.npos) {
+		directory.insert(found, "/");
+		found=found+2;
+		found = directory.find("/", found);
+	}*/
+	return directory;
 }
