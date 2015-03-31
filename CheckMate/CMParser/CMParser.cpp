@@ -118,14 +118,15 @@ void CMParser::parseDataFromFile(std::string str){
 
 	if (str[pos+1]=='-'){
 		_end = ptime();
+		pos = str.find_last_of("-", pos);
 		_type = "deadline";
 	} else {
 		pos = str.find_last_of(" ", pos-1);
 		endTimeAndDate = str.substr(pos+1);
-		_end = getDateAndTime(endTimeAndDate);
+		_end = time_from_string(endTimeAndDate);
 	}
-	str.erase(pos);
-
+	pos = str.find_last_not_of(" ",pos);
+	str.erase(pos+1);
 	pos = str.find_last_of(" ",pos-1);
 	if (str[pos+1]=='-'){
 		_start = ptime();
@@ -133,9 +134,10 @@ void CMParser::parseDataFromFile(std::string str){
 	} else {
 		pos = str.find_last_of(" ", pos-1);
 		startTimeAndDate = str.substr(pos+1);
-		_start = getDateAndTime(startTimeAndDate);
+		_start = time_from_string(startTimeAndDate);
 	}
-	str.erase(pos);
+	pos = str.find_last_not_of(" ",pos);
+	str.erase(pos+1);
 
 	_description = str;
 }
@@ -157,8 +159,7 @@ std::string CMParser::getType() {
 }
 
 std::string CMParser::determineType(std::string str){
-	int pos;
-	
+
 	if (str.find(" from ")!=str.npos) {
 		std::string start = str.substr(str.rfind(" from ")+6);
 		if (start.find(" by ")==start.npos) {
