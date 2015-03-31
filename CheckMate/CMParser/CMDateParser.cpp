@@ -83,7 +83,7 @@ date CMDateParser::getDate(std::string str) {
 	}
 	
 	for (int i=1; i<13; ++i) {
-		if ((atoi(monthStr.c_str())==i)||(monthStr==month[i])) {
+		if ((atoi(monthStr.c_str())==i)||(monthStr.find(month[i])!=monthStr.npos)) {
 			validMonth = true;
 		}
 	}

@@ -71,11 +71,12 @@ bool CMParser::hasDate(std::string str) {
 
 	return false;
 }
-void CMParser::parseData(std::string str, std::string type) {
+void CMParser::parseData(std::string str) {
 	int pos;
 	std::string startTimeAndDate;
 	std::string endTimeAndDate;
-
+	std::string type = determineType(str);
+	_type = type;
 	if (type=="timed") {
 		
 		pos = str.rfind(" from ");
@@ -112,9 +113,12 @@ void CMParser::parseDataFromFile(std::string str){
 	std::string startTimeAndDate;
 	std::string endTimeAndDate;
 	int pos = str.find_last_of(" ");
+	
+	_type = "timed";
 
 	if (str[pos+1]=='-'){
 		_end = ptime();
+		_type = "deadline";
 	} else {
 		pos = str.find_last_of(" ", pos-1);
 		endTimeAndDate = str.substr(pos+1);
@@ -125,6 +129,7 @@ void CMParser::parseDataFromFile(std::string str){
 	pos = str.find_last_of(" ",pos-1);
 	if (str[pos+1]=='-'){
 		_start = ptime();
+		_type = "float";
 	} else {
 		pos = str.find_last_of(" ", pos-1);
 		startTimeAndDate = str.substr(pos+1);
@@ -146,7 +151,11 @@ ptime CMParser::getStart() {
 ptime CMParser::getEnd() {
 	return _end;
 }
-//lunch with peter from time date || take poster from peter and pass to tom by tmr || take poster from peter and pass to tom
+
+std::string CMParser::getType() {
+	return _type;
+}
+
 std::string CMParser::determineType(std::string str){
 	int pos;
 	
