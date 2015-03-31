@@ -6,7 +6,14 @@
 
 
 
+CMLogic::CMLogic(){
+	_IsActive= true;
+}
 
+void CMLogic :: startUp(){
+		_Display=_CommandExecutor.retrieveData();
+		return;
+}
 
 
 void CMLogic :: ExecuteCommand(std::string input){
@@ -54,6 +61,12 @@ void CMLogic :: ExecuteCommand(std::string input){
 		_Display=_CommandExecutor.UndoAction();
 					 }
 					 break;
+
+	case INDEXCHECKTASK	:{
+		_Display=(_CommandExecutor.CheckTask(NewCommand->getCommandDescription()));
+					 }
+					 break;
+
 					 // View help function commands
 	/*case INDEXHELP	:{
 					 }

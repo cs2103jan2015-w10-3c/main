@@ -5,6 +5,7 @@
 Task::Task(std::string Description)
 {
 	_Description= Description;
+	_Checked= false;
 
 } 
 
@@ -19,5 +20,10 @@ std::string Task:: getDescription() const{
 	return _Description;
 }
 
+bool Task :: IsChecked() const{
+	return _Checked;
+}
 
-
+void Task :: checkTask(){
+	_Checked=true;
+}

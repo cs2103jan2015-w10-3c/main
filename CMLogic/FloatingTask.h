@@ -20,5 +20,6 @@ public:
 
 	virtual bool isFound(std::string);
 	virtual std::string getInfo();
+	virtual bool IsChecked() const;
 	};
 #endif

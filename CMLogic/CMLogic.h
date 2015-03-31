@@ -10,9 +10,7 @@
 #include "Output.h"
 
 
-const std::string GOODBYE = "Goodbye! ";
-const std::string WELCOMEMESSAGE ="Welcome Back ";
-const std::string USERNAME ="Master";
+
 
 class CMLogic
 {	private:
@@ -22,6 +20,8 @@ class CMLogic
 		Output* _Display;
 
 public:
+		CMLogic();
+		void startUp();
 		void ExecuteCommand(std :: string);
 		Output* getDisplay();
 };

@@ -14,7 +14,7 @@ using namespace boost::local_time;
 class Task{
 protected:
 	std :: string _Description;		//Describes what the task is about
-				
+	bool _Checked;			
 
 public:
 	Task(std :: string);
@@ -36,7 +36,9 @@ public:
 	//Different attributes to search
 	virtual bool isFound(std::string)=0;
 	virtual std :: string getInfo()=0;
-	
+
+	virtual bool IsChecked() const;
+	virtual void checkTask();
 };
 
 #endif

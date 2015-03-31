@@ -8,7 +8,7 @@
 
 
 TimedTask::TimedTask(std::string Description,ptime start, ptime end)
-	:Task( Description){ 
+	:Task(Description){ 
 		_Start=start;
 		_End =end;
 }
@@ -74,3 +74,4 @@ std::string TimedTask:: getInfo() {
 
 	return information.str();
 }
+

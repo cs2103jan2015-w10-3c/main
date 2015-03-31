@@ -50,5 +50,9 @@ int LogicRead :: indexCommand(std::string command){
 									if(command==EXIT){
 										return INDEXEXIT;
 									}else{
+										if(command==CHECK){
+											return INDEXCHECKTASK;
+									}else{
 										return INVALIDCOMMAND;
 									}}}}}}}}}}
+}

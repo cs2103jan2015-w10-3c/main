@@ -5,9 +5,10 @@ Output::Output(void){
 	_Feedback = "";
 }
 
-Output::Output(std :: string feedback, std :: vector<Task*> TaskList){
+Output::Output(std :: string feedback, std :: vector<Task*> TaskList,int ActionIndex){
 	_Feedback = feedback;
 	_TaskList = TaskList;
+	_LastAction = ActionIndex;
 }
 
 std :: string Output :: getFeedback() const{
@@ -16,4 +17,8 @@ std :: string Output :: getFeedback() const{
 
 std :: vector < Task*> Output :: getDisplay() const {
 	return _TaskList;
+}
+
+int Output :: getLastAction() const{
+	return _LastAction;
 }

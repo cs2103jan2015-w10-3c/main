@@ -17,33 +17,44 @@
 #include "TimedTask.h"
 #include "EditReader.h"
 #include "boost/date_time.hpp"
+#include "IntToStringConvertor.h"
 
 using namespace boost::posix_time;
 using namespace boost::gregorian;
 using namespace boost::local_time;
 
-const std::string INVALID_INPUT = "Invalid command given!";
-const std::string FLOATINGTYPE = "float";
-const std::string TIMEDTYPE = "timed";
-const std::string DEADLINE = "deadline";
-const std::string ADDED = "was added!";
-const std::string DELETED = "was deleted!";
-const std::string EDITED = "Edit Done!";
-const std::string SEARCHFOUND = "The search has found ";
-const std::string TASKS = "tasks.";
-const std::string INVALIDTASKTYPE ="Invalid Task Type Chosen!";
-const std::string INVALIDTYPE ="Invalid Category Chosen!";
-const std::string UNDID = "Action was undone!";
-const std::string REDID = "Undo was redone!";
+const std::string INVALID_INPUT		= "Invalid command given!";
+const std::string FLOATINGTYPE		= "float";
+const std::string TIMEDTYPE			= "timed";
+const std::string DEADLINE			= "deadline";
+const std::string ADDED				= "was added!";
+const std::string DELETED			= "was deleted!";
+const std::string EDITED			= "Edit Done!";
+const std::string SEARCHFOUND		= "The search has found ";
+const std::string TASKS				= "tasks.";
+const std::string INVALIDTASKTYPE	=  "Invalid Task Type Chosen!";
+const std::string INVALIDTYPE		= "Invalid Category Chosen!";
+const std::string UNDID				= "Action was undone!";
+const std::string REDID				= "Undo was redone!";
+const std::string GOODBYE			= "Goodbye! ";
+const std::string WELCOMEBACK		= "Welcome Back ";
+const std::string USERNAME			= "Master";
+const std::string NEWDIRECTORY		= "Directory Changed to ";
+const std::string CHECKED			= "It has been checked";
+
+const int NOINDEX					= -1;
 
 class LogicCommand{
 	CMParser _Parser;
 	CMStorage _Storage;
 	EditReader Editor;
+	IntToStringConvertor _IntConvertor;
+	
+	// CMTextFile _TextFile;
 	std::vector <std::string> _toDisplay;
 
 public:
-
+	Output* retrieveData();
 	Output* addTask (std::string);
 	Output* addFloatTask();
 	Output* addTimeTask();
@@ -55,6 +66,8 @@ public:
 	Output* DisplayTomorrow();
 	Output* UndoAction();
 	Output* RedoAction();
+	Output* CheckTask(std::string);
+	Output* changeStorageDirectory(std::string);
 };
 
 #endif
