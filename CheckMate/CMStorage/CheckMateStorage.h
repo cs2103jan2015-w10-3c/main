@@ -20,8 +20,7 @@ class CMStorage {
 
 		std::vector<Task*> _allTasks; //all tasks as Task pointers
 		std::vector<int> _subIndexes;
-		std::string _filename;
-		LPCWSTR _location;
+		LPCSTR _location;
 		CMHistory history;
 		 
 	public:
@@ -29,16 +28,19 @@ class CMStorage {
 		void addDeadline (Deadline*);
 		void addTimedTask (TimedTask*);
 		void addFloatingTask (FloatingTask*);
-		std::string deleteTask (int);
+std:: string  deleteTask (int );
 		std::vector<Task*> getDisplay();
 		Task* getTask(int);
 		std::vector<Task*> searchTask (std::string);
 		void setFileName (std::string);
 		void writeFile();   
 		std::vector<std::string> readFile();
-		void changeStorageLocation(LPCWSTR);
+		void changeStorageLocation(LPCSTR);
 		void undoAction();
 		void redoAction();
+		void sortAllTasks();
+		std::string getStorageLocation();
+
 
 };
 

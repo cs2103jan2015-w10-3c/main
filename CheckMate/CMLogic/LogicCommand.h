@@ -5,11 +5,8 @@
 #include <string>
 #include <vector>
 #include "CMParser.h"
-<<<<<<< HEAD
-=======
 #include "CMDateParser.h"
 #include "CMTimeParser.h"
->>>>>>> e9e324e88bd6228cdc316ba3bcb4003a65e770ea
 #include "CheckMateStorage.h"
 #include "Output.h"
 #include "Task.h"

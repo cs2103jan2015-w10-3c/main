@@ -109,22 +109,28 @@ void CMParser::parseDataFromFile(std::string str){
 
 	if (str[pos+1]=='-'){
 		_end = ptime();
+<<<<<<< HEAD
+=======
+		pos = str.find_last_of("-", pos);
+		_type = "deadline";
+>>>>>>> 48e009e649ff6d6cabf2f2defa281bfc2b05c550
 	} else {
 		pos = str.find_last_of(" ", pos-1);
 		endTimeAndDate = str.substr(pos+1);
-		_end = getDateAndTime(endTimeAndDate);
+		_end = time_from_string(endTimeAndDate);
 	}
-	str.erase(pos);
-
+	pos = str.find_last_not_of(" ",pos);
+	str.erase(pos+1);
 	pos = str.find_last_of(" ",pos-1);
 	if (str[pos+1]=='-'){
 		_start = ptime();
 	} else {
 		pos = str.find_last_of(" ", pos-1);
 		startTimeAndDate = str.substr(pos+1);
-		_start = getDateAndTime(startTimeAndDate);
+		_start = time_from_string(startTimeAndDate);
 	}
-	str.erase(pos);
+	pos = str.find_last_not_of(" ",pos);
+	str.erase(pos+1);
 
 	_description = str;
 }
@@ -142,7 +148,31 @@ ptime CMParser::getEnd() {
 }
 
 std::string CMParser::determineType(std::string str){
+<<<<<<< HEAD
 	if ((str.find(" from ")!=str.npos)||(str.find(" to ")!=str.npos)) {
+=======
+
+	if (str.find(" from ")!=str.npos) {
+		std::string start = str.substr(str.rfind(" from ")+6);
+		if (start.find(" by ")==start.npos) {
+			if (start.find(" to ")!=start.npos) {
+				start = start.erase(start.find(" to "));
+				if (getDateAndTime(start)!=ptime()){
+					std::string end = str.substr(str.rfind(" to ")+4);
+					if (getDateAndTime(end)!=ptime()){
+						return "timed";
+					}
+				}
+			} else {
+				if (getDateAndTime(start)!=ptime()){
+					return "timed";
+				}
+			}
+		}
+	}
+	/*
+	if (str.find(" to ")!=str.npos) {
+>>>>>>> 48e009e649ff6d6cabf2f2defa281bfc2b05c550
 		int pos = str.rfind(" to ")+4;
 		std::string buffer = str.substr(pos);
 		if ((buffer.find(" by ")==buffer.npos) && (hasDate(str.substr(pos)) || hasTime(str.substr(pos)))) {
