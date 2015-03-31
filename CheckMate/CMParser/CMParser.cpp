@@ -148,14 +148,24 @@ ptime CMParser::getEnd() {
 }
 //lunch with peter from time date || take poster from peter and pass to tom by tmr || take poster from peter and pass to tom
 std::string CMParser::determineType(std::string str){
+	int pos;
+	
 	if (str.find(" from ")!=str.npos) {
-		std::string buffer = str.substr(str.rfind(" from ")+6);
-		if (buffer.find(" to ")!=buffer.npos) {
-			buffer = str.substr(str.rfind(" to ")+4);
-		}
-		if (buffer.find(" by ")==buffer.npos) {
-			if (getDateAndTime(buffer)!=ptime())
-				return "timed";
+		std::string start = str.substr(str.rfind(" from ")+6);
+		if (start.find(" by ")==start.npos) {
+			if (start.find(" to ")!=start.npos) {
+				start = start.erase(start.find(" to "));
+				if (getDateAndTime(start)!=ptime()){
+					std::string end = str.substr(str.rfind(" to ")+4);
+					if (getDateAndTime(end)!=ptime()){
+						return "timed";
+					}
+				}
+			} else {
+				if (getDateAndTime(start)!=ptime()){
+					return "timed";
+				}
+			}
 		}
 	}
 	/*

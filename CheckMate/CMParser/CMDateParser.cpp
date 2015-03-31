@@ -91,7 +91,7 @@ date CMDateParser::getDate(std::string str) {
 	if (atoi(yearStr.c_str())>=2015){
 			validYear = true; 
 		}
-
+	
 	if ((validDate) && (validMonth) && (validYear)) {
 		d = from_uk_string(UKFormat.str());
 	} else d = date();
