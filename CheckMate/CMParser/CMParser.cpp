@@ -71,21 +71,28 @@ bool CMParser::hasDate(std::string str) {
 
 	return false;
 }
-void CMParser::parseData(std::string str, std::string type) {
+void CMParser::parseData(std::string str) {
 	int pos;
 	std::string startTimeAndDate;
 	std::string endTimeAndDate;
-
+	std::string type = determineType(str);
+	_type = type;
 	if (type=="timed") {
+		
 		pos = str.rfind(" from ");
-		_description = str.substr(0,pos);
-
+		_description = str.substr(0, pos);
 		startTimeAndDate = str.substr(str.rfind(" from ")+6);
-		startTimeAndDate = startTimeAndDate.erase(startTimeAndDate.find(" to "));
-		_start = getDateAndTime(startTimeAndDate);
-
-		endTimeAndDate = str.substr(str.rfind(" to ")+4);
-		_end = getDateAndTime(endTimeAndDate);
+					
+		if (startTimeAndDate.find(" to ")!=startTimeAndDate.npos) {
+			startTimeAndDate = startTimeAndDate.erase(startTimeAndDate.find(" to "));
+			_start = getDateAndTime(startTimeAndDate);
+	
+			endTimeAndDate = str.substr(str.rfind(" to ")+4);
+			_end = getDateAndTime(endTimeAndDate);
+		} else {
+			_start = getDateAndTime(startTimeAndDate);
+			_end = _start + hours(1);
+		}
 	} else if (type=="deadline") {
 		pos = str.rfind(" by ");
 		_description = str.substr(0,pos);
@@ -106,31 +113,35 @@ void CMParser::parseDataFromFile(std::string str){
 	std::string startTimeAndDate;
 	std::string endTimeAndDate;
 	int pos = str.find_last_of(" ");
+	
+	_type = "timed";
 
 	if (str[pos+1]=='-'){
 		_end = ptime();
-<<<<<<< HEAD
-=======
 		pos = str.find_last_of("-", pos);
+		str.erase(pos);
 		_type = "deadline";
->>>>>>> 48e009e649ff6d6cabf2f2defa281bfc2b05c550
 	} else {
 		pos = str.find_last_of(" ", pos-1);
 		endTimeAndDate = str.substr(pos+1);
-		_end = time_from_string(endTimeAndDate);
+		_end = getDateAndTime(endTimeAndDate);
 	}
-	pos = str.find_last_not_of(" ",pos);
+	pos = str.find_last_not_of(" ", pos);
 	str.erase(pos+1);
+
 	pos = str.find_last_of(" ",pos-1);
 	if (str[pos+1]=='-'){
 		_start = ptime();
+		pos = str.find_last_of("-", pos);
+		str.erase(pos);
+		_type = "float";
 	} else {
 		pos = str.find_last_of(" ", pos-1);
 		startTimeAndDate = str.substr(pos+1);
-		_start = time_from_string(startTimeAndDate);
+		_start = getDateAndTime(startTimeAndDate);
 	}
-	pos = str.find_last_not_of(" ",pos);
-	str.erase(pos+1);
+	pos = str.find_last_not_of(" ", pos);
+	str.erase(pos);
 
 	_description = str;
 }
@@ -147,11 +158,13 @@ ptime CMParser::getEnd() {
 	return _end;
 }
 
-std::string CMParser::determineType(std::string str){
-<<<<<<< HEAD
-	if ((str.find(" from ")!=str.npos)||(str.find(" to ")!=str.npos)) {
-=======
+std::string CMParser::getType() {
+	return _type;
+}
 
+std::string CMParser::determineType(std::string str){
+	int pos;
+	
 	if (str.find(" from ")!=str.npos) {
 		std::string start = str.substr(str.rfind(" from ")+6);
 		if (start.find(" by ")==start.npos) {
@@ -172,17 +185,17 @@ std::string CMParser::determineType(std::string str){
 	}
 	/*
 	if (str.find(" to ")!=str.npos) {
->>>>>>> 48e009e649ff6d6cabf2f2defa281bfc2b05c550
 		int pos = str.rfind(" to ")+4;
 		std::string buffer = str.substr(pos);
-		if ((buffer.find(" by ")==buffer.npos) && (hasDate(str.substr(pos)) || hasTime(str.substr(pos)))) {
+		if ((buffer.find(" by ")==buffer.npos) && (hasDate(buffer) || hasTime(buffer))) {
 			return "timed";
 		}
 	}
-
+	*/
 	if (str.find(" by ")!=str.npos) {
 		int pos = str.rfind(" by ") + 4;
-		if (hasDate(str.substr(pos))||hasTime(str.substr(pos))) {
+		std::string buffer = str.substr(str.rfind(" by ")+4);
+		if (getDateAndTime(buffer)!=ptime()) {
 			return "deadline";
 		}
 	}
@@ -224,4 +237,39 @@ ptime CMParser::changeTime (ptime current, std::string newTime) {
 
 ptime CMParser::changeDate (ptime current, std::string newDate) {
 	return ptime(dateParser.parseDate(newDate), hours(current.time_of_day().hours())+minutes(current.time_of_day().minutes()));
+}
+
+std::string CMParser::interpretDirectoryString (std::string directory){
+	bool singleSlash = false;
+	bool doubleSlash = false;
+
+	for (size_t i=0; i<directory.length(); ++i) {
+		if (directory[i]=='/'){
+			if (!singleSlash){
+				singleSlash = true;
+			} else {
+				doubleSlash = true;
+				singleSlash = false;
+			}
+			if (doubleSlash) {
+				directory.erase(i, 1);
+			}
+		} else {
+			if (singleSlash) {
+				directory.insert(i, "/");
+			}
+			singleSlash = false;
+			doubleSlash = false;
+		}
+	}
+		/*
+
+	
+	size_t found = directory.find("/");
+	while (found!=directory.npos) {
+		directory.insert(found, "/");
+		found=found+2;
+		found = directory.find("/", found);
+	}*/
+	return directory;
 }

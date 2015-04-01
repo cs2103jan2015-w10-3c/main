@@ -21,6 +21,7 @@ private:
 	std::string _category;
 	ptime _start;
 	ptime _end;
+	std::string _type;
 
 	ptime getDateAndTime(std::string);
 	bool hasTime(std::string);
@@ -30,6 +31,7 @@ public:
 	std::string getDescription();
 	ptime getStart();
 	ptime getEnd();
+	std::string getType();
 
 	std::string determineType(std::string);
 	
@@ -40,7 +42,9 @@ public:
 	std::string getTomorrow();
 
 	void parseDataFromFile(std::string);
-	void parseData(std::string, std::string);
+	void parseData(std::string);
+
+	std::string interpretDirectoryString (std::string);
 };
 
 #endif

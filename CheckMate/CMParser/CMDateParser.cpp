@@ -30,7 +30,7 @@ bool CMDateParser::isWeekdayName (std::string str){
 date CMDateParser::getDateFromWeekdayName(std::string str) {
 	date d=today;
 	int index = getIndexFromWeekdayName(str);
-	
+
 	while (d.day_of_week()!=index) {
 		d = d + date_duration(1);
 	}
@@ -43,9 +43,11 @@ date CMDateParser::getDateFromWeekdayName(std::string str) {
 }
 
 date CMDateParser::getDate(std::string str) {
+	std::string month[13] = {"","jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sept", "oct", "nov", "dec"};	
 	date d;
+	bool validDate = false, validMonth = false, validYear = false;
 	std::string dateStr, monthStr, yearStr;
-	
+
 	if (str=="today" || str=="tdy") {
 		return today;
 	} else if (str=="tomorrow"||str=="tmr") {
@@ -64,8 +66,7 @@ date CMDateParser::getDate(std::string str) {
 		std::ostringstream os;
 		os<<today.year();
 		yearStr = os.str();
-	}
-	else {
+	} else {
 		yearStr = str;
 		int yr = atoi(yearStr.c_str());
 		if (yr<2000) {
@@ -76,12 +77,33 @@ date CMDateParser::getDate(std::string str) {
 
 	std::stringstream UKFormat;
 	UKFormat << dateStr <<" "<< monthStr <<" "<< yearStr;
-	d = from_uk_string(UKFormat.str());
+
+	if ((atoi(dateStr.c_str())>=1)&&(atoi(dateStr.c_str())<=31)){
+		validDate = true; 
+	}
 	
+	for (int i=1; i<13; ++i) {
+		if ((atoi(monthStr.c_str())==i)||(monthStr.find(month[i])!=monthStr.npos)) {
+			validMonth = true;
+		}
+	}
+
+	if (atoi(yearStr.c_str())>=2015){
+			validYear = true; 
+		}
+	
+	if ((validDate) && (validMonth) && (validYear)) {
+		d = from_uk_string(UKFormat.str());
+	} else d = date();
+
 	return d;
 }
 
 date CMDateParser::parseDate(std::string str) {
+	if (str.find("'")!=str.npos){
+		return date();
+	}
+
 	if (isWeekdayName(str)){
 		return getDateFromWeekdayName(str);
 	} else {
