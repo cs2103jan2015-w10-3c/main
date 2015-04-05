@@ -20,7 +20,7 @@ class EditReader{
 
 private:
 	int _TaskIndex;
-	int _Categoryindex;
+	int _CategoryIndex;
 	std::string _NewInput;
 
 
@@ -29,6 +29,7 @@ public:
 	~EditReader(void);
 	void interpretCommand(std::string);
 	int indexCategory(std::string);
+	std::string lowerCase(std::string);
 	int getTaskindex() const;
 	int getSelectedCategory() const;
 	std::string getNewInput() const;

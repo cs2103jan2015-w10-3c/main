@@ -3,12 +3,12 @@
 #include<vector>
 #include<sstream>
 #include<string>
+#include <algorithm>
 
 class IntToStringConvertor
 {
 public:
-
-	std::vector <int> convertString(std::string);
+		std::vector <int> convertString(std::string);
 };
 
 #endif

@@ -11,7 +11,9 @@ class Output{
 	int _LastAction;
 public:
 	Output(void);
-	Output(std :: string, std :: vector<Task*>,int);
+	Output(std::string, std::vector<Task*>,int);
+
+	void editFeedback(std::string);
 	std::string getFeedback() const;
 	std::vector <Task*> getDisplay() const;
 	int getLastAction() const;
