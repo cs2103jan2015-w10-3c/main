@@ -112,7 +112,9 @@ void CMParser::parseData(std::string str) {
 void CMParser::parseDataFromFile(std::string str){
 	std::string startTimeAndDate;
 	std::string endTimeAndDate;
-	int pos = str.find_last_of(" ");
+	int pos = str.find_last_not_of(" ");
+	str.erase(pos+1);
+	pos = str.find_last_of(" ");
 	
 	_type = "timed";
 
@@ -124,7 +126,7 @@ void CMParser::parseDataFromFile(std::string str){
 	} else {
 		pos = str.find_last_of(" ", pos-1);
 		endTimeAndDate = str.substr(pos+1);
-		_end = getDateAndTime(endTimeAndDate);
+		_end = time_from_string(endTimeAndDate);
 	}
 	pos = str.find_last_not_of(" ", pos);
 	str.erase(pos+1);
@@ -138,10 +140,10 @@ void CMParser::parseDataFromFile(std::string str){
 	} else {
 		pos = str.find_last_of(" ", pos-1);
 		startTimeAndDate = str.substr(pos+1);
-		_start = getDateAndTime(startTimeAndDate);
+		_start = time_from_string(startTimeAndDate);
 	}
 	pos = str.find_last_not_of(" ", pos);
-	str.erase(pos);
+	str.erase(pos+1);
 
 	_description = str;
 }
@@ -163,8 +165,6 @@ std::string CMParser::getType() {
 }
 
 std::string CMParser::determineType(std::string str){
-	int pos;
-	
 	if (str.find(" from ")!=str.npos) {
 		std::string start = str.substr(str.rfind(" from ")+6);
 		if (start.find(" by ")==start.npos) {

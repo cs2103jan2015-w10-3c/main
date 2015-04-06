@@ -9,7 +9,7 @@ void CMTimeParser::parseTime(std::string timeStr) {
 	if (pos!=timeStr.npos)
 		timeStr.erase(pos, 1);
 
-	pos = timeStr.find_first_of("ap");
+	pos = timeStr.find_first_of("apAP");
 	if (pos!=timeStr.npos) {
 		std::string twelve_hour = (timeStr.substr(pos, 1));
 		timeStr = timeStr.substr(0, pos);
