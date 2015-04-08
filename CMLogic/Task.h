@@ -37,8 +37,9 @@ public:
 	virtual bool isFound(std::string)=0;
 	virtual std :: string getInfo()=0;
 
-	virtual bool IsChecked() const;
-	virtual void checkTask();
+	bool isChecked();
+	void checkTask();
+	virtual bool isFloat()=0;
 };
 
 #endif

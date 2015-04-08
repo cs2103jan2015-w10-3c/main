@@ -1,13 +1,13 @@
 #ifndef FLOATINGTASK_H
 #define FLOATINGTASK_H
-#pragma once
+
 #include <iostream>
 #include "Task.h"
 
 class FloatingTask : public Task
 {
 public:
-	FloatingTask(std::string,std::string);
+	FloatingTask(std::string);
 	~FloatingTask(void);
 
 	virtual void editStartDate(ptime);
@@ -20,5 +20,6 @@ public:
 
 	virtual bool isFound(std::string);
 	virtual std::string getInfo();
+	virtual bool IsChecked() const;
 	};
 #endif

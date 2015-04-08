@@ -5,8 +5,8 @@
 #include <string>
 
 
-Deadline::Deadline(std::string Description,std::string Category ,ptime Start)
-	:Task( Description, Category){ 
+Deadline::Deadline(std::string Description,ptime Start)
+	:Task(Description){ 
 		_Start = Start;
 }
 
@@ -46,10 +46,6 @@ bool Deadline:: isFound (std::string keyword){
 	if(position!= std::string::npos)
 	{found = true;}
 
-	position = _Category.find(keyword);
-	if(position!= std::string::npos)
-	{found = true;}
-
 	position = to_simple_string(_Start).find(keyword);
 	if(position!= std::string::npos)
 	{found = true;}
@@ -63,8 +59,7 @@ std:: string Deadline:: getInfo() {
 	information <<std::left<< std::setw(40)<<_Description
 		<<std::setw(30)<<_Start
 		<<std::setw(10)<<"-"
-		<<std::setw(20)<<"-"
-		<<std::setw(30)<< _Category;
+		<<std::setw(20)<<"-";
 
 	return information.str();
 }	

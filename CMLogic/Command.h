@@ -1,18 +1,18 @@
 #ifndef COMMAND_H
 #define COMMAND_H
+
 #include <iostream>
 
 class Command{
 
 private:
-	int _CommandIndex;
-	std :: string _CommandDescription;
+	int _commandIndex;
+	std::string _commandDescription;
 
 public:
 	Command(int,std::string);
-	~Command(void);
 	int getCommandIndex() const;
-	std :: string getCommandDescription() const ;
+	std::string getCommandDescription() const ;
 };
 
 #endif

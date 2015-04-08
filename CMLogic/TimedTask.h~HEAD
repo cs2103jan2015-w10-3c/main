@@ -10,7 +10,7 @@ class TimedTask : public Task{
 
 
 public:
-	TimedTask(std::string,std::string,ptime,ptime);
+	TimedTask(std::string,ptime,ptime);
 	~TimedTask(void);
 
 	virtual void editStartDate(ptime);
@@ -23,6 +23,7 @@ public:
 	
 	virtual std::string getInfo();
 	virtual bool isFound (std::string);
+	virtual bool IsChecked() const;
 };
 
 #endif

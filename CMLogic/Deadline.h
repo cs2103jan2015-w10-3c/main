@@ -19,9 +19,9 @@ public:
 	virtual ptime getStart() const;
 	virtual ptime getEnd() const;
 
-	
+
 	virtual std::string getInfo();
 	virtual bool isFound(std::string);
-	virtual bool IsChecked() const;
+	virtual bool isFloat();	
 };
 #endif

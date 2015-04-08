@@ -75,3 +75,6 @@ std::string TimedTask:: getInfo() {
 	return information.str();
 }
 
+bool TimedTask :: isFloat(){
+	return false;
+}

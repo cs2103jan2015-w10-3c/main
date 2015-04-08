@@ -3,6 +3,7 @@
 void CMStorage :: addDeadline (Deadline* NewDeadline) {
 	
 	history.updateCopy(_allTasks);
+<<<<<<< HEAD
 	if (_allTasks.size()==0) {
 		_allTasks.push_back(NewDeadline);
 		addedIndex=0;
@@ -16,11 +17,16 @@ void CMStorage :: addDeadline (Deadline* NewDeadline) {
 		addedIndex=i;
 	}
 	
+=======
+	_allTasks.push_back(NewDeadline); 
+>>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
 	writeFile();
 }
+
 void CMStorage :: addTimedTask (TimedTask* NewTimedTask){
 	
 	history.updateCopy(_allTasks);
+<<<<<<< HEAD
 	if (_allTasks.size()==0) {
 		_allTasks.push_back(NewTimedTask);
 		addedIndex=0;
@@ -36,7 +42,11 @@ void CMStorage :: addTimedTask (TimedTask* NewTimedTask){
 		addedIndex=i;
 
 	}
+=======
+	_allTasks.push_back(NewTimedTask);
+>>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
 	writeFile();
+
 }
 
 void CMStorage :: addFloatingTask (FloatingTask* NewFloatingTask) {
@@ -59,6 +69,7 @@ void CMStorage :: addArchivedDeadline (Deadline* NewDeadline) {
 	writeArchivedFile();
 }
 
+<<<<<<< HEAD
 void CMStorage :: addArchivedTimedTask (TimedTask* NewTimedTask) {
 
 	_completedTasks.push_back(NewTimedTask);
@@ -71,6 +82,8 @@ void CMStorage :: addArchivedFloatingTask (FloatingTask* NewFloatingTask) {
 	writeArchivedFile();
 }
 
+=======
+>>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
 std:: string CMStorage :: deleteTask (int index) {
 
 	history.updateCopy(_allTasks);
@@ -128,10 +141,19 @@ std::vector<Task*> CMStorage :: searchTask (std::string Keyword) {
 	return _searchedTasks;
 }
 
+void CMStorage:: setFileName (std::string Filename) {
+
+	_filename=Filename;
+}
+
 void CMStorage:: writeFile() {   
 
 	std::ofstream file;
+<<<<<<< HEAD
 	file.open(getStorageLocation()+"checkmate.txt");
+=======
+	file.open(_filename);
+>>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
 	int size=_allTasks.size();
 	for(int i = 0; i < size; i++){
         file<<_allTasks[i]->getInfo()<<std::endl;
@@ -143,8 +165,15 @@ std::vector<std::string> CMStorage:: readFile() {
 
 	std::vector<std::string> textFileStrings;
 
+<<<<<<< HEAD
 	std::ifstream read (getStorageLocation()+"checkmate.txt");
 	for (std::string line; getline(read,line);){
+=======
+	std::ifstream read;
+	read.open(_filename);
+	while (!read.eof()){
+		std::getline(read,line);
+>>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
 		textFileStrings.push_back(line);
 	}
 
@@ -174,6 +203,7 @@ void CMStorage:: redoAction() {
 	std::vector<Task*> _newAllTasks;
 	_newAllTasks = history.swapCopy(_allTasks);
 	_allTasks = _newAllTasks;
+<<<<<<< HEAD
 }
 
 
@@ -288,3 +318,6 @@ void CMStorage:: clearTasks(){
 	writeFile();
 }
 
+=======
+}
+>>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
