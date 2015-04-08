@@ -19,32 +19,43 @@ class CMStorage {
 	public: //changed for testing purpose
 
 		std::vector<Task*> _allTasks; //all tasks as Task pointers
+		std::vector<Task*> _searchedTasks; //all searched tasks as Task pointers
 		std::vector<int> _subIndexes;
-<<<<<<< HEAD:CheckMate/CMStorage/CheckMateStorage.h
-=======
-		std::string _filename;
->>>>>>> d7c524aaf03aea86d9caecdb48310517d2d56543:CMStorage/CheckMateStorage.h
+		std::vector<int> _subAIndexes; //storing sub-indexes for the completed tasks tab
 		LPCSTR _location;
 		CMHistory history;
-		 
+		std::vector<Task*> _completedTasks; //all completed tasks as Task pointers
+		int addedIndex;
+		std::string _marker;
+
 	public:
 
 		void addDeadline (Deadline*);
 		void addTimedTask (TimedTask*);
 		void addFloatingTask (FloatingTask*);
-std:: string  deleteTask (int );
+		int getAddedIndex ();
+		void addArchivedDeadline (Deadline*);
+		void addArchivedTimedTask (TimedTask*);
+		void addArchivedFloatingTask (FloatingTask*);
+		std:: string  deleteTask (int );
 		std::vector<Task*> getDisplay();
+		std::vector<Task*> getArchivedDisplay();
 		Task* getTask(int);
 		std::vector<Task*> searchTask (std::string);
 		void setFileName (std::string);
 		void writeFile();   
+		void writeArchivedFile();   
 		std::vector<std::string> readFile();
-		void changeStorageLocation(LPCSTR);
+		std::vector<std::string> readArchivedFile();
+		void changeStorageLocation(std::string);
 		void undoAction();
 		void redoAction();
 		void sortAllTasks();
 		std::string getStorageLocation();
-
+		std::string check(int);
+		std::string uncheck(int);
+		int getIndexFirstFloat ();
+		void clearTasks();
 
 };
 
