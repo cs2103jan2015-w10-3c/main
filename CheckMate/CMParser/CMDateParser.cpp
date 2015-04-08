@@ -1,17 +1,30 @@
 #include "CMDateParser.h"
 date today = day_clock::local_day();
 
-int CMDateParser::getIndexFromWeekdayName (std::string str) {
-	std::string longWeekdayName[7] = {"sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"};
-	std::string abbreviatedWeekdayName[7] = {"sun", "mon", "tue", "wed", "thur", "fri", "sat"};
+const std::string CMDateParser::MONTH[24] = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sept", "oct", "nov", "dec", "january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"};
+const std::string CMDateParser::LONG_WEEKDAY_NAME[7] = {"sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"};
+const std::string CMDateParser::ABBREVIATED_WEEKDAY_NAME[7] = {"sun", "mon", "tue", "wed", "thur", "fri", "sat"};
 
+bool CMDateParser::isMonth(std::string str) {
+	for (size_t i=0; i<str.length(); ++i) {
+		str[i]=tolower(str[i]);
+	}
+	for (int i=0; i<24; ++i) {
+		if (str.find(MONTH[i])!=str.npos) {
+			return true;
+		}
+	}
+	return false;
+}
+
+int CMDateParser::getIndexFromWeekdayName (std::string str) {
 	for (int i=0; i<7; ++i){
-		if (str.find(longWeekdayName[i])!=str.npos) {
+		if (str.find(LONG_WEEKDAY_NAME[i])!=str.npos) {
 			return i;
 		}
 	}
 	for (int j=0; j<7; ++j){
-		if (str.find(abbreviatedWeekdayName[j])!=str.npos) {
+		if (str.find(ABBREVIATED_WEEKDAY_NAME[j])!=str.npos) {
 			return j;
 		}
 	}
@@ -43,7 +56,6 @@ date CMDateParser::getDateFromWeekdayName(std::string str) {
 }
 
 date CMDateParser::getDate(std::string str) {
-	std::string month[13] = {"","jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sept", "oct", "nov", "dec"};	
 	date d;
 	bool validDate = false, validMonth = false, validYear = false;
 	std::string dateStr, monthStr, yearStr;
@@ -55,6 +67,10 @@ date CMDateParser::getDate(std::string str) {
 	}
 
 	int pos = str.find_first_of(" /");
+	if (pos==str.npos){
+		return date();
+	}
+
 	dateStr = str.substr(0, pos);
 	str.erase(0, pos+1);
 
@@ -82,8 +98,8 @@ date CMDateParser::getDate(std::string str) {
 		validDate = true; 
 	}
 	
-	for (int i=1; i<13; ++i) {
-		if ((atoi(monthStr.c_str())==i)||(monthStr.find(month[i])!=monthStr.npos)) {
+	for (int i=0; i<12; ++i) {
+		if ((atoi(monthStr.c_str())==i+1)||(monthStr.find(MONTH[i])!=monthStr.npos)) {
 			validMonth = true;
 		}
 	}
