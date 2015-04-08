@@ -6,16 +6,18 @@
 #include "Task.h"
 
 class Output{
-	std::string _Feedback;
-	std::vector <Task*> _TaskList;
-	int _LastAction;
+	std::string _feedback;
+	std::vector <Task*> _taskList;
+	int _lastActionIndex;
+	int	_firstFloatIndex;
 public:
 	Output(void);
-	Output(std::string, std::vector<Task*>,int);
+	Output(std::string, std::vector<Task*>,int,int);
 
 	void editFeedback(std::string);
 	std::string getFeedback() const;
 	std::vector <Task*> getDisplay() const;
 	int getLastAction() const;
+	int getFirstFloat() const;
 };
 #endif

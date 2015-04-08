@@ -20,6 +20,6 @@ public:
 
 	virtual bool isFound(std::string);
 	virtual std::string getInfo();
-	
-	};
+	virtual bool isFloat();	
+};
 #endif

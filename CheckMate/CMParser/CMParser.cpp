@@ -71,11 +71,12 @@ bool CMParser::hasDate(std::string str) {
 
 	return false;
 }
-void CMParser::parseData(std::string str, std::string type) {
+void CMParser::parseData(std::string str) {
 	int pos;
 	std::string startTimeAndDate;
 	std::string endTimeAndDate;
-
+	std::string type = determineType(str);
+	_type = type;
 	if (type=="timed") {
 		
 		pos = str.rfind(" from ");
@@ -112,24 +113,34 @@ void CMParser::parseDataFromFile(std::string str){
 	std::string startTimeAndDate;
 	std::string endTimeAndDate;
 	int pos = str.find_last_of(" ");
+	
+	_type = "timed";
 
 	if (str[pos+1]=='-'){
 		_end = ptime();
+		pos = str.find_last_of("-", pos);
+		str.erase(pos);
+		_type = "deadline";
 	} else {
 		pos = str.find_last_of(" ", pos-1);
 		endTimeAndDate = str.substr(pos+1);
 		_end = getDateAndTime(endTimeAndDate);
 	}
-	str.erase(pos);
+	pos = str.find_last_not_of(" ", pos);
+	str.erase(pos+1);
 
 	pos = str.find_last_of(" ",pos-1);
 	if (str[pos+1]=='-'){
 		_start = ptime();
+		pos = str.find_last_of("-", pos);
+		str.erase(pos);
+		_type = "float";
 	} else {
 		pos = str.find_last_of(" ", pos-1);
 		startTimeAndDate = str.substr(pos+1);
 		_start = getDateAndTime(startTimeAndDate);
 	}
+	pos = str.find_last_not_of(" ", pos);
 	str.erase(pos);
 
 	_description = str;
@@ -146,16 +157,30 @@ ptime CMParser::getStart() {
 ptime CMParser::getEnd() {
 	return _end;
 }
-//lunch with peter from time date || take poster from peter and pass to tom by tmr || take poster from peter and pass to tom
+
+std::string CMParser::getType() {
+	return _type;
+}
+
 std::string CMParser::determineType(std::string str){
+	int pos;
+	
 	if (str.find(" from ")!=str.npos) {
-		std::string buffer = str.substr(str.rfind(" from ")+6);
-		if (buffer.find(" to ")!=buffer.npos) {
-			buffer = str.substr(str.rfind(" to ")+4);
-		}
-		if (buffer.find(" by ")==buffer.npos) {
-			if (getDateAndTime(buffer)!=ptime())
-				return "timed";
+		std::string start = str.substr(str.rfind(" from ")+6);
+		if (start.find(" by ")==start.npos) {
+			if (start.find(" to ")!=start.npos) {
+				start = start.erase(start.find(" to "));
+				if (getDateAndTime(start)!=ptime()){
+					std::string end = str.substr(str.rfind(" to ")+4);
+					if (getDateAndTime(end)!=ptime()){
+						return "timed";
+					}
+				}
+			} else {
+				if (getDateAndTime(start)!=ptime()){
+					return "timed";
+				}
+			}
 		}
 	}
 	/*

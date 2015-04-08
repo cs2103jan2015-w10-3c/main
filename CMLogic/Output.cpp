@@ -2,27 +2,32 @@
 
 Output::Output(void){
 
-	_Feedback = "";
+	_feedback = "";
 }
 
-Output::Output(std::string feedback, std::vector<Task*> TaskList,int ActionIndex){
-	_Feedback = feedback;
-	_TaskList = TaskList;
-	_LastAction = ActionIndex;
+Output::Output(std::string feedback, std::vector<Task*> taskList,int actionIndex,int floatindex){
+	_feedback = feedback;
+	_taskList = taskList;
+	_lastActionIndex = actionIndex;
+	_firstFloatIndex = floatindex;
 }
 
-void Output::editFeedback(std::string NewFeedback){
-	_Feedback = NewFeedback;
+void Output::editFeedback(std::string newFeedback){
+	_feedback = newFeedback;
 }
 
 std::string Output :: getFeedback() const{
-	return _Feedback;
+	return _feedback;
 }
 
 std::vector < Task*> Output::getDisplay() const {
-	return _TaskList;
+	return _taskList;
 }
 
 int Output::getLastAction() const{
-	return _LastAction;
+	return _lastActionIndex;
+}
+
+int Output::getFirstFloat() const{
+	return _firstFloatIndex;
 }

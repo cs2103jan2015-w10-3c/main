@@ -27,7 +27,7 @@ private:
 public:
 	EditReader(void);
 	~EditReader(void);
-	void interpretCommand(std::string);
+	bool interpretCommand(std::string);
 	int indexCategory(std::string);
 	std::string lowerCase(std::string);
 	int getTaskindex() const;

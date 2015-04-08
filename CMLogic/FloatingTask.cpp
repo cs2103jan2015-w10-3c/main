@@ -59,3 +59,7 @@ std::string FloatingTask:: getInfo() {
 
 	return information.str();
 }
+
+bool FloatingTask :: isFloat(){
+	return true;
+}

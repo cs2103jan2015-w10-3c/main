@@ -57,9 +57,13 @@ std:: string Deadline:: getInfo() {
 	std::ostringstream information;
 
 	information <<std::left<< std::setw(40)<<_Description
-		<<std::setw(30)<<_Start
-		<<std::setw(10)<<"-"
-		<<std::setw(20)<<"-";
+		<<std::setw(50)<<_Start
+		<<std::setw(20)<<" -"
+		<<std::setw(20)<<" -";
 
 	return information.str();
 }	
+
+bool Deadline :: isFloat(){
+	return false;
+}

@@ -2,14 +2,14 @@
 
 
 Command::Command(int index,std::string input){
-	_CommandIndex = index;
-	_CommandDescription= input;
+	_commandIndex = index;
+	_commandDescription= input;
 }
 
 int Command::getCommandIndex() const{
-	return _CommandIndex;
+	return _commandIndex;
 }
 
 std::string Command::getCommandDescription() const{
-	return _CommandDescription;
+	return _commandDescription;
 }

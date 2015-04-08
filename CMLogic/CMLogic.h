@@ -14,15 +14,15 @@
 
 class CMLogic
 {	private:
-		LogicCommand _CommandExecutor; //To execute actions
-		LogicRead _CommandReader;	//To interpret the user input
-		bool _IsActive;  //Status of system
-		Output* _Display;
+		LogicCommand _commandExecutor;	//To execute actions
+		LogicRead _commandReader;		//To interpret the user input
+		bool _isActive;					//Status of system
+		Output* _display;				// Display for GUI
 
 public:
 		CMLogic();
 		void startUp();
-		void ExecuteCommand(std :: string);
+		void executeCommand(std::string);
 		Output* getDisplay();
 };
 #endif

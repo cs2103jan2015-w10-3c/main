@@ -1,5 +1,6 @@
 #include "EditReader.h"
 #include <sstream>
+#include <cctype>
 
 EditReader::EditReader(void)
 {  int _TaskIndex =-1;
@@ -12,18 +13,29 @@ EditReader::~EditReader(void)
 {
 }
 
-void EditReader::interpretCommand(std::string CommandInput){
+bool EditReader::interpretCommand(std::string CommandInput){
 	//Find index of Searched Task
 	std::istringstream EditDetails(CommandInput);
-	
-	EditDetails>>_TaskIndex;
-	EditDetails>>_CategoryIndex;
-	getline(EditDetails,_NewInput);
 
+	if(EditDetails>>_TaskIndex){
+	}else {return false;}
+
+	std::string Category;
+
+	if(EditDetails>>Category){
+		_CategoryIndex=indexCategory(Category);
+	} else {return false;}					//Invalid Input
+
+
+	if(getline(EditDetails,_NewInput)){
+		_NewInput=_NewInput.substr(1);
+		return true;} 
+	else{
+		return false;}
 }
 
 int EditReader::indexCategory(std::string category){
-	
+
 	std::string Catergory = lowerCase(category); 
 
 	if(Catergory==DESCRIPTION){

@@ -6,8 +6,8 @@
 class Command{
 
 private:
-	int _CommandIndex;
-	std::string _CommandDescription;
+	int _commandIndex;
+	std::string _commandDescription;
 
 public:
 	Command(int,std::string);

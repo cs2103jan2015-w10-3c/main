@@ -20,7 +20,7 @@ std::string Task:: getDescription() const{
 	return _Description;
 }
 
-bool Task :: IsChecked() const{
+bool Task :: isChecked(){
 	return _Checked;
 }
 

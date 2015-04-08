@@ -5,17 +5,24 @@
 
 
 Command* LogicRead :: interpretCommand(std::string input){
-	std::istringstream UserInput(input);
-	
-	std::string CommandOrder; //Finding the User Command
-	std::string Description;	//Finding the details of command
+	std::istringstream userInput(input);
+	std::string userCommand;	
+	std::string description;	
 
-	UserInput>>CommandOrder;
-	getline(UserInput,Description);
+	int commandIndex;
 
-	int CommandIndex = indexCommand(CommandOrder);
+	if(userInput>>userCommand){
+		commandIndex = indexCommand(userCommand);
+	}else {commandIndex = INVALIDCOMMAND;}
 
-	Command* IndexedCommand = new Command(CommandIndex,Description);
+	if(getline(userInput,description)){
+		description=description.substr(1);
+	}else{
+		description="";}
+
+
+	Command* IndexedCommand = new Command(commandIndex,description);
+
 
 	return IndexedCommand;
 }
@@ -40,8 +47,8 @@ int LogicRead :: indexCommand(std::string NewCommand){
 		(command==TODAY){
 			return INDEXTODAY;
 	}else if
-		(command==TOMMORROW){
-			return INDEXTOMMORROW;
+		(command==TOMORROW){
+			return INDEXTOMORROW;
 	}else if
 		(command==UNDO){
 			return INDEXUNDO;
@@ -52,27 +59,33 @@ int LogicRead :: indexCommand(std::string NewCommand){
 		(command==CHECK){
 			return INDEXCHECKTASK;
 	}else if
-		(command==START){
-			return INDEXSTART;
-	}else if
 		(command==REDO){
 			return INDEXREDO;
 	}else if
 		(command==CLEAR){
 			return INDEXCLEAR;
+	}else if
+		(command==COMPLETED){
+			return INDEXCOMPLETED;
+	}else if
+		(command==UNCHECK){
+			return INDEXUNCHECK;
+	}else if
+		(command==CHANGESTORE){
+			return INDEXCHANGESTORE;
 	}else{
 		return INVALIDCOMMAND;
 	}
 }
 
-std::string LogicRead :: lowerCase(std::string CommandInput){
+std::string LogicRead :: lowerCase(std::string commandInput){
 
-	char NewCase;
-	for(unsigned int index = 0; index < CommandInput.size();index++){
-		if(isupper(CommandInput[index])){ 
-			NewCase= tolower(CommandInput[index]);
-			CommandInput[index] = NewCase;
+	char newCase;
+	for(unsigned int index = 0; index < commandInput.size();index++){
+		if(isupper(commandInput[index])){ 
+			newCase= tolower(commandInput[index]);
+			commandInput[index] = newCase;
 		}
 	}
-	return CommandInput;
+	return commandInput;
 }

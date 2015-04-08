@@ -7,89 +7,97 @@
 
 
 CMLogic::CMLogic(){
-	_IsActive= true;
+	_isActive= true;
 }
 
 void CMLogic :: startUp(){
-	_Display=_CommandExecutor.retrieveData();
+	_display=_commandExecutor.retrieveData();
 	return;
 }
 
 
-void CMLogic :: ExecuteCommand(std::string input){
+void CMLogic :: executeCommand(std::string input){
+	//Obtains index for switch and Description behind
+	Command* newCommand = _commandReader.interpretCommand(input);
+	int commandIndex = newCommand->getCommandIndex();
+	std::string commandDescription=newCommand->getCommandDescription();
 
-	Command* NewCommand = _CommandReader.interpretCommand(input);		//Obtains index for switch and Description behind
-	int CommandIndex = NewCommand->getCommandIndex();
-	std::string CommandDescription=NewCommand->getCommandDescription();
-
-	switch(CommandIndex){
+	switch(commandIndex){
 		//AddTask
 	case INDEXADD :{ 
-		_Display= _CommandExecutor.addTask(CommandDescription,FROMUSER); 
+		_display= _commandExecutor.addTask(commandDescription,FROMUSER,UNCOMPLETEDTASK); 
 				   }
 				   break;
 
 				   //Search all mathcing Task
 	case INDEXSEARCH:{   
-		_Display  = _CommandExecutor.searchTask(CommandDescription);
+		_display  = _commandExecutor.searchTask(commandDescription);
 					 }
 					 break;
 
 					 //Edit a task
 	case INDEXEDIT:{
-		_Display = _CommandExecutor.editTask(CommandDescription);
+		_display = _commandExecutor.editTask(commandDescription);
 				   }
 				   break;
 
 				   //Delete task
 	case INDEXDELETE:{ 
-		_Display = _CommandExecutor.deleteTask(CommandDescription);
+		_display = _commandExecutor.deleteTask(commandDescription);
 					 }
 					 break;
 
 					 //Search for all Task Today
 	case INDEXTODAY:{
-		_Display = _CommandExecutor.displayToday();
+		_display = _commandExecutor.displayToday();
 					}
 					break;
 
 					//Search for all Task Tommorrow
-	case INDEXTOMMORROW:{
-		_Display = _CommandExecutor.displayTomorrow();
-						}
-						break;
+	case INDEXTOMORROW:{
+		_display = _commandExecutor.displayTomorrow();
+					   }
+					   break;
 
-						//Undo previous action
+					   //Undo previous action
 	case INDEXUNDO	:{
-		_Display=_CommandExecutor.undoAction();
+		_display=_commandExecutor.undoAction();
 					 }
 					 break;
 					 //redo undone action
 	case INDEXREDO:{
-		_Display=_CommandExecutor.redoAction();
+		_display=_commandExecutor.redoAction();
 				   }
 				   break;
 				   //redo undone action
 	case INDEXCLEAR:{
-		_Display=_CommandExecutor.clearTask();
+		_display=_commandExecutor.clearTask();
 					}
 					break;
 
 					//check an index Task
 	case INDEXCHECKTASK	:{
-		_Display=_CommandExecutor.checkTask(CommandDescription);
+		_display=_commandExecutor.checkTask(commandDescription);
 						 }
 						 break;
 						 //closes the Program
-	/*case INDEXEXIT:{
-		_IsActive = false;
-		_Display=_CommandExecutor.exit();
-				   }
-				   break;*/
+	case INDEXCOMPLETED:{
+		_display=_commandExecutor.checkCompletedTask();
+						}
+						break;
 
-				   //Invalid Input
+	case INDEXUNCHECK:{
+		_display=_commandExecutor.uncheckTask(commandDescription);
+					  }
+					  break;
+	case INDEXCHANGESTORE:{
+		_display=_commandExecutor.changeStorageDirectory(commandDescription);
+					  }
+					  break;
+
+					  //Invalid Input
 	default:{
-		_Display->editFeedback(INVALID_INPUT);
+		_display->editFeedback(INVALID_INPUT);
 			}
 			break;
 	}
@@ -99,6 +107,6 @@ void CMLogic :: ExecuteCommand(std::string input){
 }
 
 Output*  CMLogic :: getDisplay(){
-	return _Display;
+	return _display;
 }
 
