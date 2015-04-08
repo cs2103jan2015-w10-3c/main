@@ -62,7 +62,7 @@ date CMDateParser::getDate(std::string str) {
 
 	if (str=="today" || str=="tdy") {
 		return today;
-	} else if (str=="tomorrow"||str=="tmr") {
+	} else if (str=="tomorrow"||str=="tmr"||str=="tmrw") {
 		return (today + date_duration(1));
 	}
 

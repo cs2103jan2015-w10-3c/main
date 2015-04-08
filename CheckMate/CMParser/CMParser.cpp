@@ -4,7 +4,7 @@ const std::string CMParser::TIMED = "timed";
 const std::string CMParser::DEADLINE = "deadline";
 const std::string CMParser::FLOAT = "float";
 const std::string CMParser::TIME_ATTRIBUTE[6] = {":", "am", "pm", "PM", "AM", "."};
-const std::string CMParser::VALID_DATE[6] = {"today", "tdy", "tomorrow", "tmr", " ", "/"};
+const std::string CMParser::VALID_DATE[7] = {"tmrw", "today", "tdy", "tomorrow", "tmr", " ", "/"};
 
 
 ptime CMParser::getDateAndTime(std::string str) {
@@ -38,7 +38,6 @@ ptime CMParser::getDateAndTime(std::string str) {
 	}
 	else if (hasTime(str)) {
 		timeStr = str;
-		
 		timeParser.parseTime(timeStr);
 		
 		if (_start.date()==date())
@@ -46,7 +45,7 @@ ptime CMParser::getDateAndTime(std::string str) {
 
 		d = _start.date();
 		dateAndTime = ptime(d ,hours(timeParser.getHour())+minutes(timeParser.getMin()));
-		if (dateAndTime<second_clock::local_time()){
+		if (dateAndTime<second_clock::local_time() || dateAndTime<_start){
 			dateAndTime += date_duration(1);	
 		}
 	} else {
@@ -71,7 +70,7 @@ bool CMParser::hasDate(std::string str) {
 		return true;
 	}
 
-	for (int i=0; i<6; ++i) {
+	for (int i=0; i<7; ++i) {
 		if (str.find(VALID_DATE[i])!=str.npos) {
 			return true;
 		}
@@ -85,8 +84,8 @@ bool CMParser::isConnectingWord(std::string str) {
 	for (size_t i=0; i<str.length(); ++i) {
 		str[i]=tolower(str[i]);
 	}
-	for (int i=0; i<24; ++i) {
-		if (str.find(connectingWords[i])!=str.npos) {
+	for (int i=0; i<5; ++i) {
+		if (str==connectingWords[i]) {
 			return true;
 		}
 	}
@@ -94,7 +93,7 @@ bool CMParser::isConnectingWord(std::string str) {
 }
 
 bool CMParser::isTdyOrTmr (std::string str) {
-	for (int i=0; i<4; ++i) {
+	for (int i=0; i<5; ++i) {
 		if (str==VALID_DATE[i]) {
 			return true;
 		}
@@ -113,7 +112,7 @@ void CMParser::parseData(std::string str) {
 	bool isStart = true;
 	_start = ptime();
 	_end = ptime();
-
+	
 	while (ss>>buffer){
 		tokens.push_back(buffer);
 	}
@@ -122,56 +121,39 @@ void CMParser::parseData(std::string str) {
 		std::ostringstream bufferTimeAndDate;
 		buffer = tokens[i];
 		if (isTdyOrTmr(tokens[i])) {
-			//_type = _type+ "1";
-			if ((isStart) && (isConnectingWord(tokens[i-1]))) {
-				description.pop_back();
-			}
 			bufferTimeAndDate << tokens[i];
 			if ((i+1<tokens.size())&&(hasTime(tokens[i+1]))) {
 				bufferTimeAndDate << " " << tokens[i+1];
 				++i;
 			}
 		} else if (dateParser.isWeekdayName(tokens[i])) {
-			//_type = _type+ "2";
 			if (tokens[i-1]=="next") {
-				if (isStart) {
 					description.pop_back();
-				}
-				if ((isStart) && (isConnectingWord(tokens[i-2]))) {
-					description.pop_back();
-				}
-				bufferTimeAndDate << tokens[i-1];
-			} else {
-				if ((isStart) && (isConnectingWord(tokens[i-1]))) {
-					description.pop_back();
-				}
-			}
-			bufferTimeAndDate << " " << tokens[i];
+					bufferTimeAndDate << tokens[i-1]<<" ";
+			} 
+			bufferTimeAndDate <<tokens[i];
 			if ((i+1<tokens.size()) && (hasTime(tokens[i+1]))) {
 				bufferTimeAndDate << " " << tokens[i+1];
 				++i;
 			}
 		} else if (dateParser.parseDate(buffer)!=date()) {
-			//_type = _type + "3";
-			if ((isStart) && (isConnectingWord(tokens[i-1]))) {
-				description.pop_back();
-			}
 			bufferTimeAndDate << tokens[i];
 			if ((i+1<tokens.size()) && (hasTime(tokens[i+1]))) {
 				bufferTimeAndDate << " " << tokens[i+1];
 				++i;
 			}
 		} else if (dateParser.isMonth(tokens[i])) {
-			//_type = _type+ "4";
-			int date = atoi(tokens[i-1].c_str());
+			std::string dateStr = tokens[i-1];
+			if (dateStr.length()>2) {
+				dateStr.erase(dateStr.length()-2);
+
+			}
+			int date = atoi(dateStr.c_str());
 			if ((date>=1) && (date <=31)) {
-				if ((isStart) && (isConnectingWord(tokens[i-2]))) {
-					description.pop_back();
-				}
 				if (isStart) {
 					description.pop_back();
 				}
-				bufferTimeAndDate << tokens[i-1] <<" "<<tokens[i];
+				bufferTimeAndDate << dateStr <<" "<<tokens[i];
 				if ((i+1<tokens.size()) && (atoi(tokens[i+1].c_str())>=1)){
 					bufferTimeAndDate << " " << tokens[i+1];
 				}
@@ -183,7 +165,6 @@ void CMParser::parseData(std::string str) {
 				}
 			}
 		} else if (hasTime(tokens[i])) {
-			//_type = _type+ "5";
 			bufferTimeAndDate << tokens[i];
 		}
 		
@@ -202,16 +183,21 @@ void CMParser::parseData(std::string str) {
 			description.push_back(buffer);
 		} 
 	}
-	_type = _type + startTimeAndDate+"!"+endTimeAndDate;
-	//_start = ptime();
-	//_end = ptime();
-	
 	_start = getDateAndTime(startTimeAndDate);
 	_end = getDateAndTime(endTimeAndDate);
 	determineType();
-	
+	if (_type==DEADLINE){
+		_end = _start;
+		_start = ptime();
+	}
+	if (!description.empty()){
+		if (isConnectingWord(description.back())) {
+			description.pop_back();
+		}
+	}
 
 	std::string s;
+
 	for (std::vector<std::string>::const_iterator i = description.begin(); i != description.end(); ++i) {
 		if (i==description.begin()){
 			s += *i;
@@ -220,7 +206,9 @@ void CMParser::parseData(std::string str) {
 			s += *i;
 		}
 	}
+	
 	_description = s;
+	
 }
 
 void CMParser::parseDataFromFile(std::string str){
@@ -268,6 +256,10 @@ void CMParser::parseDataFromFile(std::string str){
 	}
 	determineType();
 
+	if (_type==DEADLINE){
+		_end = _start;
+		_start = ptime();
+	}
 	
 	std::string s;
 	for (std::vector<std::string>::const_iterator i = description.begin(); i != description.end(); ++i) {
@@ -279,46 +271,6 @@ void CMParser::parseDataFromFile(std::string str){
 		}
 	}
 	_description = s;
-	
-	/*std::string startTimeAndDate;
-	std::string endTimeAndDate;
-	_start = ptime();
-	_end = ptime();
-	int pos = str.find_last_not_of(" ");
-	str.erase(pos+1);
-	pos = str.find_last_of(" ");
-	
-	_type = TIMED;
-
-	if (str[pos+1]=='-'){
-		_end = ptime();
-		pos = str.find_last_of("-", pos);
-		str.erase(pos);
-		_type = DEADLINE;
-	} else {
-		pos = str.find_last_of(" ", pos-1);
-		endTimeAndDate = str.substr(pos+1);
-		_end = time_from_string(endTimeAndDate);
-	}
-	pos = str.find_last_not_of(" ", pos);
-	str.erase(pos+1);
-
-	pos = str.find_last_of(" ",pos-1);
-	if (str[pos+1]=='-'){
-		_start = ptime();
-		pos = str.find_last_of("-", pos);
-		str.erase(pos);
-		_type = FLOAT;
-	} else {
-		pos = str.find_last_of(" ", pos-1);
-		startTimeAndDate = str.substr(pos+1);
-		_start = time_from_string(startTimeAndDate);
-	}
-	pos = str.find_last_not_of(" ", pos);
-	str.erase(pos+1);
-
-	_description = str;
-	*/
 }
 
 std::string CMParser::getDescription() {
@@ -385,28 +337,7 @@ ptime CMParser::changeDate (ptime current, std::string newDate) {
 }
 
 std::string CMParser::interpretDirectoryString (std::string directory){
-	bool singleSlash = false;
-	bool doubleSlash = false;
-
-	for (size_t i=0; i<directory.length(); ++i) {
-		if (directory[i]=='/'){
-			if (!singleSlash){
-				singleSlash = true;
-			} else {
-				doubleSlash = true;
-				singleSlash = false;
-			}
-			if (doubleSlash) {
-				directory.erase(i, 1);
-			}
-		} else {
-			if (singleSlash) {
-				directory.insert(i, "/");
-			}
-			singleSlash = false;
-			doubleSlash = false;
-		}
-	}
-
-	return directory;
+	if (directory==""){
+		return directory;
+	} else return directory+"\\";
 }

@@ -18,7 +18,7 @@ private:
 	static const std::string DEADLINE;
 	static const std::string FLOAT;
 	static const std::string TIME_ATTRIBUTE[6];
-	static const std::string VALID_DATE[6];
+	static const std::string VALID_DATE[7];
 	
 	CMDateParser dateParser;
 	CMTimeParser timeParser;
