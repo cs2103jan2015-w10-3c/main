@@ -13,6 +13,8 @@
 // that allow you to set the time manually.
 class CMTimeParser {
 private:
+	static const std::string TIME_ATTRIBUTE[3];
+
 	int _hours;
 	int _minutes;
 		
@@ -22,6 +24,9 @@ public:
 	// time formats are as follow:
 	//		11am, 11pm, 1130am, 1130pm, 11:30am, 11:30pm, 11:30
 	void parseTime(std::string);
+
+	// Determines if a given string has any of the time attributes "am", "pm" or ":".
+	bool hasTime(std::string);
 
 	// These 2 functions enable to client to set the values of _hours and _minutes
 	// manually.

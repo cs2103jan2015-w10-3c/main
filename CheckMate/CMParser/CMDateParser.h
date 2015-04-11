@@ -16,6 +16,7 @@ private:
 	static const std::string MONTH[24];
 	static const std::string LONG_WEEKDAY_NAME[7];
 	static const std::string ABBREVIATED_WEEKDAY_NAME[7];
+	static const std::string VALID_DATE[8];
 	static const int NOT_FOUND;
 
 	// This function returns the index of the weekday name (0 = sunday, 7 = saturday), 
@@ -42,6 +43,12 @@ public:
 	// This function checks if a given string is a valid month by going through an array
 	// It is able to determine long month names and abbreviated month names. 
 	bool isMonth(std::string);
+	// Determines if a given string is today or tomorrow. Even able to recognise common short
+	// forms like "tmrw", "tdy", "tmr".
+	bool isTdyOrTmr (std::string str);
+	// Determines if a given string has any of the date attributes "tmrw", "today", "tdy",
+	// "tomorrow", "tmr", " ", "/", "."
+	bool hasDate(std::string);
 };
 
 #endif

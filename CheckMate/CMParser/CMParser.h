@@ -20,9 +20,7 @@ private:
 	static const std::string TIMED;
 	static const std::string DEADLINE;
 	static const std::string FLOAT;
-	static const std::string TIME_ATTRIBUTE[3];
-	static const std::string VALID_DATE[8];
-	static const std::string connectingWords[6];
+	static const std::string CONNECTING_WORDS[6];
 	
 	CMDateParser dateParser;
 	CMTimeParser timeParser;
@@ -44,18 +42,10 @@ private:
 	// is 2pm, the date will be tomorrow instead of today.
 	boost::posix_time::ptime getDateAndTime(std::string);
 	
-	// Determines if a given string has any of the time attributes "am", "pm" or ":".
-	bool hasTime(std::string);
-	// Determines if a given string has any of the date attributes "tmrw", "today", "tdy",
-	// "tomorrow", "tmr", " ", "/", "."
-	bool hasDate(std::string);
 	// Determines if a given string is a connecting word that is not part of the description
 	// For example, in the sentence "Meeting from today 2pm to 4pm", from is a connecting word.
 	// The common connecting words are "from", "to", "on", "by", "due", "at".
 	bool isConnectingWord(std::string str);
-	// Determines if a given string is today or tomorrow. Even able to recognise common short
-	// forms like "tmrw", "tdy", "tmr".
-	bool isTdyOrTmr (std::string str);
 	
 	// Combines a given vector of strings into a string
 	std::string vectorToString (std::vector<std::string>);

@@ -4,9 +4,7 @@
 const std::string CMParser::TIMED = "timed";
 const std::string CMParser::DEADLINE = "deadline";
 const std::string CMParser::FLOAT = "float";
-const std::string CMParser::TIME_ATTRIBUTE[3] = {":", "am", "pm"};
-const std::string CMParser::VALID_DATE[8] = {"tmrw", "today", "tdy", "tomorrow", "tmr", " ", "/", "."};
-const std::string CMParser::connectingWords[6] = {"from", "to", "on", "by", "due", "at"};
+const std::string CMParser::CONNECTING_WORDS[6] = {"from", "to", "on", "by", "due", "at"};
 
 void CMParser::parseData(std::string str) {
 	std::vector<std::string> tokens;
@@ -54,9 +52,9 @@ void CMParser::parseData(std::string str) {
 					continue;
 				}
 
-				if (isTdyOrTmr(tokens[i])) {
+				if (dateParser.isTdyOrTmr(tokens[i])) {
 						bufferTimeAndDate << tokens[i];
-						if ((i+1 < tokens.size()) && (hasTime(tokens[i+1]))) {
+						if ((i+1 < tokens.size()) && (timeParser.hasTime(tokens[i+1]))) {
 							bufferTimeAndDate << " " << tokens[i+1];
 							++i;
 						}
@@ -66,13 +64,13 @@ void CMParser::parseData(std::string str) {
 							bufferTimeAndDate << tokens[i-1] << " ";
 						} 
 						bufferTimeAndDate << tokens[i];
-						if ((i+1 < tokens.size()) && (hasTime(tokens[i+1]))) {
+						if ((i+1 < tokens.size()) && (timeParser.hasTime(tokens[i+1]))) {
 							bufferTimeAndDate << " " << tokens[i+1];
 							++i;
 						}
 					} else if (dateParser.parseDate(buffer) != boost::gregorian::date()) {
 						bufferTimeAndDate << tokens[i];
-						if ((i+1 < tokens.size()) && (hasTime(tokens[i+1]))) {
+						if ((i+1 < tokens.size()) && (timeParser.hasTime(tokens[i+1]))) {
 						bufferTimeAndDate << " " << tokens[i+1];
 							++i;
 						}
@@ -90,14 +88,14 @@ void CMParser::parseData(std::string str) {
 							if ((i+1 < tokens.size()) && (atoi(tokens[i+1].c_str()) >= 1)){
 								bufferTimeAndDate << " " << tokens[i+1];
 							}
-							if ((i+2 < tokens.size()) && (hasTime(tokens[i+2]))) {
+							if ((i+2 < tokens.size()) && (timeParser.hasTime(tokens[i+2]))) {
 								bufferTimeAndDate << " " << tokens[i+2];
 								i = i + 2;
 							} else {
 								++i;
 							}
 						}
-					} else if (hasTime(tokens[i])) {
+					} else if (timeParser.hasTime(tokens[i])) {
 						bufferTimeAndDate << tokens[i];
 					}
 			
@@ -273,7 +271,7 @@ boost::posix_time::ptime CMParser::getDateAndTime(std::string str) {
 		str[i] = tolower(str[i]);
 	}
 	
-	if (hasTime(str) && hasDate(str)){
+	if (timeParser.hasTime(str) && dateParser.hasDate(str)){
 		timeStr = str.substr(lastSpace+1);
 		dateStr = str.erase(lastSpace);
 		
@@ -285,7 +283,7 @@ boost::posix_time::ptime CMParser::getDateAndTime(std::string str) {
 
 		dateAndTime = boost::posix_time::ptime(bufferDate ,boost::posix_time::hours(hours) + boost::posix_time::minutes(minutes));
 	}
-	else if (hasDate(str)) {
+	else if (dateParser.hasDate(str)) {
 		dateStr = str;
 		
 		timeParser.setHour(23);
@@ -298,7 +296,7 @@ boost::posix_time::ptime CMParser::getDateAndTime(std::string str) {
 
 		dateAndTime = boost::posix_time::ptime(bufferDate ,boost::posix_time::hours(hours) + boost::posix_time::minutes(minutes));
 	}
-	else if (hasTime(str)) {
+	else if (timeParser.hasTime(str)) {
 		timeStr = str;
 		timeParser.parseTime(timeStr);
 
@@ -322,60 +320,6 @@ boost::posix_time::ptime CMParser::getDateAndTime(std::string str) {
 
 	return dateAndTime;
 }
-	
-bool CMParser::hasTime(std::string str) {
-	std::string buffer;
-	std::string timeStr;
-	
-	for (size_t i = 0; i < str.length(); ++i) {
-		str[i] = tolower(str[i]);
-	}
-
-	int pos = str.find_last_of(" ");
-	if (pos != str.npos){
-		str = str.substr(pos + 1);
-	}
-
-	// Checking for am/pm format time
-	for (int i = 1; i < 3; ++i) {
-		if (str.length() > 2){
-			// Removing delimiters
-			int pos = str.find_first_of(":");			
-			if (pos != str.npos) {
-				str.erase(pos, 1);
-			}
-
-			if ( std::all_of(str.begin(), str.end(), std::isdigit) ) {
-				return true;
-			} else {
-				buffer = str.substr(str.length() - 2);
-			
-				if (buffer == TIME_ATTRIBUTE[i]) {
-					timeStr = str.substr(0, str.length() - 2); 
-						
-					if ( std::all_of(timeStr.begin(), timeStr.end(), std::isdigit) ) {
-						return true;
-					}
-				}
-			}
-		}
-	}
-	return false;
-}
-
-bool CMParser::hasDate(std::string str) {
-	if (dateParser.isWeekdayName(str)) {
-		return true;
-	}
-
-	for (int i = 0; i < 8; ++i) {
-		if (str.find(VALID_DATE[i]) != str.npos) {
-			return true;
-		}
-	}
-
-	return false;
-}
 
 bool CMParser::isConnectingWord(std::string str) {
 	assert( str != "");
@@ -384,18 +328,7 @@ bool CMParser::isConnectingWord(std::string str) {
 		str[i] = tolower(str[i]);
 	}
 	for (int i = 0; i < 6; ++i) {
-		if (str == connectingWords[i]) {
-			return true;
-		}
-	}
-	return false;
-}
-
-bool CMParser::isTdyOrTmr (std::string str) {
-	assert( str != "");
-
-	for (int i = 0; i < 5; ++i) {
-		if (str == VALID_DATE[i]) {
+		if (str == CONNECTING_WORDS[i]) {
 			return true;
 		}
 	}

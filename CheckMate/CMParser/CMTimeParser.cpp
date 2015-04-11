@@ -1,6 +1,8 @@
 // @author A0111405B
 #include "CMTimeParser.h"
 
+const std::string CMTimeParser::TIME_ATTRIBUTE[3] = {":", "am", "pm"};
+
 // Firstly, the delimiters are removed from the string. Next, am or pm is found and removed, 
 // leaving only the numbers left. If the string length is less than 3, only hours remain, else,
 // hours and minutes remain, with minutes being the last 2 digits.
@@ -78,4 +80,44 @@ int CMTimeParser::getHour() {
 
 int CMTimeParser::getMin() {
 	return _minutes;
+}
+
+bool CMTimeParser::hasTime(std::string str) {
+	std::string buffer;
+	std::string timeStr;
+	
+	for (size_t i = 0; i < str.length(); ++i) {
+		str[i] = tolower(str[i]);
+	}
+
+	int pos = str.find_last_of(" ");
+	if (pos != str.npos){
+		str = str.substr(pos + 1);
+	}
+
+	// Checking for am/pm format time
+	for (int i = 1; i < 3; ++i) {
+		if (str.length() > 2){
+			// Removing delimiters
+			int pos = str.find_first_of(":");			
+			if (pos != str.npos) {
+				str.erase(pos, 1);
+			}
+
+			if ( std::all_of(str.begin(), str.end(), std::isdigit) ) {
+				return true;
+			} else {
+				buffer = str.substr(str.length() - 2);
+			
+				if (buffer == TIME_ATTRIBUTE[i]) {
+					timeStr = str.substr(0, str.length() - 2); 
+						
+					if ( std::all_of(timeStr.begin(), timeStr.end(), std::isdigit) ) {
+						return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
 }

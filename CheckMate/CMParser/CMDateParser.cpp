@@ -10,6 +10,8 @@ const std::string CMDateParser::MONTH[24] = {"jan", "feb", "mar", "apr", "may", 
 const std::string CMDateParser::LONG_WEEKDAY_NAME[7] = {"sunday", "monday", "tuesday", "wednesday", "thursday", 
 														"friday", "saturday"};
 const std::string CMDateParser::ABBREVIATED_WEEKDAY_NAME[7] = {"sun", "mon", "tue", "wed", "thur", "fri", "sat"};
+const std::string CMDateParser::VALID_DATE[8] = {"tmrw", "today", "tdy", "tomorrow", "tmr", " ", "/", "."};
+
 const int CMDateParser::NOT_FOUND = -1;
 
 bool CMDateParser::isMonth(std::string str) {
@@ -26,7 +28,6 @@ bool CMDateParser::isMonth(std::string str) {
 	}
 	return false;
 }
-
 
 int CMDateParser::getIndexFromWeekdayName (std::string str) {
 	// Checking if given string is a long weekday name
@@ -152,4 +153,29 @@ boost::gregorian::date CMDateParser::parseDate(std::string str) {
 	std::cout << "PARSER:: parsing date \"" << str << "\"" << " to \"" << bufferDate << "\"" <<std::endl;
 	
 	return bufferDate;
+}
+
+bool CMDateParser::isTdyOrTmr (std::string str) {
+	assert( str != "");
+
+	for (int i = 0; i < 5; ++i) {
+		if (str == VALID_DATE[i]) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CMDateParser::hasDate(std::string str) {
+	if (isWeekdayName(str)) {
+		return true;
+	}
+
+	for (int i = 0; i < 8; ++i) {
+		if (str.find(VALID_DATE[i]) != str.npos) {
+			return true;
+		}
+	}
+
+	return false;
 }
