@@ -1,4 +1,4 @@
-//@author A0111405B
+// @author A0111405B
 #include "CMDateParser.h"
 
 boost::gregorian::date today = boost::gregorian::day_clock::local_day();
@@ -13,12 +13,12 @@ const std::string CMDateParser::ABBREVIATED_WEEKDAY_NAME[7] = {"sun", "mon", "tu
 const int CMDateParser::NOT_FOUND = -1;
 
 bool CMDateParser::isMonth(std::string str) {
-	//convert given string to lower case
+	// Convert given string to lower case
 	for (size_t i = 0; i < str.length(); ++i) {
 		str[i] = tolower(str[i]);
 	}
 
-	//checking if given string is a month
+	// Checking if given string is a month
 	for (int i = 0; i < 24; ++i) {
 		if (str.find(MONTH[i]) != str.npos) {
 			return true;
@@ -27,17 +27,16 @@ bool CMDateParser::isMonth(std::string str) {
 	return false;
 }
 
-//This function returns the index of the weekday name 
-//(0 = sunday, 7 = saturday), and -1 otherwise
+
 int CMDateParser::getIndexFromWeekdayName (std::string str) {
-	//checking if given string is a long weekday name
+	// Checking if given string is a long weekday name
 	for (int i = 0; i < 7; ++i){
 		if (str.find(LONG_WEEKDAY_NAME[i]) != str.npos) {
 			return i;
 		}
 	}
 
-	//checking if given string is a abreviated weekday name
+	// Checking if given string is a abreviated weekday name
 	for (int j = 0; j < 7; ++j){
 		if (str.find(ABBREVIATED_WEEKDAY_NAME[j]) != str.npos) {
 			return j;
@@ -54,11 +53,11 @@ bool CMDateParser::isWeekdayName (std::string str){
 	}
 }
 
-//This function returns a date corresponding to the weekday name
-//Requirement: string is a weekday name
 boost::gregorian::date CMDateParser::getDateFromWeekdayName(std::string str) {
 	boost::gregorian::date bufferDate = today;
 	int index = getIndexFromWeekdayName(str);
+	
+	assert ((index >= 0) && (index < 7)); 
 
 	while (bufferDate.day_of_week() != index) {
 		bufferDate = bufferDate + boost::gregorian::date_duration(1);

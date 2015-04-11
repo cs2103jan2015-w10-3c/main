@@ -1,4 +1,4 @@
-//@author A0111405B
+// @author A0111405B
 #include "CMParser.h"
 
 const std::string CMParser::TIMED = "timed";
@@ -65,7 +65,7 @@ void CMParser::parseData(std::string str) {
 							description.pop_back();
 							bufferTimeAndDate << tokens[i-1] << " ";
 						} 
-						bufferTimeAndDate <<tokens[i];
+						bufferTimeAndDate << tokens[i];
 						if ((i+1 < tokens.size()) && (hasTime(tokens[i+1]))) {
 							bufferTimeAndDate << " " << tokens[i+1];
 							++i;
@@ -203,8 +203,7 @@ void CMParser::parseDataFromFile(std::string str){
 		
 				bufferTimeAndDate >> bufferDate;
 		
-				if (buffer == "-") {
-					++i;
+				if (buffer == "--NIL--") {
 					isDescription = false;
 				} else if (bufferDate != boost::gregorian::date()){
 					if (isStart) {
@@ -269,7 +268,7 @@ boost::posix_time::ptime CMParser::getDateAndTime(std::string str) {
 
 	int lastSpace = str.find_last_of(" ");
 	
-	//change given string to lower case
+	// Change given string to lower case
 	for (size_t i = 0; i < str.length(); ++i) {
 		str[i] = tolower(str[i]);
 	}
@@ -306,15 +305,16 @@ boost::posix_time::ptime CMParser::getDateAndTime(std::string str) {
 		hours = timeParser.getHour();
 		minutes = timeParser.getMin();
 		
-		if (_start.date() == boost::gregorian::date())
+		if (_start.date() == boost::gregorian::date()) {
 			_start = boost::posix_time::second_clock::local_time();
+		}
 
 		bufferDate = _start.date();
 		dateAndTime = boost::posix_time::ptime(bufferDate ,boost::posix_time::hours(hours) + boost::posix_time::minutes(minutes));
 		if (dateAndTime < boost::posix_time::second_clock::local_time() || dateAndTime < _start){
 			dateAndTime += boost::gregorian::date_duration(1);	
 		}
-	} else { //if given string has no time or date attributes
+	} else { // If given string has no time or date attributes
 		dateAndTime = boost::posix_time::ptime();
 	} 
 	
@@ -336,10 +336,10 @@ bool CMParser::hasTime(std::string str) {
 		str = str.substr(pos + 1);
 	}
 
-	//checking for am/pm format time
+	// Checking for am/pm format time
 	for (int i = 1; i < 3; ++i) {
 		if (str.length() > 2){
-			//removing delimiters
+			// Removing delimiters
 			int pos = str.find_first_of(":");			
 			if (pos != str.npos) {
 				str.erase(pos, 1);
@@ -464,7 +464,16 @@ boost::posix_time::ptime CMParser::changeDate (boost::posix_time::ptime current,
 }
 
 std::string CMParser::interpretDirectoryString (std::string directory){
+	std::string newDirectory;
+	
 	if (directory == ""){
-		return directory;
-	} else return directory + "\\";
+		newDirectory = directory;
+	} else {
+		if (directory.back() == '\\') {
+			newDirectory = directory;
+		} else {
+			newDirectory = directory + "\\";
+		}
+	}
+	return newDirectory;
 }

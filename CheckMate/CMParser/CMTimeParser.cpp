@@ -1,8 +1,9 @@
-//@author A0111405B
+// @author A0111405B
 #include "CMTimeParser.h"
 
-// Parses a given time string into _hours and _minutes
-
+// Firstly, the delimiters are removed from the string. Next, am or pm is found and removed, 
+// leaving only the numbers left. If the string length is less than 3, only hours remain, else,
+// hours and minutes remain, with minutes being the last 2 digits.
 void CMTimeParser::parseTime(std::string timeStr) {
 	assert(timeStr.length() != 0); // An empty string should not be passed into this function
 
@@ -11,13 +12,13 @@ void CMTimeParser::parseTime(std::string timeStr) {
 	_hours = 0;
 	_minutes = 0;
 
-	//to remove the delimiter
+	// To remove the delimiter
 	int pos = timeStr.find_first_of(":");
 	if (pos != timeStr.npos) {
 		timeStr.erase(pos, 1);
 	}
 
-	//to determine if "am" or "pm" is present
+	// To determine if "am" or "pm" is present
 	pos = timeStr.find_first_of("apAP");
 	if (pos != timeStr.npos) {
 		pmOrAm = (timeStr.substr(pos, 1));
