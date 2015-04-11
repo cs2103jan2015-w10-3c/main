@@ -1,45 +1,74 @@
+//@author A0111405B
 #include "CMTimeParser.h"
 
+// Parses a given time string into _hours and _minutes
+
 void CMTimeParser::parseTime(std::string timeStr) {
-	_hours=0;
-	_minutes=0;
+	assert(timeStr.length() != 0); // An empty string should not be passed into this function
+
 	std::string pmOrAm;
+
+	_hours = 0;
+	_minutes = 0;
 
 	//to remove the delimiter
 	int pos = timeStr.find_first_of(":");
-	if (pos!=timeStr.npos)
+	if (pos != timeStr.npos) {
 		timeStr.erase(pos, 1);
+	}
 
+	//to determine if "am" or "pm" is present
 	pos = timeStr.find_first_of("apAP");
-	if (pos!=timeStr.npos) {
+	if (pos != timeStr.npos) {
 		pmOrAm = (timeStr.substr(pos, 1));
 		timeStr = timeStr.substr(0, pos);
-		if (pmOrAm=="p") {
+		if (pmOrAm == "p" || pmOrAm == "P") {
 			_hours = 12;
 		}	
 	}
-	if (timeStr.length()<3) {
+
+	if (timeStr.length() < 3) {
 		_hours += atoi(timeStr.c_str());
-		if ((atoi(timeStr.c_str())==12) && (pmOrAm!="")) {
+		if ((atoi(timeStr.c_str()) == 12) && (pmOrAm != "")) {
 			_hours -= 12;
 		}
 		_minutes += 0;
 	}
 	else {
-		_hours += atoi(timeStr.substr(0, timeStr.length()-2).c_str());
-		if ((atoi(timeStr.c_str())==12) && (pmOrAm!="")) {
+		_hours += atoi(timeStr.substr(0, timeStr.length() - 2).c_str());
+		if ((atoi(timeStr.substr(0, timeStr.length()-2).c_str()) == 12) && (pmOrAm != "")) {
 			_hours -= 12;
 		}
-		_minutes += atoi(timeStr.substr(timeStr.length()-2, 2).c_str());
+		_minutes += atoi(timeStr.substr(timeStr.length() - 2, 2).c_str());
 	}
+	
+	std::cout << "PARSER:: parsing time \"" << timeStr << "\"" << " to \"" << _hours << ":" << _minutes << "\"" <<std::endl;
 }
 
 void CMTimeParser::setHour(int hours) {
-	_hours = hours;
+	try{
+		if ((hours <= 24) && (hours >= 0)) {
+			_hours = hours;
+		} else {
+			throw std::string ("ERROR: TRYING TO SET INVALID HOUR");
+		}
+	}
+	catch (std::string e) {
+		std::cerr << e << std::endl;
+	}
 }
 
 void CMTimeParser::setMin(int minutes) {
-	_minutes = minutes;
+	try{
+		if ((minutes <= 60) && (minutes >= 0)) {
+			_minutes = minutes;
+		} else {
+			throw std::string ("ERROR: TRYING TO SET INVALID MINUTE");
+		}
+	}
+	catch (std::string e) {
+		std::cerr << e << std::endl;
+	}
 }
 
 int CMTimeParser::getHour() {

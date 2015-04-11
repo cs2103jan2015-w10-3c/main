@@ -1,3 +1,4 @@
+//@author A0111405B 
 #ifndef CMDATEPARSER_H
 #define CMDATEPARSER_H
 
@@ -6,22 +7,24 @@
 #include <sstream>
 #include <boost/date_time.hpp>
 
-using namespace boost::posix_time;
-using namespace boost::gregorian;
-using namespace boost::local_time;
-
+//This class parses a given input and returns them as a 
+//boost::gregorian::date format. It recognises several formats.
+//It also has functions that can determine if a given string is
+//a month or a weekday name.
 class CMDateParser {
 private:
 	static const std::string MONTH[24];
 	static const std::string LONG_WEEKDAY_NAME[7];
 	static const std::string ABBREVIATED_WEEKDAY_NAME[7];
+	static const int NOT_FOUND;
 
 	int getIndexFromWeekdayName (std::string);
-	date getDateFromWeekdayName(std::string);
-	date getDate(std::string);
+	boost::gregorian::date getDateFromWeekdayName(std::string);
+	boost::gregorian::date getDate(std::string);
 
 public:
-	date parseDate(std::string);
+	boost::gregorian::date parseDate(std::string);
+
 	bool isWeekdayName (std::string);
 	bool isMonth(std::string);
 };
