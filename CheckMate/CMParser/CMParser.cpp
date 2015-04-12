@@ -386,14 +386,36 @@ boost::posix_time::ptime CMParser::changeTime (boost::posix_time::ptime current,
 	int hours = timeParser.getHour();
 	int minutes = timeParser.getMin();
 
+	try {
+		if (!((hours >= 0) && (hours <= 24) && (minutes >= 0) && (minutes <= 60))) {
+		hours = 0;
+		minutes = 0;
+		throw std::string ("ERROR: TRYING TO CHANGE TO INVALID TIME");
+		}
+	}
+	catch (std::string e) {
+		std::cerr << e << std::endl;
+	}
+
 	return boost::posix_time::ptime(currentDate , boost::posix_time::hours(hours) + boost::posix_time::minutes(minutes));
 }
 
-boost::posix_time::ptime CMParser::changeDate (boost::posix_time::ptime current, std::string newDate) {
+boost::posix_time::ptime CMParser::changeDate (boost::posix_time::ptime current, std::string newDateStr) {
 	int hours = current.time_of_day().hours();
 	int minutes = current.time_of_day().minutes();
+	boost::gregorian::date newDate = dateParser.parseDate(newDateStr);
 
-	return boost::posix_time::ptime(dateParser.parseDate(newDate), boost::posix_time::hours(hours) + boost::posix_time::minutes(minutes));
+	try {
+		if (newDate == boost::gregorian::date()) {
+			newDate = current.date();
+			throw std::string ("ERROR: TRYING TO CHANGE TO INVALID DATE");
+		}
+	}
+	catch (std::string e) {
+		std::cerr << e << std::endl;
+	}
+
+	return boost::posix_time::ptime(newDate, boost::posix_time::hours(hours) + boost::posix_time::minutes(minutes));
 }
 
 std::string CMParser::interpretDirectoryString (std::string directory){

@@ -19,7 +19,7 @@ private:
 	static const std::string VALID_DATE[8];
 	static const int NOT_FOUND;
 
-	// This function returns the index of the weekday name (0 = sunday, 7 = saturday), 
+	// This function returns the index of the weekday name (0 = sunday, 6 = saturday), 
 	// and -1 otherwise
 	int getIndexFromWeekdayName (std::string);
 	// This function returns a date corresponding to the weekday name. If the given string

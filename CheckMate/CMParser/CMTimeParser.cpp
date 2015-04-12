@@ -44,7 +44,7 @@ void CMTimeParser::parseTime(std::string timeStr) {
 		}
 		_minutes += atoi(timeStr.substr(timeStr.length() - 2, 2).c_str());
 	}
-	
+
 	std::cout << "PARSER:: parsing time \"" << timeStr << "\"" << " to \"" << _hours << ":" << _minutes << "\"" <<std::endl;
 }
 
