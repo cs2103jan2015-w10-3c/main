@@ -1,323 +1,262 @@
 #include "checkmatestorage.h"
 
-void CMStorage :: addDeadline (Deadline* NewDeadline) {
+
+const std::string CMStorage:: DISPLAYS_HOME_PAGE = "home";
+const std::string CMStorage:: DISPLAYS_SEARCHED_PAGE = "searched";
+const std::string CMStorage:: DISPLAYS_ARCHIVED_PAGE = "archive";
+const std::string CMStorage:: CHECKED_OR_UNCHECKED = "checkedOrUnchecked";
+
+//---------------------------------------------------------------//
+
+void CMStorage :: addDeadline (Deadline* newDeadline) {
 	
-	history.updateCopy(_allTasks);
-<<<<<<< HEAD
-	if (_allTasks.size()==0) {
-		_allTasks.push_back(NewDeadline);
-		addedIndex=0;
-	}
-	else {
-		unsigned int i=0;
-		while( i<_allTasks.size() && ((_allTasks[i]->getStart())!=ptime()) && (NewDeadline->getStart()>_allTasks[i]->getStart())){
-			i++;						
-		} 
-		_allTasks.insert(_allTasks.begin()+i, NewDeadline);
-		addedIndex=i;
-	}
+	_active.addActiveDeadline(newDeadline);
+    std::cout<<"STORAGE:"<<"Added "<<newDeadline->Task::getInfo();
 	
-=======
-	_allTasks.push_back(NewDeadline); 
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
-	writeFile();
 }
 
-void CMStorage :: addTimedTask (TimedTask* NewTimedTask){
+void CMStorage :: addTimedTask (TimedTask* newTimedTask){
 	
-	history.updateCopy(_allTasks);
-<<<<<<< HEAD
-	if (_allTasks.size()==0) {
-		_allTasks.push_back(NewTimedTask);
-		addedIndex=0;
+    _active.addActiveTimedTask(newTimedTask);
+}
 
-	}
-	else {
-		unsigned int i=0;
-		while( i<_allTasks.size() && ((_allTasks[i]->getStart())!=ptime()) && (NewTimedTask->getStart()>_allTasks[i]->getStart())){
-			i++;						
+void CMStorage :: addFloatingTask (FloatingTask* newFloatingTask) {
 
-		} 
-		_allTasks.insert(_allTasks.begin()+i, NewTimedTask);
-		addedIndex=i;
-
-	}
-=======
-	_allTasks.push_back(NewTimedTask);
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
-	writeFile();
+	_active.addActiveFloatingTask(newFloatingTask);
 
 }
 
-void CMStorage :: addFloatingTask (FloatingTask* NewFloatingTask) {
+//---------------------------------------------------------------//
 
-	history.updateCopy(_allTasks);
-	_allTasks.push_back(NewFloatingTask);
-	writeFile();
-	int size = _allTasks.size()-1;
-	addedIndex=size;
+void CMStorage :: addArchivedDeadline (Deadline* newDeadline) {
 
+	_completed.addArchivedDeadline(newDeadline);
+	
 }
 
-int CMStorage:: getAddedIndex () {
-	return addedIndex;
+void CMStorage :: addArchivedTimedTask (TimedTask* newTimedTask) {
+	
+	_completed.addArchivedTimedTask(newTimedTask);
+	
 }
 
-void CMStorage :: addArchivedDeadline (Deadline* NewDeadline) {
-
-	_completedTasks.push_back(NewDeadline);
-	writeArchivedFile();
+void CMStorage :: addArchivedFloatingTask (FloatingTask* newFloatingTask) {
+	
+	_completed.addArchivedFloatingTask(newFloatingTask);
+	
 }
 
-<<<<<<< HEAD
-void CMStorage :: addArchivedTimedTask (TimedTask* NewTimedTask) {
+//---------------------------------------------------------------//
 
-	_completedTasks.push_back(NewTimedTask);
-	writeArchivedFile();
-}
 
-void CMStorage :: addArchivedFloatingTask (FloatingTask* NewFloatingTask) {
-
-	_completedTasks.push_back(NewFloatingTask);
-	writeArchivedFile();
-}
-
-=======
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
 std:: string CMStorage :: deleteTask (int index) {
 
-	history.updateCopy(_allTasks);
-	int realIndex= _subIndexes[index-1];
-	std::string deletedTask= _allTasks[realIndex]->getInfo();
-	_allTasks [realIndex] =  NULL; 
-	delete _allTasks[realIndex]; //deleting the pointer
-	_allTasks.erase(_allTasks.begin()+realIndex); //erasing the vector item containing the pointer
-	_subIndexes.clear();
-	writeFile();
-
-	return deletedTask;
+	if (_displayMarker!=DISPLAYS_ARCHIVED_PAGE){
+		int realIndex= _subIndexes[index-1];
+		return _active.deleteActiveTask(realIndex);
+	} else {
+		int realIndex= index - 1;
+		return _completed.deleteCompletedTask(realIndex);
+	}
 }
 
-std::vector<Task*> CMStorage :: getDisplay (void) {
+Task* CMStorage :: getTask(int index){ //linked to logic's edit function
+	
+	int realIndex= _subIndexes[index-1];
+	return _active.getTask(realIndex);
+	
+}
+
+void CMStorage:: writeEditedFile () { //linked to logic's edit function
+	
+	_active.writeFile();
+	
+}
+
+void CMStorage:: clearTasks(){
+	
+	_active.clearTasks();
+	_completed.clearCompletedTasks();
+	
+}
+
+//---------------------------------------------------------------//
+
+
+std::vector<Task*> CMStorage :: getActiveDisplay (void) {
 
 	_subIndexes.clear();
 	std::vector<Task*> _displayTasks; 
-
-	for (unsigned int i = 0; i < _allTasks.size(); i++){
-		_displayTasks.push_back(_allTasks[i]);
+	sortAllTasks();
+		
+	for (unsigned int i = 0; i <_active.getActiveTasks().size(); i++){
+		_displayTasks.push_back(_active.getActiveTasks()[i]);
 		_subIndexes.push_back(i);
 	}
 
-	_marker="home";
+	_displayMarker=DISPLAYS_HOME_PAGE;
 	return _displayTasks;
 
 }
 
-
-Task* CMStorage :: getTask(int index){ //linked to logic's edit function
- 
-	history.updateCopy(_allTasks);
-	int realIndex= _subIndexes[index-1];
-	Task* taskPointer= _allTasks[realIndex];
-	_subIndexes.clear();
-	return taskPointer;
-
+std::vector<Task*> CMStorage :: getArchivedDisplay (void) {
+	
+	_displayMarker=DISPLAYS_ARCHIVED_PAGE;
+	return _completed.getArchivedDisplay();
+	
 }
 
-
-std::vector<Task*> CMStorage :: searchTask (std::string Keyword) {
+std::vector<Task*> CMStorage :: getSearchedTasks(std::string keyword) {
 
 	_subIndexes.clear();
-	int size = _allTasks.size();
 	_searchedTasks.clear();
-
-	for (int i = 0; i < size; i++ ) {
-		if (_allTasks[i]->isFound(Keyword)){
-			_searchedTasks.push_back(_allTasks[i]);
+	
+	for (unsigned int i = 0; i < _active.getActiveTasks().size(); i++ ) {
+		if (_active.getActiveTasks()[i]->isFound(keyword)){
+			_searchedTasks.push_back(_active.getActiveTasks()[i]);
 			_subIndexes.push_back(i);
 		}
 	}
-	_marker="searched";
-	return _searchedTasks;
+    
+    sortSearchedTasks();
+	_displayMarker=DISPLAYS_SEARCHED_PAGE;
+	return _searchedTasks; //will be sorted
+
 }
 
-void CMStorage:: setFileName (std::string Filename) {
+//---------------------------------------------------------------//
 
-	_filename=Filename;
-}
-
-void CMStorage:: writeFile() {   
-
-	std::ofstream file;
-<<<<<<< HEAD
-	file.open(getStorageLocation()+"checkmate.txt");
-=======
-	file.open(_filename);
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
-	int size=_allTasks.size();
-	for(int i = 0; i < size; i++){
-        file<<_allTasks[i]->getInfo()<<std::endl;
-	}
-	file.close();
-} 
 
 std::vector<std::string> CMStorage:: readFile() {
 
-	std::vector<std::string> textFileStrings;
-
-<<<<<<< HEAD
-	std::ifstream read (getStorageLocation()+"checkmate.txt");
-	for (std::string line; getline(read,line);){
-=======
-	std::ifstream read;
-	read.open(_filename);
-	while (!read.eof()){
-		std::getline(read,line);
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
-		textFileStrings.push_back(line);
-	}
-
-	return textFileStrings;
+	return _active.readFile();
 }
 
 
-void CMStorage :: changeStorageLocation(std::string NewLocation) {
+void CMStorage :: changeStorageLocation(std::string newLocation) {
 
-	std::ofstream file;
-	file.open("StorageLocation.txt");
-	file<<NewLocation;
-	file.close();
-	writeFile();
+	_active.changeStorageLocation(newLocation);
 	
 }
-
-void CMStorage:: undoAction() {
-	
-	std::vector<Task*> _newAllTasks;
-	_newAllTasks = history.swapCopy(_allTasks);
-	_allTasks = _newAllTasks;
-}
-
-void CMStorage:: redoAction() {
-	 
-	std::vector<Task*> _newAllTasks;
-	_newAllTasks = history.swapCopy(_allTasks);
-	_allTasks = _newAllTasks;
-<<<<<<< HEAD
-}
-
 
 std::string CMStorage :: getStorageLocation(){
-
-	std::ifstream read ("StorageLocation.txt");
-	std::string line;
-	getline(read,line);
-	return line;
+	
+	return _active.getStorageLocation();
+	
 }
+
+std::vector<std::string> CMStorage:: readArchivedFile() {
+	
+	return _completed.readArchivedFile();
+	
+}
+
+//---------------------------------------------------------------//
 
 std::string CMStorage:: check(int index){
 
-	history.updateCopy(_allTasks);
+	_checkUncheckMarker=CHECKED_OR_UNCHECKED;
 	int realIndex= _subIndexes[index-1];
-	_completedTasks.push_back(_allTasks[realIndex]);
-	std::string checkedTask= _allTasks[realIndex]->getInfo();
-	_allTasks [realIndex] =  NULL; 
-	delete _allTasks[realIndex]; //deleting the pointer
-	_allTasks.erase(_allTasks.begin()+realIndex); //erasing the vector item containing the pointer
-	_subIndexes.clear();
-	writeArchivedFile();
-	return checkedTask;
-
+	_completed.checkInArchive(_active.getActiveTasks()[realIndex]);
+	return _active.check(realIndex);
 }
 
 std::string CMStorage:: uncheck (int index){ //if the task has been checked as completed, now uncheck it and it becomes active again
 
-	history.updateCopy(_allTasks);
-	int realIndex= _subAIndexes[index-1];
-	_allTasks.push_back(_completedTasks[realIndex]);
-	std::string uncheckedTask= _completedTasks[realIndex]->getInfo();
-	_completedTasks [realIndex] =  NULL; 
-	delete _completedTasks[realIndex]; //deleting the pointer
-	_completedTasks.erase(_completedTasks.begin()+realIndex); //erasing the vector item containing the pointer
-	_subAIndexes.clear();
-	writeArchivedFile();
-	return uncheckedTask;
+	_checkUncheckMarker=CHECKED_OR_UNCHECKED;
+	int realIndex=index - 1;
+	return _completed.uncheckInArchive(realIndex); //return unchecked task
 
 }
 
-std::vector<Task*> CMStorage :: getArchivedDisplay (void) {
+//---------------------------------------------------------------//
 
-	_subAIndexes.clear();
-	std::vector<Task*> _displayCompletedTasks; 
-
-	for (unsigned int i = 0; i < _completedTasks.size(); i++){
-		_displayCompletedTasks.push_back(_completedTasks[i]);
-		_subAIndexes.push_back(i);
-	}
-
-	return _displayCompletedTasks;
-
-}
-
-void CMStorage:: writeArchivedFile() {   
-
-	std::ofstream file;
-	file.open("ArchivedCheckmate.txt");
-	int size=_completedTasks.size();
-	for(int i = 0; i < size; i++){
-        file<<_completedTasks[i]->getInfo()<<std::endl;
-	}
-	file.close();
-} 
-
-std::vector<std::string> CMStorage:: readArchivedFile() {
-
-	std::vector<std::string> textFileStrings;
-
-	std::ifstream read ("ArchivedCheckmate.txt");
-	for (std::string line; getline(read,line);){
-		textFileStrings.push_back(line);
-	}
-
-	return textFileStrings;
-}
 
 int CMStorage:: getIndexFirstFloat () {
 	
-	if (_marker=="home"){
-	for (unsigned int i=0;i<_allTasks.size();i++){
-		if (_allTasks[i]->isFloat()) {
-			return i;
-		}
+	if (_displayMarker==DISPLAYS_HOME_PAGE){
+		
+		return getDefaultIndexFirstFloat();
+
+	} else if (_displayMarker==DISPLAYS_SEARCHED_PAGE){
 	
+		return getSearchedIndexFirstFloat();
+	
+	} else {
+		
+		return 0;
 	}
+}
 
-	int index=_allTasks.size();
-	return index; 
+int CMStorage:: getDefaultIndexFirstFloat () { //the whole _allActiveTasks vector
+	
+	return _active.getDefaultIndexFirstFloat();
+		
+}
 
-	} else if (_marker=="string"){
+int CMStorage:: getSearchedIndexFirstFloat() {
 	
 	for (unsigned int i=0;i<_searchedTasks.size();i++){
+		
 		if (_searchedTasks[i]->isFloat()) {
 			return i;
 		}
-	
 	}
-
-	int index=_searchedTasks.size();
-	return index; 
 	
-	} else return 0;
+	int index=_searchedTasks.size();
+	return index;
 
 }
 
-void CMStorage:: clearTasks(){
+//---------------------------------------------------------------//
 
-	history.updateCopy(_allTasks);
-	_allTasks.clear();
-	writeFile();
+
+int CMStorage :: getEditedIndex(std::string desc,boost::posix_time::ptime start,boost::posix_time::ptime end){
+	
+	return _active.getEditedIndex (desc, start, end);
+	
 }
 
-=======
+int CMStorage:: getAddedIndex () {
+	
+	return _active.getAddedActiveIndex();
+    
 }
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
+
+//---------------------------------------------------------------//
+
+void CMStorage :: sortAllTasks () { //no need to sort archived/completed tasks
+	
+	_active.sortAllTasks();
+	
+}
+
+void CMStorage :: sortSearchedTasks () {
+	
+	_searchedTasks= _storageSort.sortAllTasks(_searchedTasks, getSearchedIndexFirstFloat());
+	
+}
+
+//---------------------------------------------------------------//
+
+void CMStorage:: updateHistory(){
+	_active.updateHistory();
+}
+
+void CMStorage:: updateArchivedHistory(){
+	_completed.updateArchiveHistory();
+}
+
+//---------------------------------------------------------------//
+
+void CMStorage:: undoAction() {
+	
+	if (_checkUncheckMarker==CHECKED_OR_UNCHECKED){
+		_active.undoActiveTaskAction();
+		_completed.undoArchivedTaskAction();
+	} else if (_displayMarker!=DISPLAYS_ARCHIVED_PAGE){
+		_active.undoActiveTaskAction();
+	} else {
+		_completed.undoArchivedTaskAction();
+	}
+}

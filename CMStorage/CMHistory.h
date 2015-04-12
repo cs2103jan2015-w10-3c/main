@@ -22,8 +22,4 @@ public:
 	std::vector<Task*> swapCopy(std::vector<Task*>); //if undo or redo action is being called 
 };
 
-
-
-
-
 #endif

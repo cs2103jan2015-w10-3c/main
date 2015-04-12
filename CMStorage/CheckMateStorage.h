@@ -1,3 +1,5 @@
+//@author A0115990B
+
 #ifndef CHECKMATESTORAGE_H
 #define CHECKMATESTORAGE_H
 
@@ -11,62 +13,72 @@
 #include "TimedTask.h"
 #include "Deadline.h" 
 #include "CMHistory.h"
-#include <windows.h>
-
+#include "CMArchive.h"
+#include "CMTextFile.h"
+#include "CMStorageSort.h"
+#include "CMActive.h"
 
 class CMStorage {
 
-	public: //changed for testing purpose
+private: 
+	
+	std::vector<Task*> _searchedTasks; //all searched tasks as Task pointers
+	
+	std::vector<int> _subIndexes;
+	
+	std::string _displayMarker;
+	std::string _checkUncheckMarker;
 
-		std::vector<Task*> _allTasks; //all tasks as Task pointers
-		std::vector<Task*> _searchedTasks; //all searched tasks as Task pointers
-		std::vector<int> _subIndexes;
-<<<<<<< HEAD
-		std::vector<int> _subAIndexes; //storing sub-indexes for the completed tasks tab
-=======
-		std::string _filename;
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
-		LPCSTR _location;
-		CMHistory history;
-		std::vector<Task*> _completedTasks; //all completed tasks as Task pointers
-		int addedIndex;
-		std::string _marker;
+	CMArchive _completed;
+	CMActive _active;
+	CMStorageSort _storageSort;
+	
+	static const std::string DISPLAYS_HOME_PAGE;
+	static const std::string DISPLAYS_SEARCHED_PAGE;
+	static const std::string DISPLAYS_ARCHIVED_PAGE;
+	static const std::string CHECKED_OR_UNCHECKED;
+	
+public:
 
-	public:
+	void addDeadline (Deadline*);
+	void addTimedTask (TimedTask*);
+	void addFloatingTask (FloatingTask*);
+	
+	void addArchivedDeadline (Deadline*); //Ar
+	void addArchivedTimedTask (TimedTask*); //Ar
+	void addArchivedFloatingTask (FloatingTask*); //Ar
+	
+	std:: string  deleteTask (int );
+	Task* getTask(int); //for edit
+	void writeEditedFile();
+	void clearTasks();
+	
+	std::vector<Task*> getActiveDisplay();
+	std::vector<Task*> getArchivedDisplay(); //Ar
+	std::vector<Task*> getSearchedTasks(std::string);
 
-		void addDeadline (Deadline*);
-		void addTimedTask (TimedTask*);
-		void addFloatingTask (FloatingTask*);
-<<<<<<< HEAD
-		int getAddedIndex ();
-		void addArchivedDeadline (Deadline*);
-		void addArchivedTimedTask (TimedTask*);
-		void addArchivedFloatingTask (FloatingTask*);
-		std:: string  deleteTask (int );
-=======
-		std::string deleteTask (int);
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
-		std::vector<Task*> getDisplay();
-		std::vector<Task*> getArchivedDisplay();
-		Task* getTask(int);
-		std::vector<Task*> searchTask (std::string);
-		void setFileName (std::string);
-		void writeFile();   
-		void writeArchivedFile();   
-		std::vector<std::string> readFile();
-		std::vector<std::string> readArchivedFile();
-		void changeStorageLocation(std::string);
-		void undoAction();
-		void redoAction();
-<<<<<<< HEAD
-		void sortAllTasks();
-		std::string getStorageLocation();
-		std::string check(int);
-		std::string uncheck(int);
-		int getIndexFirstFloat ();
-		void clearTasks();
-=======
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
+	std::vector<std::string> readFile(); //TF
+	void changeStorageLocation(std::string); //TF
+	std::string getStorageLocation(); //TF
+	std::vector<std::string> readArchivedFile(); //Ar
+	
+	std::string check(int);
+	std::string uncheck(int);
+	
+	int getIndexFirstFloat ();
+	int getDefaultIndexFirstFloat ();
+	int getSearchedIndexFirstFloat ();
+	
+	int getEditedIndex(std::string,boost::posix_time::ptime,boost::posix_time::ptime);
+	int getAddedIndex ();
+
+	void sortAllTasks(); //Sort
+	void sortSearchedTasks();
+
+	void updateHistory();
+	void updateArchivedHistory();//Ar
+	
+	void undoAction();
 
 };
 
