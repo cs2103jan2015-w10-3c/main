@@ -177,7 +177,6 @@ Output* LogicCommand :: editTask(std::string commandInput){
 	isValidInput=_editor.interpretCommand(commandInput);
 	Task* selectedTask;
 	_taskList =_storage.getActiveDisplay();
-
 	if(isValidInput&&(_editor.getTaskIndex()<=_taskList.size())){
 		int taskIndex =_editor.getTaskIndex();
 		selectedTask= _storage.getTask(taskIndex);
