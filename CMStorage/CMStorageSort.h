@@ -1,10 +1,4 @@
-//
-//  StorageSort.h
-//  testmypart
-//
-//  Created by Elaine Cai on 10/4/15.
-//
-//
+//@author A0115990B
 
 #ifndef CMSTORAGESORT_H
 #define CMSTORAGESORT_H
@@ -22,11 +16,10 @@
 class CMStorageSort {
 	
 public:
-//	bool hasStart(Task*);
-//	bool hasEnd(Task*);
-	std::vector<Task*>  sortAllTasks(std::vector<Task*>, int);
+	
+	std::vector<Task*>  sortTasks(std::vector<Task*>, int);
 	void swap(Task*&,Task*&);
-
+	
 };
 
 

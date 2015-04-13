@@ -1,3 +1,5 @@
+//@author A0115990B
+
 #ifndef CHECKMATEHISTORY_H
 #define CHECKMATEHISTORY_H
 
@@ -14,12 +16,16 @@
 class CMHistory {
 
 private:
+	
 	std::vector<Task*> _allTasksCopy;
 
 public:
+	
 	CMHistory(void);
+	~CMHistory();
 	void updateCopy(std::vector<Task*>); //if no undo or redo action
 	std::vector<Task*> swapCopy(std::vector<Task*>); //if undo or redo action is being called 
+
 };
 
 #endif

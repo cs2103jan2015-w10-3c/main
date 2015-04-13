@@ -18,19 +18,24 @@
 #include "CMStorageSort.h"
 #include "CMActive.h"
 
+//CMStorage is the only class in Storage being called by the Logic component;
+//Within itself, it calls the objects from 2 main classes, the active/current tasks and the archive/completed tasks;
+//CMStorage mainly calls these 2 classes for concrete actions, while itself is focused on determining the
+//screen the user is on and act accordingly. Also, it is responsible for getting the right displaying tasks including
+//searched tasks back to the Logic component
+
 class CMStorage {
 
 private: 
 	
 	std::vector<Task*> _searchedTasks; //all searched tasks as Task pointers
-	
-	std::vector<int> _subIndexes;
+	std::vector<int> _subIndexes; //to hold all the realIndexes (different from what the user sees on screen)
 	
 	std::string _displayMarker;
 	std::string _checkUncheckMarker;
 
-	CMArchive _completed;
-	CMActive _active;
+	CMActive _active; //active tasks object
+	CMArchive _completed; //completed tasks object
 	CMStorageSort _storageSort;
 	
 	static const std::string DISPLAYS_HOME_PAGE;
@@ -72,7 +77,7 @@ public:
 	int getEditedIndex(std::string,boost::posix_time::ptime,boost::posix_time::ptime);
 	int getAddedIndex ();
 
-	void sortAllTasks(); //Sort
+	void sortAllTasks(); //no need to sort archived/completed tasks
 	void sortSearchedTasks();
 
 	void updateHistory();
