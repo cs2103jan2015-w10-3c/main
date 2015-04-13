@@ -16,9 +16,7 @@ const int CMDateParser::NOT_FOUND = -1;
 
 bool CMDateParser::isMonth(std::string str) {
 	// Convert given string to lower case
-	for (size_t i = 0; i < str.length(); ++i) {
-		str[i] = tolower(str[i]);
-	}
+	boost::algorithm::to_lower(str);
 
 	// Checking if given string is a month
 	for (int i = 0; i < 24; ++i) {
@@ -30,6 +28,8 @@ bool CMDateParser::isMonth(std::string str) {
 }
 
 int CMDateParser::getIndexFromWeekdayName (std::string str) {
+	boost::algorithm::to_lower(str);
+	
 	// Checking if given string is a long weekday name
 	for (int i = 0; i < 7; ++i){
 		if (str.find(LONG_WEEKDAY_NAME[i]) != str.npos) {

@@ -85,10 +85,8 @@ int CMTimeParser::getMin() {
 bool CMTimeParser::hasTime(std::string str) {
 	std::string buffer;
 	std::string timeStr;
-	
-	for (size_t i = 0; i < str.length(); ++i) {
-		str[i] = tolower(str[i]);
-	}
+
+	boost::algorithm::to_lower(str);
 
 	int pos = str.find_last_of(" ");
 	if (pos != str.npos){
@@ -108,10 +106,10 @@ bool CMTimeParser::hasTime(std::string str) {
 				return true;
 			} else {
 				buffer = str.substr(str.length() - 2);
-			
+
 				if (buffer == TIME_ATTRIBUTE[i]) {
 					timeStr = str.substr(0, str.length() - 2); 
-						
+
 					if ( std::all_of(timeStr.begin(), timeStr.end(), std::isdigit) ) {
 						return true;
 					}

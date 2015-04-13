@@ -17,7 +17,7 @@ private:
 
 	int _hours;
 	int _minutes;
-		
+
 public:
 	// This function will parse a string with valid time into _hours and _minutes. 
 	// After which they can be retrieved using the getter functions. Several valid

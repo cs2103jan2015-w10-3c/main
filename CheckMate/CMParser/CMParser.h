@@ -21,7 +21,7 @@ private:
 	static const std::string DEADLINE;
 	static const std::string FLOAT;
 	static const std::string CONNECTING_WORDS[6];
-	
+
 	CMDateParser dateParser;
 	CMTimeParser timeParser;
 
@@ -33,7 +33,7 @@ private:
 	// This function determines if the type of task by whether _start and _end are valid
 	// date and time.
 	void determineType();
-	
+
 	// This function parses a given string into ptime format. If the given string is not
 	// a valid date and time string, the default constructor of ptime is returned. If the 
 	// given string only contains a date, the time is set at 23:59. If the given string only
@@ -41,12 +41,12 @@ private:
 	// will be changed to tomorrow. For example, if the current time is 4pm and the string
 	// is 2pm, the date will be tomorrow instead of today.
 	boost::posix_time::ptime getDateAndTime(std::string);
-	
+
 	// Determines if a given string is a connecting word that is not part of the description
 	// For example, in the sentence "Meeting from today 2pm to 4pm", from is a connecting word.
 	// The common connecting words are "from", "to", "on", "by", "due", "at".
 	bool isConnectingWord(std::string str);
-	
+
 	// Combines a given vector of strings into a string
 	std::string vectorToString (std::vector<std::string>);
 
@@ -73,7 +73,7 @@ public:
 	// Returns the date of today and tmr in a string
 	std::string getToday();
 	std::string getTomorrow();
-		
+
 	// Edits the given string is a valid directory by ensuring that the end of the string is a backslash
 	std::string interpretDirectoryString (std::string);
 };

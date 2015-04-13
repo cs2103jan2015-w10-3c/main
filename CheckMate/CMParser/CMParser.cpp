@@ -13,11 +13,11 @@ void CMParser::parseData(std::string str) {
 	std::string timeAndDate1; 
 	std::string timeAndDate2;
 	std::vector<std::string> description;
-	
+
 	bool isDescription = true;
 	bool isStart = true;
 	bool openInvertedCommas = false;
-	
+
 	_start = boost::posix_time::ptime();
 	_end = boost::posix_time::ptime();
 
@@ -29,7 +29,7 @@ void CMParser::parseData(std::string str) {
 			throw std::string("ERROR: NOTHING TO PARSE");
 		} else {
 			std::cout << "PARSER: parsing from input \"" << str << "\"" << std::endl; 
-		
+
 			while (ss >> buffer){
 				tokens.push_back(buffer);
 			}
@@ -40,7 +40,7 @@ void CMParser::parseData(std::string str) {
 
 				if (buffer.find('"') != buffer.npos) {
 					description.push_back(buffer);
-			
+
 					if (openInvertedCommas) {
 						openInvertedCommas = false;	
 					} else {
@@ -53,74 +53,74 @@ void CMParser::parseData(std::string str) {
 				}
 
 				if (dateParser.isTdyOrTmr(tokens[i])) {
-						bufferTimeAndDate << tokens[i];
-						if ((i+1 < tokens.size()) && (timeParser.hasTime(tokens[i+1]))) {
-							bufferTimeAndDate << " " << tokens[i+1];
-							++i;
-						}
-					} else if (dateParser.isWeekdayName(tokens[i])) {
-						if (tokens[i-1] == "next") {
-							description.pop_back();
-							bufferTimeAndDate << tokens[i-1] << " ";
-						} 
-						bufferTimeAndDate << tokens[i];
-						if ((i+1 < tokens.size()) && (timeParser.hasTime(tokens[i+1]))) {
-							bufferTimeAndDate << " " << tokens[i+1];
-							++i;
-						}
-					} else if (dateParser.parseDate(buffer) != boost::gregorian::date()) {
-						bufferTimeAndDate << tokens[i];
-						if ((i+1 < tokens.size()) && (timeParser.hasTime(tokens[i+1]))) {
+					bufferTimeAndDate << tokens[i];
+					if ((i+1 < tokens.size()) && (timeParser.hasTime(tokens[i+1]))) {
 						bufferTimeAndDate << " " << tokens[i+1];
+						++i;
+					}
+				} else if (dateParser.isWeekdayName(tokens[i])) {
+					if (tokens[i-1] == "next") {
+						description.pop_back();
+						bufferTimeAndDate << tokens[i-1] << " ";
+					} 
+					bufferTimeAndDate << tokens[i];
+					if ((i+1 < tokens.size()) && (timeParser.hasTime(tokens[i+1]))) {
+						bufferTimeAndDate << " " << tokens[i+1];
+						++i;
+					}
+				} else if (dateParser.parseDate(buffer) != boost::gregorian::date()) {
+					bufferTimeAndDate << tokens[i];
+					if ((i+1 < tokens.size()) && (timeParser.hasTime(tokens[i+1]))) {
+						bufferTimeAndDate << " " << tokens[i+1];
+						++i;
+					}
+				} else if (dateParser.isMonth(tokens[i])) {
+					std::string dateStr = tokens[i-1];
+					if (dateStr.length() > 2) {
+						dateStr.erase(dateStr.length() - 2);
+					}
+					int date = atoi(dateStr.c_str());
+					if ((date >= 1) && (date <= 31)) {
+						if (isStart) {
+							description.pop_back();
+						}
+						bufferTimeAndDate << dateStr << " " << tokens[i];
+						if ((i+1 < tokens.size()) && (atoi(tokens[i+1].c_str()) >= 1)){
+							bufferTimeAndDate << " " << tokens[i+1];
+						}
+						if ((i+2 < tokens.size()) && (timeParser.hasTime(tokens[i+2]))) {
+							bufferTimeAndDate << " " << tokens[i+2];
+							i = i + 2;
+						} else {
 							++i;
 						}
-					} else if (dateParser.isMonth(tokens[i])) {
-						std::string dateStr = tokens[i-1];
-						if (dateStr.length() > 2) {
-							dateStr.erase(dateStr.length() - 2);
-						}
-						int date = atoi(dateStr.c_str());
-						if ((date >= 1) && (date <= 31)) {
-							if (isStart) {
-								description.pop_back();
-							}
-							bufferTimeAndDate << dateStr << " " << tokens[i];
-							if ((i+1 < tokens.size()) && (atoi(tokens[i+1].c_str()) >= 1)){
-								bufferTimeAndDate << " " << tokens[i+1];
-							}
-							if ((i+2 < tokens.size()) && (timeParser.hasTime(tokens[i+2]))) {
-								bufferTimeAndDate << " " << tokens[i+2];
-								i = i + 2;
-							} else {
-								++i;
-							}
-						}
-					} else if (timeParser.hasTime(tokens[i])) {
-						bufferTimeAndDate << tokens[i];
 					}
-			
-					if (!(bufferTimeAndDate.str().empty())){
-						if (isStart) {
-							timeAndDate1 = bufferTimeAndDate.str();
-							isStart = false;
-							isDescription = false;
-						} else {
-							timeAndDate2 = bufferTimeAndDate.str();
-							isDescription = false;
-						}
+				} else if (timeParser.hasTime(tokens[i])) {
+					bufferTimeAndDate << tokens[i];
+				}
+
+				if (!(bufferTimeAndDate.str().empty())){
+					if (isStart) {
+						timeAndDate1 = bufferTimeAndDate.str();
+						isStart = false;
+						isDescription = false;
+					} else {
+						timeAndDate2 = bufferTimeAndDate.str();
+						isDescription = false;
 					}
-		
+				}
+
 				if (isDescription){
 					description.push_back(buffer);
 				} 
-		
+
 			}
 			std::cout << "PARSER: time 1 is \"" << timeAndDate1 << "\"" << std::endl;
 			std::cout << "PARSER: time 2 is \"" << timeAndDate2 << "\"" << std::endl;
 
 			_start = getDateAndTime(timeAndDate1);
 			_end = getDateAndTime(timeAndDate2);
-	
+
 			determineType();
 			std::cout << "PARSER:: type is \"" << _type << "\"" <<std::endl;
 
@@ -148,7 +148,7 @@ void CMParser::parseData(std::string str) {
 		std::cerr << e << std::endl;
 	}
 }
-	
+
 
 void CMParser::parseDataFromFile(std::string str){
 	std::vector<std::string> tokens;
@@ -157,13 +157,13 @@ void CMParser::parseDataFromFile(std::string str){
 	std::string timeAndDate1; 
 	std::string timeAndDate2;
 	std::vector<std::string> description;
-	
+
 	bool isDescription = true;
 	bool isStart = true;
 	bool openInvertedCommas = false;
 
 	boost::gregorian::date bufferDate;
-	
+
 	_start = boost::posix_time::ptime();
 	_end = boost::posix_time::ptime();
 
@@ -182,10 +182,10 @@ void CMParser::parseDataFromFile(std::string str){
 
 			for (unsigned int i = 0; i < tokens.size(); ++i) {
 				buffer = tokens[i];
-		
+
 				if (buffer.find('"') != buffer.npos) {
 					description.push_back(buffer);
-			
+
 					if (openInvertedCommas) {
 						openInvertedCommas = false;	
 					} else {
@@ -196,11 +196,11 @@ void CMParser::parseDataFromFile(std::string str){
 					}
 					continue;
 				}
-		
+
 				std::istringstream bufferTimeAndDate(buffer);
-		
+
 				bufferTimeAndDate >> bufferDate;
-		
+
 				if (buffer == "--NIL--") {
 					isDescription = false;
 				} else if (bufferDate != boost::gregorian::date()){
@@ -215,7 +215,7 @@ void CMParser::parseDataFromFile(std::string str){
 					isDescription = false;
 					++i;
 				} 
-	
+
 				if (isDescription){
 					description.push_back(buffer);
 				} 
@@ -265,33 +265,30 @@ boost::posix_time::ptime CMParser::getDateAndTime(std::string str) {
 	int minutes;
 
 	int lastSpace = str.find_last_of(" ");
-	
-	// Change given string to lower case
-	for (size_t i = 0; i < str.length(); ++i) {
-		str[i] = tolower(str[i]);
-	}
-	
+
+	boost::algorithm::to_lower(str);
+
 	if (timeParser.hasTime(str) && dateParser.hasDate(str)){
 		timeStr = str.substr(lastSpace+1);
 		dateStr = str.erase(lastSpace);
-		
+
 		timeParser.parseTime(timeStr);
 		hours = timeParser.getHour();
 		minutes = timeParser.getMin();
-		
+
 		bufferDate = dateParser.parseDate(dateStr);
 
 		dateAndTime = boost::posix_time::ptime(bufferDate ,boost::posix_time::hours(hours) + boost::posix_time::minutes(minutes));
 	}
 	else if (dateParser.hasDate(str)) {
 		dateStr = str;
-		
+
 		timeParser.setHour(23);
 		timeParser.setMin(59);
 
 		hours = timeParser.getHour();
 		minutes = timeParser.getMin();
-		
+
 		bufferDate = dateParser.parseDate(dateStr);
 
 		dateAndTime = boost::posix_time::ptime(bufferDate ,boost::posix_time::hours(hours) + boost::posix_time::minutes(minutes));
@@ -302,7 +299,7 @@ boost::posix_time::ptime CMParser::getDateAndTime(std::string str) {
 
 		hours = timeParser.getHour();
 		minutes = timeParser.getMin();
-		
+
 		if (_start.date() == boost::gregorian::date()) {
 			_start = boost::posix_time::second_clock::local_time();
 		}
@@ -315,7 +312,7 @@ boost::posix_time::ptime CMParser::getDateAndTime(std::string str) {
 	} else { // If given string has no time or date attributes
 		dateAndTime = boost::posix_time::ptime();
 	} 
-	
+
 	std::cout << "PARSER: \"" << str << "\" is \"" << dateAndTime << "\"" << std::endl;
 
 	return dateAndTime;
@@ -324,9 +321,8 @@ boost::posix_time::ptime CMParser::getDateAndTime(std::string str) {
 bool CMParser::isConnectingWord(std::string str) {
 	assert( str != "");
 
-	for (size_t i = 0; i < str.length(); ++i) {
-		str[i] = tolower(str[i]);
-	}
+	boost::algorithm::to_lower(str);
+
 	for (int i = 0; i < 6; ++i) {
 		if (str == CONNECTING_WORDS[i]) {
 			return true;
@@ -382,15 +378,15 @@ std::string CMParser::getTomorrow() {
 boost::posix_time::ptime CMParser::changeTime (boost::posix_time::ptime current, std::string newTime) {
 	boost::gregorian::date currentDate = current.date();
 	timeParser.parseTime(newTime);
-	
+
 	int hours = timeParser.getHour();
 	int minutes = timeParser.getMin();
 
 	try {
 		if (!((hours >= 0) && (hours <= 24) && (minutes >= 0) && (minutes <= 60))) {
-		hours = 0;
-		minutes = 0;
-		throw std::string ("ERROR: TRYING TO CHANGE TO INVALID TIME");
+			hours = 0;
+			minutes = 0;
+			throw std::string ("ERROR: TRYING TO CHANGE TO INVALID TIME");
 		}
 	}
 	catch (std::string e) {
@@ -420,7 +416,7 @@ boost::posix_time::ptime CMParser::changeDate (boost::posix_time::ptime current,
 
 std::string CMParser::interpretDirectoryString (std::string directory){
 	std::string newDirectory;
-	
+
 	if (directory == ""){
 		newDirectory = directory;
 	} else {
