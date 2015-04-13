@@ -1,5 +1,7 @@
+//@author A0111448M
 #ifndef EDITREADER_H
 #define EDITREADER_H
+
 #include<iostream>
 #include<string>
 
@@ -16,21 +18,24 @@ const int STARTDATEINDEX= 4;
 const int ENDDATEINDEX= 5;
 const int INVALIDINDEX=20;
 
+//Serves as a reader to interpret a string input into an index of the Task selected,
+//the type of category chosen( Description, start time, start date, end time, end date)
+//and the new infomartion to update. It is assumed the user know the category keywords
 class EditReader{ 
 
 private:
-	int _TaskIndex;
-	int _CategoryIndex;
-	std::string _NewInput;
+	int _taskIndex;							//Index of selected task Displayed
+	int _categoryIndex;						//Index of Description/Start/End
+	std::string _newInput;					//New input to replace previous
 
 
 public:
 	EditReader(void);
 	~EditReader(void);
-	bool interpretCommand(std::string);
-	int indexCategory(std::string);
-	std::string lowerCase(std::string);
-	int getTaskindex() const;
+	bool interpretCommand(std::string);		//Retruns false if line is Invalid
+	int indexCategory(std::string);			//Indexes the category for switch case
+	std::string lowerCase(std::string);		//Allows Logic to read upper and lowercase
+	int getTaskIndex() const;
 	int getSelectedCategory() const;
 	std::string getNewInput() const;
 };

@@ -1,547 +1,358 @@
+//@author A0111448M
 #include "LogicCommand.h"
 
 Output*  LogicCommand :: retrieveData(){
 	Output* output;
-<<<<<<< HEAD
-	//_toDisplay= _TextFile.readFile();
-
-	for(unsigned int index=0; index < _toDisplay.size(); index++){
-		output= addTask(_toDisplay[index]);
-	}
-	int ActionIndex = NOINDEX;
-	std::string feedback = WELCOMEBACK + USERNAME;
-	std::vector <Task*> TaskList =_Storage.getDisplay();
-	output= new Output(feedback,TaskList,ActionIndex);
-
-	return output;
-
-=======
 	//Add Task from textfiles back
-	_toDisplay=_Storage.readFile();		
+	std::vector<std::string> _toDisplay=_storage.readFile();		
 	for(unsigned int index=0; index < _toDisplay.size(); index++){
-		output = addTask(_toDisplay[index],FROMFILE,UNCOMPLETEDTASK);
+		output = addTask(_toDisplay[index],FROMFILE,ACTIVETASK);
 	} 
 	//Add Completed Files from textfiles back
-	std::vector<std::string> archivedFileList = _Storage.readArchivedFile();
+	std::vector<std::string> archivedFileList = _storage.readArchivedFile();
 	for(unsigned int index=0; index < archivedFileList.size(); index++){
 		output = addTask(archivedFileList[index],FROMFILE,COMPLETEDTASK);
 	} 
-
-	_firstFloatIndex=_Storage.getIndexFirstFloat();
+	_taskList =_storage.getActiveDisplay();
+	_firstFloatIndex=_storage.getIndexFirstFloat();
 	_lastActionIndex= NONOBSERVABLE;
-	std::string feedback = WELCOMEBACK;
-	std::vector <Task*> TaskList =_Storage.getDisplay();
+	_feedback = WELCOMEBACK;
+	_listType= ACTIVETASK;
 
-	output= new Output(feedback,TaskList,_lastActionIndex,_firstFloatIndex);
-
+	output= new Output(_feedback,_taskList,_lastActionIndex,_firstFloatIndex,_listType);
 	return output;
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
 
 }
 
 
-<<<<<<< HEAD
-Output*  LogicCommand :: addTask(std::string CommandInput){
-
-
-	std::string TaskType = _Parser.determineType(CommandInput);
-	_Parser.parseData(CommandInput,TaskType);
-
-
-	if(TaskType==TIMEDTYPE){
-		Output* output= addTimeTask();
-		return output;	}
-	else{
-		if(TaskType==FLOATINGTYPE){
-			Output*  output= addFloatTask();
-			return output;}
-		else{
-			if(TaskType==DEADLINE){
-				Output*  output= addDeadlines();
-				return output;}
-			else{ 
-				std::string feedback = INVALIDTYPE;
-				std::vector <Task*> TaskList =_Storage.getDisplay();
-				int ActionIndex = NOINDEX;
-				Output*  output= new Output(feedback,TaskList,ActionIndex);
-				return output;}
-		}}
-
-}
-
-Output* LogicCommand :: addFloatTask(){
-	std::string Description =_Parser.getDescription();
-
-	FloatingTask* NewFloatingTask = new FloatingTask(Description);
-
-	_Storage.addFloatingTask(NewFloatingTask);
-	int ActionIndex=1;//= _Storage.getTaskIndex(TaskIndex);
-	std::string feedback = Description + " " + " " + ADDED;
-	std::vector <Task*> TaskList =_Storage.getDisplay();
-
-	Output* output= new Output(feedback,TaskList,ActionIndex);
-=======
-Output*  LogicCommand :: addTask(std::string CommandInput,int InputSource=FROMUSER,bool isCompleted=UNCOMPLETEDTASK){
+Output*  LogicCommand :: addTask(std::string commandInput,int InputSource=FROMUSER,bool isCompleted=ACTIVETASK){
 
 
 	if(InputSource==FROMFILE){                          
-		_Parser.parseDataFromFile(CommandInput);
+		_parser.parseDataFromFile(commandInput);
 	}else{												
-		_Parser.parseData(CommandInput);
+		_parser.parseData(commandInput);
 	}
 
-	std::string TaskType = _Parser.getType();
+	std::string taskType = _parser.getType();
 
-	if(TaskType==TIMEDTYPE){
+	if(taskType==TIMEDTYPE){
 		Output* output= addTimeTask(isCompleted);
 		return output;	
 	}else if
-		(TaskType==FLOATINGTYPE){
+		(taskType==FLOATINGTYPE){
 			Output*  output= addFloatTask(isCompleted);
 			return output;
 	}else if
-		(TaskType==DEADLINE){
+		(taskType==DEADLINE){
 			Output*  output= addDeadlines(isCompleted);
 			return output;
 	}else{ 
 		std::string feedback = INVALIDTYPE;
-		std::vector <Task*> TaskList =_Storage.getDisplay();
-		Output*  output= new Output(feedback,TaskList,_lastActionIndex,_firstFloatIndex);
+		_taskList =_storage.getActiveDisplay();
+		
+		Output*  output= new Output(feedback,_taskList,_lastActionIndex,_firstFloatIndex,_listType);
 		return output;}
 }
 
 Output* LogicCommand :: addFloatTask(bool isCompleted){
-	std::string Description =_Parser.getDescription();
+	std::string description =_parser.getDescription();
 
-	FloatingTask* NewFloatingTask = new FloatingTask(Description);
+	FloatingTask* newFloatingTask = new FloatingTask(description);
 	if(isCompleted){
-		_Storage.addArchivedFloatingTask(NewFloatingTask);
+		_storage.addArchivedFloatingTask(newFloatingTask);
 		_lastActionIndex=NONOBSERVABLE;
 	}else if
 		(!isCompleted){
-			_Storage.addFloatingTask(NewFloatingTask);
-			_lastActionIndex=_Storage.getAddedIndex();}
+			_storage.addFloatingTask(newFloatingTask);
+			_lastActionIndex=_storage.getAddedIndex();}
 
-	_firstFloatIndex=_Storage.getIndexFirstFloat();
-	std::string feedback = Description + " " + " " + ADDED;
-	std::vector <Task*> TaskList =_Storage.getDisplay();
+	_taskList =_storage.getActiveDisplay();
+	_firstFloatIndex=_storage.getIndexFirstFloat();
+	_feedback = description + ADDED;
 
-	_Storage.writeFile();
-	Output* output= new Output(feedback,TaskList,_lastActionIndex,_firstFloatIndex);
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
-
+	Output* output= new Output(_feedback,_taskList,_lastActionIndex,_firstFloatIndex,_listType);
 	return output;
 }
 
 
-<<<<<<< HEAD
-Output* LogicCommand :: addDeadlines(){
-=======
 Output* LogicCommand :: addDeadlines(bool isCompleted){
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
-	std::string Description =_Parser.getDescription();
-	ptime Start = _Parser.getStart();
+	std::string description =_parser.getDescription();
+	boost::posix_time::ptime end = _parser.getEnd();
 
-	Deadline* NewDeadline = new Deadline(Description,Start);
+	Deadline* NewDeadline = new Deadline(description,end);
 
-<<<<<<< HEAD
-	_Storage.addDeadline(NewDeadline);
-	int ActionIndex=1;//= _Storage.getTaskIndex(TaskIndex);
-	std::string feedback = Description +  " " + to_simple_string(Start) +" " +  " " + ADDED;
-	std::vector <Task*> TaskList =_Storage.getDisplay();
-
-	Output* output= new Output(feedback,TaskList,ActionIndex);
-=======
 	if(isCompleted){
-		_Storage.addArchivedDeadline(NewDeadline);
+		_storage.addArchivedDeadline(NewDeadline);
 		_lastActionIndex=NONOBSERVABLE;
 	}else if
 		(!isCompleted){
-			_Storage.addDeadline(NewDeadline);
-			_lastActionIndex=_Storage.getAddedIndex();}
+			_storage.addDeadline(NewDeadline);
+			_lastActionIndex=_storage.getAddedIndex();}
 
-	_firstFloatIndex=_Storage.getIndexFirstFloat();
-	std::string feedback = Description +  " " + to_simple_string(Start) +" " +  " " + ADDED;
-	std::vector <Task*> TaskList =_Storage.getDisplay();
+	_taskList =_storage.getActiveDisplay();
+	_firstFloatIndex=_storage.getIndexFirstFloat();
+	_feedback = description + ADDED;
 
-	_Storage.writeFile();
-	Output* output= new Output(feedback,TaskList,_lastActionIndex,_firstFloatIndex);
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
-
+	Output* output= new Output(_feedback,_taskList,_lastActionIndex,_firstFloatIndex,_listType);
 	return output;
 }
 
-<<<<<<< HEAD
-Output* LogicCommand :: addTimeTask(){
-=======
 Output* LogicCommand :: addTimeTask(bool isCompleted){
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
 
-	std::string Description =_Parser.getDescription();
+	std::string description =_parser.getDescription();
 
-	ptime Start = _Parser.getStart(); // To identify a deadline and TimedTask
-	ptime End = _Parser.getEnd();
+	boost::posix_time::ptime Start = _parser.getStart(); // To identify a deadline and TimedTask
+	boost::posix_time::ptime End = _parser.getEnd();
 
-	TimedTask* NewTimedTask = new TimedTask(Description,Start,End);
-<<<<<<< HEAD
+	_taskList =_storage.getActiveDisplay();
 
-	_Storage.addTimedTask(NewTimedTask);
-	int ActionIndex=1;//= _Storage.getTaskIndex(TaskIndex);
-	std::string feedback = Description +  " " + to_simple_string(Start) + " " + to_simple_string(End) +  " " + ADDED;
-	std :: vector <Task*> TaskList =_Storage.getDisplay();
 
-	Output* output= new Output(feedback,TaskList,ActionIndex);
-=======
+	bool hasClash = _checker.checkClash(_taskList,Start,End);
+
+	if(hasClash){
+		_feedback =  CLASHED ; 
+	} else if
+		(!hasClash){
+			_feedback = description + ADDED;
+	}
+	TimedTask* newTimedTask = new TimedTask(description,Start,End);
+
 	if(isCompleted){
-		_Storage.addArchivedTimedTask(NewTimedTask);
+		_storage.addArchivedTimedTask(newTimedTask);
 		_lastActionIndex=NONOBSERVABLE;}
 	else if
 		(!isCompleted){
-			_Storage.addTimedTask(NewTimedTask);
-			_lastActionIndex=_Storage.getAddedIndex();}
+			_storage.addTimedTask(newTimedTask);
+			_lastActionIndex=_storage.getAddedIndex();}
+	_taskList =_storage.getActiveDisplay();
+	_firstFloatIndex=_storage.getIndexFirstFloat();
 
-	_firstFloatIndex=_Storage.getIndexFirstFloat();
-	std::string feedback = Description +  " " + to_simple_string(Start) + " " + to_simple_string(End) +  " " + ADDED;
-	std :: vector <Task*> TaskList =_Storage.getDisplay();
-
-	_Storage.writeFile();
-	Output* output= new Output(feedback,TaskList,_lastActionIndex,_firstFloatIndex);
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
-
+	Output* output= new Output(_feedback,_taskList,_lastActionIndex,_firstFloatIndex,_listType);
 	return output;
 }
 
-Output* LogicCommand :: searchTask (std::string CommandInput){
-
-	std::vector <Task*> TaskList = _Storage.searchTask(CommandInput);
-	std::string feedback = SEARCHFOUND + " " + TASKS;
-<<<<<<< HEAD
-	int ActionIndex = NOINDEX;
-	Output* output= new Output(feedback,TaskList,ActionIndex);
-=======
+Output* LogicCommand :: searchTask (std::string commandInput){
+	if(commandInput==""){
+		_taskList =_storage.getActiveDisplay();
+		_feedback = NOTFOUND;
+	} else {
+		_taskList = _storage.getSearchedTasks(commandInput);
+		if(_taskList.empty()){
+			_feedback = NOTFOUND;
+			_firstFloatIndex = _taskList.size();
+		}else {
+			_feedback = SEARCHFOUND + TASKS;
+			_firstFloatIndex = _taskList.size();
+		}
+	}
 	_lastActionIndex = NONOBSERVABLE;
-	_firstFloatIndex = TaskList.size();
-	Output* output= new Output(feedback,TaskList,_lastActionIndex,_firstFloatIndex);
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
+	
 
+	Output* output= new Output(_feedback,_taskList,_lastActionIndex,_firstFloatIndex,_listType);
 	return output;
 }
 
-Output* LogicCommand :: deleteTask(std::string SelectedIndexes){
-	std::string feedback="";
-<<<<<<< HEAD
-	std::vector<int> IndexVector =_IntConvertor.convertString(SelectedIndexes);
-
-	for(unsigned startindex=0;startindex<IndexVector.size();startindex++){
-
-		int TaskIndex = IndexVector[startindex];
-		feedback = feedback + _Storage.deleteTask(TaskIndex);
-	}
-	 
-	std::vector <Task*> TaskList =_Storage.getDisplay();
-	int ActionIndex = NOINDEX;
-	Output* output= new Output(feedback,TaskList,ActionIndex);
-=======
-	std::vector<int> IndexVector =_stringConvertor.toInt(SelectedIndexes);
-
-	for(unsigned int index=0;index<IndexVector.size();index++){
-		int TaskIndex = IndexVector[index];
-		feedback = feedback + _Storage.deleteTask(TaskIndex);
+Output* LogicCommand :: deleteTask(std::string selectedIndexes){
+	_storage.updateHistory();
+	_feedback="";
+	std::vector<int> indexVector =_stringConvertor.toInt(selectedIndexes);
+	
+	for(unsigned int index=0;index<indexVector.size();index++){
+		int taskIndex = indexVector[index];
+		_feedback = _feedback + _storage.deleteTask(taskIndex);
 	}
 
-	_Storage.writeFile();
-	std::vector <Task*> TaskList =_Storage.getDisplay();
+	_taskList =_storage.getActiveDisplay();
 	_lastActionIndex= NONOBSERVABLE;
-	_firstFloatIndex=_Storage.getIndexFirstFloat();
-	Output* output= new Output(feedback,TaskList,_lastActionIndex,_firstFloatIndex);
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
+	_firstFloatIndex=_storage.getIndexFirstFloat();
 
+	Output* output= new Output(_feedback,_taskList,_lastActionIndex,_firstFloatIndex,_listType);
 	return output;
 }
 
-<<<<<<< HEAD
-Output* LogicCommand :: EditTask(std::string CommandInput){
-	std::string feedback;
-	Editor.interpretCommand(CommandInput);
-	int TaskIndex =Editor.getTaskindex();
-	Task* SelectedTask= _Storage.getTask(TaskIndex);
-	int ActionIndex=1; //= _Storage.getTaskIndex(TaskIndex);
-
-	int EditCommandIndex = Editor.getSelectedCategory();
-
-	switch(EditCommandIndex){
-	case DESCRIPTIONINDEX:{
-		SelectedTask->editDescription(Editor.getNewInput());
-		feedback=EDITED;}
-						  break;
-	case STARTTIMEINDEX:{
-		ptime PreviousTime = SelectedTask->getStart();
-		ptime NewStart = _Parser.changeTime(PreviousTime,Editor.getNewInput());
-		SelectedTask->editStartTime(NewStart);
-		feedback=EDITED;}
-						break;
-	case STARTDATEINDEX:{
-		ptime PreviousDate = SelectedTask->getStart();
-		ptime NewStart = _Parser.changeDate(PreviousDate,Editor.getNewInput());
-		SelectedTask->editStartDate(NewStart);
-		feedback=EDITED;}
-						break;
-	case ENDTIMEINDEX:{
-		ptime PreviousTime = SelectedTask->getEnd();
-		ptime NewEnd = _Parser.changeTime(PreviousTime,Editor.getNewInput());
-		SelectedTask->editEndTime(NewEnd);
-		feedback=EDITED;}
-					  break;
-
-	case ENDDATEINDEX:{
-		ptime PreviousDate = SelectedTask->getEnd();
-		ptime NewEnd = _Parser.changeDate(PreviousDate,Editor.getNewInput());
-		SelectedTask->editEndDate(NewEnd);
-		feedback=EDITED;}
-					  break;
-	default:{
-		feedback= INVALIDTYPE;}
-			break;
-	}
-
-	//_TextFile.writeFile();
-	std::vector <Task*> TaskList =_Storage.getDisplay();
-
-	Output* output= new Output(feedback,TaskList,ActionIndex);
-=======
-Output* LogicCommand :: editTask(std::string CommandInput){
-	std::string feedback;
-	bool IsValidInput=true;
-	IsValidInput=Editor.interpretCommand(CommandInput);
+Output* LogicCommand :: editTask(std::string commandInput){
+	std::string _feedback;
+	bool isValidInput=true;
+	isValidInput=_editor.interpretCommand(commandInput);
+	Task* selectedTask;
+	_taskList =_storage.getActiveDisplay();
+	if(isValidInput&&(_editor.getTaskIndex()<=_taskList.size())){
+		int taskIndex =_editor.getTaskIndex();
+		selectedTask= _storage.getTask(taskIndex);
 
 
-	if(IsValidInput){
-		int TaskIndex =Editor.getTaskindex();
+		int editCommandIndex = _editor.getSelectedCategory();
+		std::string editedInput = _editor.getNewInput();
 
-		Task* SelectedTask= _Storage.getTask(TaskIndex);
-		_lastActionIndex = TaskIndex;
-
-		int EditCommandIndex = Editor.getSelectedCategory();
-		std::string EditedInput = Editor.getNewInput();
-
-		switch(EditCommandIndex){
+		switch(editCommandIndex){
 		case DESCRIPTIONINDEX:{
-			SelectedTask->editDescription(EditedInput);
-			feedback=EDITED;}
+			selectedTask->editDescription(editedInput);
+			_feedback=EDITED;}
 							  break;
 		case STARTTIMEINDEX:{
-			ptime PreviousTime = SelectedTask->getStart();
-			ptime NewStart = _Parser.changeTime(PreviousTime,EditedInput);
-			SelectedTask->editStartTime(NewStart);
-			feedback=EDITED;}
+			boost::posix_time::ptime previousTime = selectedTask->getStart();
+			boost::posix_time::ptime newStart = _parser.changeTime(previousTime,editedInput);
+			selectedTask->editStartTime(newStart);
+			_feedback=EDITED;}
 							break;
 		case STARTDATEINDEX:{
-			ptime PreviousDate = SelectedTask->getStart();
-			ptime NewStart = _Parser.changeDate(PreviousDate,EditedInput);
-			SelectedTask->editStartDate(NewStart);
-			feedback=EDITED;}
+			boost::posix_time::ptime previousDate = selectedTask->getStart();
+			boost::posix_time::ptime newStart = _parser.changeDate(previousDate,editedInput);
+			selectedTask->editStartDate(newStart);
+			_feedback=EDITED;}
 							break;
 		case ENDTIMEINDEX:{
-			ptime PreviousTime = SelectedTask->getEnd();
-			ptime NewEnd = _Parser.changeTime(PreviousTime,EditedInput);
-			SelectedTask->editEndTime(NewEnd);
-			feedback=EDITED;}
+			boost::posix_time::ptime previousTime = selectedTask->getEnd();
+			boost::posix_time::ptime newEnd = _parser.changeTime(previousTime,editedInput);
+			selectedTask->editEndTime(newEnd);
+			_feedback=EDITED;}
 						  break;
 
 		case ENDDATEINDEX:{
-			ptime PreviousDate = SelectedTask->getEnd();
-			ptime NewEnd = _Parser.changeDate(PreviousDate,EditedInput);
-			SelectedTask->editEndDate(NewEnd);
-			feedback=EDITED;}
+			boost::posix_time::ptime previousDate = selectedTask->getEnd();
+			boost::posix_time::ptime newEnd = _parser.changeDate(previousDate,editedInput);
+			selectedTask->editEndDate(newEnd);
+			_feedback=EDITED;}
 						  break;
 		default:{
-			feedback= INVALIDTYPE;}
+			_feedback= INVALIDTYPE;}
 				break;
 		}
-	}else {feedback= INVALIDTYPE;}
+	}else {_feedback= INVALIDTYPE;}
 
-	_Storage.writeFile();
-	std::vector <Task*> TaskList =_Storage.getDisplay();
+	_storage.writeEditedFile();
+	_taskList =_storage.getActiveDisplay();
+	if(_feedback!= INVALIDTYPE){
+		_lastActionIndex = _storage.getEditedIndex(selectedTask->getDescription(),selectedTask->getStart(),selectedTask->getEnd());
+	} 
 
-	Output* output= new Output(feedback,TaskList,_lastActionIndex,_firstFloatIndex);
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
-
+	Output* output= new Output(_feedback,_taskList,_lastActionIndex,_firstFloatIndex,_listType);
 	return output;
 
 
 }
 
-<<<<<<< HEAD
-Output* LogicCommand :: DisplayToday(){
-
-=======
 Output* LogicCommand :: displayToday(){
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
 
-	std::string today = _Parser.getToday();
+	std::string today = _parser.getToday();
 	Output* output= searchTask(today);
-
+	_listType= ACTIVETASK;
 	return output;
 }
 
-<<<<<<< HEAD
-Output* LogicCommand ::  DisplayTomorrow(){
-=======
 Output* LogicCommand ::  displayTomorrow(){
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
 
-	std::string tomorrow = _Parser.getTomorrow();
+	std::string tomorrow = _parser.getTomorrow();
 	Output* output= searchTask(tomorrow);
-
+	_listType= ACTIVETASK;
 	return output;
 }
 
 
-<<<<<<< HEAD
-Output* LogicCommand :: UndoAction(){
-	_Storage.undoAction();
-	int ActionIndex=1;//= _Storage.getTaskIndex(TaskIndex);
-	std::vector <Task*> TaskList =_Storage.getDisplay();
-	std::string feedback= UNDID;
-	Output* output= new Output(feedback,TaskList,ActionIndex);
-
-	return output;
-
-}
-Output* LogicCommand :: RedoAction(){
-	_Storage.redoAction();
-	int ActionIndex=1; //= _Storage.getTaskIndex(TaskIndex);
-	std::vector <Task*> TaskList =_Storage.getDisplay();
-	std::string feedback= REDID;
-	Output* output= new Output(feedback,TaskList,ActionIndex);
-
-	return output;
-}
-
-Output* LogicCommand :: CheckTask(std::string SelectedIndexes){
-
-	std::vector<int> IndexVector =_IntConvertor.convertString(SelectedIndexes);
-
-	for(unsigned startindex=0;startindex<IndexVector.size();startindex++){
-
-		int TaskIndex = IndexVector[startindex];
-		Task* SelectedTask= _Storage.getTask(TaskIndex);
-		SelectedTask->checkTask();
-	}
-
-	std:: string feedback=CHECKED;
-	std::vector <Task*> TaskList =_Storage.getDisplay();
-	int ActionIndex = NOINDEX;
-	Output* output= new Output(feedback,TaskList,ActionIndex);
-
-	return output;
-=======
 Output* LogicCommand :: undoAction(){
-	_Storage.undoAction();
+	_storage.undoAction();
+
+	_taskList =_storage.getActiveDisplay();
 	_lastActionIndex = NONOBSERVABLE;
-	_firstFloatIndex= _Storage.getIndexFirstFloat();
-	std::vector <Task*> TaskList =_Storage.getDisplay();
-	std::string feedback= UNDID;
-	Output* output= new Output(feedback,TaskList,_lastActionIndex,_firstFloatIndex);
-	_Storage.writeFile();
+	_firstFloatIndex= _storage.getIndexFirstFloat();
+
+	_feedback= UNDID;
+
+
+	Output* output= new Output(_feedback,_taskList,_lastActionIndex,_firstFloatIndex,_listType);
 	return output;
 
 }
-Output* LogicCommand :: redoAction(){
-	_Storage.redoAction();
-	_lastActionIndex = NONOBSERVABLE;
-	_firstFloatIndex= _Storage.getIndexFirstFloat();
-	std::vector <Task*> TaskList =_Storage.getDisplay();
-	std::string feedback= REDID;
-	Output* output= new Output(feedback,TaskList,_lastActionIndex,_firstFloatIndex);
-	_Storage.writeFile();
-	return output;
-}
 
-Output* LogicCommand :: checkTask(std::string SelectedIndexes){
 
-	std::vector<int> IndexVector =_stringConvertor.toInt(SelectedIndexes);
-	std:: string feedback="";
-	for(unsigned startindex=0;startindex<IndexVector.size();startindex++){
-		feedback = _Storage.check(IndexVector[startindex]) + '\n' +feedback;
+Output* LogicCommand :: checkTask(std::string selectedIndexes){
+
+	_storage.updateHistory();
+	_storage.updateArchivedHistory();
+
+	std::vector<int> indexVector =_stringConvertor.toInt(selectedIndexes);
+	_feedback="";
+
+	for(unsigned index=0;index<indexVector.size();index++){
+		_feedback = _storage.check(indexVector[index]) + '\n' +_feedback;
 	}
-	feedback= feedback + CHECKED;
-	std::vector <Task*> TaskList =_Storage.getDisplay();
-	_firstFloatIndex = _Storage.getIndexFirstFloat();
+	_taskList =_storage.getActiveDisplay();
+	_feedback= _feedback + CHECKED;
+
+	_firstFloatIndex = _storage.getIndexFirstFloat();
 	_lastActionIndex =NONOBSERVABLE;
-	Output* output= new Output(feedback,TaskList,_lastActionIndex,_firstFloatIndex);
 
-	_Storage.writeFile();
-	_Storage.writeArchivedFile();
+	Output* output= new Output(_feedback,_taskList,_lastActionIndex,_firstFloatIndex,_listType);
 	return output;
 }
 
-Output* LogicCommand :: uncheckTask(std::string SelectedIndexes){
+Output* LogicCommand :: uncheckTask(std::string selectedIndexes){
+	
+	_storage.updateHistory();
+	_storage.updateArchivedHistory();
 
-	std::vector<int> IndexVector =_stringConvertor.toInt(SelectedIndexes);
-	std:: string feedback="";
+	std::vector<int> indexVector =_stringConvertor.toInt(selectedIndexes);
+	_feedback="";
 
-	for(unsigned startindex=0;startindex<IndexVector.size();startindex++){
-		feedback = _Storage.uncheck(IndexVector[startindex]) + '\n' +feedback;
+	Output* output;
+	for(unsigned startindex=0;startindex<indexVector.size();startindex++){
+		std::string uncheckTask = _storage.uncheck(indexVector[startindex]);
+		output = addTask(uncheckTask,FROMFILE,ACTIVETASK);
+		_feedback = uncheckTask + '\n' +_feedback;
 	}
-	feedback= feedback + CHECKED;
+	_feedback= _feedback + CHECKED;
 
-	Output* output= checkCompletedTask();
+	output= checkCompletedTask();
 
-	_Storage.writeArchivedFile();
-	_Storage.writeFile();
 	return output;
 }
 
 Output* LogicCommand :: clearTask(){
-	_Storage.clearTasks();
-	std:: string feedback=CLEARED;
-	std::vector <Task*> TaskList =_Storage.getDisplay();
+	_storage.clearTasks();
+
+	_feedback=CLEARED;
+	_taskList =_storage.getActiveDisplay();
 	_lastActionIndex=NONOBSERVABLE;
 	_firstFloatIndex=NONE;
-	Output* output= new Output(feedback,TaskList,_lastActionIndex,_firstFloatIndex);
-	_Storage.writeFile();
+
+	Output* output= new Output(_feedback,_taskList,_lastActionIndex,_firstFloatIndex,_listType);
+
 	return output;
 
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
 }
-
 
 Output* LogicCommand :: changeStorageDirectory(std::string DirectoryInput){
 
-<<<<<<< HEAD
-std::string NewDirectory =_Parser.interpretDirectoryString(DirectoryInput);
-//_TextFile.changeStorageLocation(NewDirectory);
-std::vector <Task*> TaskList =_Storage.getDisplay();
-std::string feedback= NEWDIRECTORY + NewDirectory;
-int ActionIndex = NOINDEX;
-Output* output= new Output(feedback,TaskList,ActionIndex);
+	std::string NewDirectory =_parser.interpretDirectoryString(DirectoryInput);
 
-return output;
+	_storage.changeStorageLocation(NewDirectory);
 
-}
-=======
-	std::string NewDirectory =_Parser.interpretDirectoryString(DirectoryInput);
+	_taskList =_storage.getActiveDisplay();
+	_feedback= NEWDIRECTORY + NewDirectory;
 
-	_Storage.changeStorageLocation(NewDirectory);
-
-	std::vector <Task*> TaskList =_Storage.getDisplay();
-	std::string feedback= NEWDIRECTORY + NewDirectory;
-	Output* output= new Output(feedback,TaskList,_lastActionIndex,_firstFloatIndex);
-
+	Output* output= new Output(_feedback,_taskList,_lastActionIndex,_firstFloatIndex,_listType);
 	return output;
-
 }
 
 Output* LogicCommand :: checkCompletedTask() {
 
-	std::vector <Task*> TaskList =_Storage.getArchivedDisplay();
-	std::string feedback = ARCHIVED;
-
+	_taskList =_storage.getArchivedDisplay();
+	_feedback = ARCHIVED;
 	_lastActionIndex=NONOBSERVABLE;
-	_firstFloatIndex=TaskList.size();
-	Output* output= new Output(feedback,TaskList,_lastActionIndex,_firstFloatIndex);
+	_firstFloatIndex=_taskList.size();
+	_listType= COMPLETEDTASK;
+	Output* output= new Output(_feedback,_taskList,_lastActionIndex,_firstFloatIndex,_listType);
 	return output;
-
 }
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
+
+Output* LogicCommand :: returnToHomePage(){
+
+	_taskList =_storage.getActiveDisplay();
+	_feedback = "";
+	_lastActionIndex=NONOBSERVABLE;
+	_firstFloatIndex=_storage.getIndexFirstFloat();
+	_listType= ACTIVETASK;
+	Output* output= new Output(_feedback,_taskList,_lastActionIndex,_firstFloatIndex,_listType);
+	return output;
+}

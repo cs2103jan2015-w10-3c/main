@@ -1,49 +1,14 @@
-//
-//  CMActive.cpp
-//  testmypart
-//
-//  Created by Elaine Cai on 12/4/15.
-//
-//
+//@author A0115990B
 
 #include "CMActive.h"
 
-void CMActive :: sortAllTasks () {
-	
-	_allActiveTasks=_storageSort.sortAllTasks(_allActiveTasks, getDefaultIndexFirstFloat());
-	
-}
+const std::string CMActive:: FILENAME = "Checkmate.txt";
 
-void CMActive:: writeFile() {
-	
-	_textFile.writeFile(_allActiveTasks);
-	
-}
-
-std::vector<std::string> CMActive:: readFile() {
-	
-	return _textFile.readFile();
-
-}
-
-void CMActive :: changeStorageLocation(std::string NewLocation) {
-	
-	_textFile.changeStorageLocation(NewLocation);
-	writeFile();
-	
-}
-
-std::string CMActive :: getStorageLocation(){
-	
-	return _textFile.getStorageLocation();
-}
-
-
-void CMActive :: addDeadline (Deadline* NewDeadline) {
+void CMActive:: addActiveDeadline (Deadline* NewDeadline) {
 	
     bool isFound=false;
     
-	updateHistory();
+	updateActiveHistory();
 	if (_allActiveTasks.size()==0) { //empty vector
         
 		_allActiveTasks.push_back(NewDeadline);
@@ -53,22 +18,26 @@ void CMActive :: addDeadline (Deadline* NewDeadline) {
 		
 		int i=0;
 		
-		while ((i<getDefaultIndexFirstFloat())&&(!isFound)){
+		while ((i<getActiveIndexFirstFloat())&&(!isFound)){
 			
-			//end of deadline compared with start of timedtask
 			if (_allActiveTasks[i]->isTimed()) {
 				
-				if (NewDeadline->getEnd()<_allActiveTasks[i]->getStart()){
+				if (NewDeadline->getEnd()<_allActiveTasks[i]->getStart()){	//end of deadline compared with start of timedtask
+
+					
 					isFound=true;
 					break;
+				
 				}
                 
 			} else if (_allActiveTasks[i]->isDeadline()){
-				//end of deadline compared with end of deadline
+
 				
-				if (NewDeadline->getEnd()<_allActiveTasks[i]->getEnd()){
+				if (NewDeadline->getEnd()<_allActiveTasks[i]->getEnd()){  //end of deadline compared with end of deadline
+					
 					isFound=true;
 					break;
+				
 				}
 			}
 			i++;
@@ -76,17 +45,18 @@ void CMActive :: addDeadline (Deadline* NewDeadline) {
 		
 		_allActiveTasks.insert(_allActiveTasks.begin()+i, NewDeadline);
 		_addedIndex=i;
+		
 	}
 	
-	writeFile();
+	writeActiveFile();
 	
 }
 
-void CMActive :: addTimedTask (TimedTask* NewTimedTask){
+void CMActive:: addActiveTimedTask (TimedTask* NewTimedTask){
 	
     bool isFound=false;
     
-	updateHistory();
+	updateActiveHistory();
 	if (_allActiveTasks.size()==0) { //empty vector
         
 		_allActiveTasks.push_back(NewTimedTask);
@@ -96,21 +66,24 @@ void CMActive :: addTimedTask (TimedTask* NewTimedTask){
 		
 		int i=0;
 		
-		while ((i<getDefaultIndexFirstFloat())&&(!isFound)){
+		while ((i<getActiveIndexFirstFloat())&&(!isFound)){
             
-            //start of timedtask compared with start of timedtask
 			if (_allActiveTasks[i]->isTimed()) {
                 
-                if (NewTimedTask->getStart()<_allActiveTasks[i]->getStart()){
+                if (NewTimedTask->getStart()<_allActiveTasks[i]->getStart()){  //start of timedtask compared with start of timedtask
+
                     isFound=true;
 					break;
+					
                 }
                 
-            } else if (_allActiveTasks[i]->isDeadline()) {  //start of timedtask compared with end of deadline
+            } else if (_allActiveTasks[i]->isDeadline()) {
                 
-                if (NewTimedTask->getStart()<_allActiveTasks[i]->getEnd()){
-                    isFound=true;
+                if (NewTimedTask->getStart()<_allActiveTasks[i]->getEnd()){  //start of timedtask compared with end of deadline
+                    
+					isFound=true;
 					break;
+					
                 }
             }
 			i++;
@@ -118,33 +91,32 @@ void CMActive :: addTimedTask (TimedTask* NewTimedTask){
 		
 		_allActiveTasks.insert(_allActiveTasks.begin()+i, NewTimedTask);
 		_addedIndex=i;
+		
 	}
 	
-	writeFile();
+	writeActiveFile();
 }
 
-void CMActive :: addFloatingTask (FloatingTask* NewFloatingTask) {
+void CMActive:: addActiveFloatingTask (FloatingTask* NewFloatingTask) {
 	
-	updateHistory();
+	updateActiveHistory();
 	_allActiveTasks.push_back(NewFloatingTask);
-	writeFile();
+	writeActiveFile();
 	int index = _allActiveTasks.size()-1;
 	_addedIndex= index;
 	
 }
 
-int CMActive:: getAddedIndex () {
-	return _addedIndex;
-}
+//---------------------------------------------------------------//
 
+std:: string CMActive:: deleteActiveTask (int realIndex) {
 
-std:: string CMActive :: deleteActiveTask (int realIndex) {
-
-	//lack of update history for multiple delete
+	//lack of updateActivehistory() in the case of multiple delete
 	std::string deletedTask= _allActiveTasks[realIndex]->getInfo();
 		eraseTask(realIndex);
-		writeFile();
+		writeActiveFile();
 		return deletedTask;
+	
 }
 
 void CMActive:: eraseTask(int realIndex){
@@ -152,13 +124,39 @@ void CMActive:: eraseTask(int realIndex){
 	_allActiveTasks [realIndex] =  NULL;
 	delete _allActiveTasks[realIndex]; //deleting the pointer
 	_allActiveTasks.erase(_allActiveTasks.begin()+realIndex); //erasing the vector item containing the pointer
+	
 }
 
-Task* CMActive :: getTask(int realIndex){ //linked to logic's edit function
+
+Task* CMActive:: getTask(int realIndex){ //linked to logic's edit function
 	
-	updateHistory();
+	updateActiveHistory();
 	Task* taskPointer= _allActiveTasks[realIndex];
 	return taskPointer;
+	
+}
+
+void CMActive:: clearActiveTasks(){
+	
+	updateActiveHistory();
+	_allActiveTasks.clear();
+	writeActiveFile();
+	
+}
+
+std::string CMActive:: checkActive(int realIndex){
+	
+	//lack of updateActivehistory() in the case of multiple check
+	std::string checkedTask= _allActiveTasks[realIndex]->getInfo();
+	eraseTask(realIndex);
+	writeActiveFile();
+	return checkedTask;
+	
+}
+
+void CMActive:: sortAllActiveTasks () {
+	
+	_allActiveTasks=_storageSort.sortTasks(_allActiveTasks, getActiveIndexFirstFloat());
 	
 }
 
@@ -167,22 +165,22 @@ void CMActive:: undoActiveTaskAction(){
 	std::vector<Task*> _newAllTasks;
 	_newAllTasks = _history.swapCopy(_allActiveTasks);
 	_allActiveTasks = _newAllTasks;
-	writeFile();
-}
-
-std::string CMActive:: check(int realIndex){
-	
-	//lack of update history for multiple check
-	std::string checkedTask= _allActiveTasks[realIndex]->getInfo();
-	eraseTask(realIndex);
-	writeFile();
-	return checkedTask;
+	writeActiveFile();
 	
 }
 
-int CMActive:: getDefaultIndexFirstFloat () { //the whole _allActiveTasks vector
+//---------------------------------------------------------------//
+
+int CMActive:: getAddedActiveTaskIndex () {
+	
+	return _addedIndex;
+
+}
+
+int CMActive:: getActiveIndexFirstFloat () {
 	
 	for (unsigned int i=0;i<_allActiveTasks.size();i++){
+		
 		if (_allActiveTasks[i]->isFloat()) {
 			return i;
 		}
@@ -193,29 +191,56 @@ int CMActive:: getDefaultIndexFirstFloat () { //the whole _allActiveTasks vector
 	
 }
 
-void CMActive:: clearTasks(){
+int CMActive:: getEditedIndex(std::string desc,boost::posix_time::ptime start,boost::posix_time::ptime end){
 	
-	updateHistory();
-	_allActiveTasks.clear();
-	writeFile();
-		
-}
-
-int CMActive :: getEditedIndex(std::string desc,boost::posix_time::ptime start,boost::posix_time::ptime end){
 	for (unsigned int i=0; i< _allActiveTasks.size() ; i++){
+		
 		if (_allActiveTasks[i]->isEditedTask(desc,start,end)){
 			return i;
 		}
 	}
+	
 	return 0;
 }
 
-void CMActive::updateHistory(){
-	_history.updateCopy(_allActiveTasks);
-}
-
-std::vector<Task*> CMActive::getActiveTasks(){
+std::vector<Task*> CMActive:: getActiveTasks(){
 	
 	return _allActiveTasks;
-
+	
 }
+
+//---------------------------------------------------------------//
+
+void CMActive:: updateActiveHistory(){
+	
+	_history.updateCopy(_allActiveTasks);
+	
+}
+
+//---------------------------------------------------------------//
+
+void CMActive:: writeActiveFile() {
+	
+	_textFile.writeFile(_allActiveTasks, FILENAME);
+	
+}
+
+std::vector<std::string> CMActive:: readActiveFile() {
+	
+	return _textFile.readFile(FILENAME);
+	
+}
+
+void CMActive:: changeStorageLocation(std::string NewLocation) {
+	
+	_textFile.changeStorageLocation(NewLocation);
+	writeActiveFile();
+	
+}
+
+std::string CMActive:: getStorageLocation(){
+	
+	return _textFile.getStorageLocation();
+	
+}
+

@@ -1,29 +1,21 @@
+//@author A0111448M
 #include "Task.h"
 #include <iostream>
 #include <algorithm>
 
-Task::Task(std::string Description)
+Task::Task(std::string description)
 {
-	_Description= Description;
-	_Checked= false;
-
+	_description= description;
 } 
 
 Task::~Task(void)
 {}
 
 void Task:: editDescription(std::string NewDescription){
-	_Description = NewDescription;
+	_description = NewDescription;
 }
 
 std::string Task:: getDescription() const{
-	return _Description;
+	return _description;
 }
 
-bool Task :: isChecked(){
-	return _Checked;
-}
-
-void Task :: checkTask(){
-	_Checked=true;
-}
