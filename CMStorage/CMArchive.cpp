@@ -1,84 +1,41 @@
-//
-//  CMArchive.cpp
-//  testmypart
-//
-//  Created by Elaine Cai on 9/4/15.
-//
-//
+//@author A0115990B
 
 #include "CMArchive.h"
 
-void CMArchive :: addArchivedDeadline (Deadline* NewDeadline) {
+const std::string CMArchive:: ARCHIVE_FILENAME = "ArchivedCheckmate.txt";
+
+
+void CMArchive:: addArchivedDeadline (Deadline* NewDeadline) {
 	
 	updateArchiveHistory();
 	_completedTasks.push_back(NewDeadline);
 	writeArchivedFile();
+	
 }
 
-void CMArchive :: addArchivedTimedTask (TimedTask* NewTimedTask) {
+void CMArchive:: addArchivedTimedTask (TimedTask* NewTimedTask) {
 	
 	updateArchiveHistory();
 	_completedTasks.push_back(NewTimedTask);
 	writeArchivedFile();
+	
 }
 
-void CMArchive :: addArchivedFloatingTask (FloatingTask* NewFloatingTask) {
+void CMArchive:: addArchivedFloatingTask (FloatingTask* NewFloatingTask) {
 	
 	updateArchiveHistory();
 	_completedTasks.push_back(NewFloatingTask);
 	writeArchivedFile();
-}
-
-std::vector<Task*> CMArchive :: getArchivedDisplay (void) {
-	
-	std::vector<Task*> _displayCompletedTasks;
-	
-	for (unsigned int i = 0; i < _completedTasks.size(); i++){
-		_displayCompletedTasks.push_back(_completedTasks[i]);
-	}
-	
-	return _displayCompletedTasks;
 	
 }
 
-void CMArchive:: writeArchivedFile() {
+std::string CMArchive:: deleteCompletedTask (int realIndex){
 	
-	std::ofstream file;
-	file.open("ArchivedCheckmate.txt");
-	int size=_completedTasks.size();
-	for(int i = 0; i < size; i++){
-        file<<_completedTasks[i]->getInfo()<<std::endl;
-	}
-	file.close();
-}
-
-std::vector<std::string> CMArchive:: readArchivedFile() {
-	
-	std::vector<std::string> textFileStrings;
-	
-	std::ifstream read ("ArchivedCheckmate.txt");
-	for (std::string line; getline(read,line);){
-		textFileStrings.push_back(line);
-	}
-	
-	return textFileStrings;
-}
-
-void CMArchive:: checkInArchive(Task* task){
-	
-	//lack of update history for multiple check
-	_completedTasks.push_back(task);
-	writeArchivedFile();
-}
-
-std::string CMArchive:: uncheckInArchive (int realIndex){ //if the task has been checked as completed, now uncheck it and it becomes active again
-	
-	//lack of update history for multiple uncheck
-	std::string uncheckedTask= _completedTasks[realIndex]->getInfo();
+	//lack of updateArchivehistory() in the case of multiple delete
+	std::string deletedTask= _completedTasks[realIndex]->getInfo();
 	eraseTask(realIndex);
-	//	_subAIndexes.clear();
 	writeArchivedFile();
-	return uncheckedTask;
+	return deletedTask;
 	
 }
 
@@ -90,21 +47,12 @@ void CMArchive:: eraseTask(int realIndex){
 	
 }
 
-std::string CMArchive:: deleteCompletedTask (int realIndex){
+void CMArchive:: clearCompletedTasks(){
 	
-	std::string deletedTask= _completedTasks[realIndex]->getInfo();
-	eraseTask(realIndex);
+	updateArchiveHistory();
+	_completedTasks.clear();
 	writeArchivedFile();
-	return deletedTask;
-}
-
-
-void CMArchive:: updateArchiveHistory(){
-	_completedTasksHistory.updateCopy(_completedTasks);
-}
-
-std::vector<Task*> CMArchive:: getCompletedTasks(){
-	return _completedTasks;
+	
 }
 
 void CMArchive:: undoArchivedTaskAction() {
@@ -113,12 +61,67 @@ void CMArchive:: undoArchivedTaskAction() {
 	_newCompletedTasks = _completedTasksHistory.swapCopy(_completedTasks);
 	_completedTasks = _newCompletedTasks;
 	writeArchivedFile();
-}
-
-
-void CMArchive:: clearCompletedTasks(){
 	
-	updateArchiveHistory();
-	_completedTasks.clear();
-	writeArchivedFile();
 }
+
+std::vector<Task*> CMArchive:: getArchivedDisplay (void) {
+	
+	std::vector<Task*> _displayCompletedTasks;
+	
+	for (unsigned int i = 0; i < _completedTasks.size(); i++){
+		
+		_displayCompletedTasks.push_back(_completedTasks[i]);
+	
+	}
+	
+	return _displayCompletedTasks;
+	
+}
+
+std::vector<Task*> CMArchive:: getCompletedTasks(){
+	
+	return _completedTasks;
+
+}
+
+
+void CMArchive:: writeArchivedFile() {
+	
+	_archiveTextFile.writeFile(_completedTasks, ARCHIVE_FILENAME);
+	
+}
+
+std::vector<std::string> CMArchive:: readArchivedFile() {
+	
+	return _archiveTextFile.readFile(ARCHIVE_FILENAME);
+	
+}
+
+void CMArchive:: checkInArchive(Task* task){
+	
+	//lack of updateArchivehistory() in the case of multiple check
+	_completedTasks.push_back(task);
+	writeArchivedFile();
+	
+}
+
+std::string CMArchive:: uncheckInArchive (int realIndex){ 
+	
+	//lack of updateArchivehistory() in the case of multiple uncheck
+	std::string uncheckedTask= _completedTasks[realIndex]->getInfo();
+	eraseTask(realIndex);
+	writeArchivedFile();
+	return uncheckedTask;
+	
+}
+
+void CMArchive:: updateArchiveHistory(){
+	
+	_completedTasksHistory.updateCopy(_completedTasks);
+	
+}
+
+
+
+
+

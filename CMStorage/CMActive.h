@@ -1,13 +1,7 @@
-//
-//  CMActive.h
-//  testmypart
-//
-//  Created by Elaine Cai on 12/4/15.
-//
-//
+//@author A0115990B
 
-#ifndef CMActive_H
-#define CMActive_H
+#ifndef CMACTIVE_H
+#define CMACTIVE_H
 
 #include <iostream>
 #include <vector>
@@ -22,57 +16,52 @@
 #include "CMArchive.h"
 #include "CMTextFile.h"
 #include "CMStorageSort.h"
-#include "CMActive.h"
+
+//CMActive is responsible for all the active tasks. basic functions such as add,delete,etc are performed here.
+//typically, have to make sure that everything is sorted according to the time and date;
+//a CMHistory object is called to store the history of previous vector for undo/redo function,
+//a CMTextFile object is called to write the information into a textfile
+//a CMStorageSort object is called to sort the tasks chronologically
 
 class CMActive {
 
 private:
 
-	//vectors of Task*:
-	std::vector<Task*> _allActiveTasks; //all tasks as Task pointers
-	//std::vector<Task*> _searchedTasks; //all searched tasks as Task pointers
-	
-	//std::vector<int> _subIndexes;
+	std::vector<Task*> _allActiveTasks;
 	int _addedIndex;
-	
-	std::string _displayMarker;
-	std::string _checkUncheckMarker;
 	
 	CMHistory _history;
 	CMTextFile _textFile;
 	CMStorageSort _storageSort;
 	
-	static const std::string DISPLAYS_HOME_PAGE;
-	static const std::string DISPLAYS_SEARCHED_PAGE;
-	static const std::string DISPLAYS_ARCHIVED_PAGE;
-	static const std::string CHECKED_OR_UNCHECKED;
-	
+	static const std::string FILENAME;
 	
 public:
+	
 	void addActiveDeadline (Deadline*);
 	void addActiveTimedTask (TimedTask*);
 	void addActiveFloatingTask (FloatingTask*);
-	int getAddedActiveIndex ();
+	
 	std:: string  deleteActiveTask (int );
-	Task* getTask(int);
-	std::string check(int);
-	int getIndexFirstFloat ();
-	int getDefaultIndexFirstFloat ();
-	void clearTasks();
-	void eraseTask(int);
-	void sortAllTasks(); //Sort
-	void sortSearchedTasks();
-	int getEditedIndex(std::string,boost::posix_time::ptime,boost::posix_time::ptime);
-	void updateHistory();
+	void eraseTask(int); //not returning anything
+	Task* getTask(int); //linked to main storage to logic's edit function
+	void clearActiveTasks();
+	std::string checkActive(int);
+	void sortAllActiveTasks(); 
 	void undoActiveTaskAction();
-	void writeFile();
-	std::vector<std::string> readFile();
+	
+	int getAddedActiveTaskIndex ();
+	int getActiveIndexFirstFloat ();
+	int getEditedIndex(std::string,boost::posix_time::ptime,boost::posix_time::ptime);
 	std::vector<Task*> getActiveTasks();
-	std::vector<int> getSubIndexes ();
+	
+	void updateActiveHistory();
+		
+	void writeActiveFile();
+	std::vector<std::string> readActiveFile();
 	void changeStorageLocation(std::string);
 	std::string getStorageLocation();
 
 };
-
 
 #endif

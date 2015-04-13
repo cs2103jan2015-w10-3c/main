@@ -1,15 +1,16 @@
+//@author A0115990B
+
 #include "CMHistory.h"
 
+CMHistory:: CMHistory(void){}
 
-CMHistory :: CMHistory(void) {
-}
+CMHistory:: ~CMHistory(void){}
 
-
-void CMHistory :: updateCopy( std::vector<Task*> _allTasks) {
+void CMHistory:: updateCopy( std::vector<Task*> _allTasks) {
+	
 	_allTasksCopy=_allTasks;
+
 }
-
-
 
 std::vector<Task*> CMHistory:: swapCopy(std::vector<Task*> _allTasks){
 

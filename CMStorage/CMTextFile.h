@@ -1,13 +1,7 @@
-//
-//  CMTextFile.h
-//  testmypart
-//
-//  Created by Elaine Cai on 9/4/15.
-//
-//
+//@author A0115990B
 
-#ifndef CMTextFile_H
-#define CMTextFile_H
+#ifndef CMTEXTFILE_H
+#define CMTEXTFILE_H
 
 #include <iostream>
 #include <vector>
@@ -19,16 +13,22 @@
 #include "TimedTask.h"
 #include "Deadline.h"
 
-//purely for active tasks
-
 class CMTextFile {
 
 private:
-	std::vector<std::string> _textFileStrings;
 	
+	std::vector<std::string> _textFileStrings;
+	static const std::string PARTITION_LINE;
+	static const std::string DESCRIPTION;
+	static const std::string START_DATE_AND_TIME;
+	static const std::string END_DATE_AND_TIME;
+	static const std::string STORAGE_FILE;
+
 public:
-	void writeFile(std::vector<Task*>);
-	std::vector<std::string> readFile();
+	
+	void writeFile(std::vector<Task*>, std::string);
+	std::vector<std::string> readFile(std::string);
+	std::string headings();
 	void changeStorageLocation(std::string);
 	std::string getStorageLocation();
 
