@@ -1,4 +1,4 @@
-// @author A0111405B
+//@author A0111405B
 #include "CMTimeParser.h"
 
 const std::string CMTimeParser::TIME_ATTRIBUTE[3] = {":", "am", "pm"};

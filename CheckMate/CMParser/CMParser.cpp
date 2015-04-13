@@ -1,4 +1,4 @@
-// @author A0111405B
+//@author A0111405B
 #include "CMParser.h"
 
 const std::string CMParser::TIMED = "timed";

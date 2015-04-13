@@ -1,9 +1,9 @@
-// @author A0111405B
+//@author A0111405B
 #include "CMDateParser.h"
 
 boost::gregorian::date today = boost::gregorian::day_clock::local_day();
 
-const std::string CMDateParser::MONTH[24] = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sept", 
+const std::string CMDateParser::MONTH[24] = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", 
 											"oct", "nov", "dec", "january", "february", "march", "april", "may",
 											"june", "july", "august", "september", "october", "november", 
 											"december"};

@@ -1,4 +1,4 @@
-// @author A0111405B
+//@author A0111405B
 #ifndef CMTIMEPARSER_H
 #define CMTIMEPARSER_H
 
