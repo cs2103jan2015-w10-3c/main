@@ -1,0 +1,1261 @@
+//@author: a0111405b
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMParser\CMDateParser.cpp
+	 */
+
+#include "CMDateParser.h"
+
+boost::gregorian::date today = boost::gregorian::day_clock::local_day();
+
+const std::string CMDateParser::MONTH[24] = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", 
+											"oct", "nov", "dec", "january", "february", "march", "april", "may",
+											"june", "july", "august", "september", "october", "november", 
+											"december"};
+const std::string CMDateParser::LONG_WEEKDAY_NAME[7] = {"sunday", "monday", "tuesday", "wednesday", "thursday", 
+														"friday", "saturday"};
+const std::string CMDateParser::ABBREVIATED_WEEKDAY_NAME[7] = {"sun", "mon", "tue", "wed", "thur", "fri", "sat"};
+const std::string CMDateParser::VALID_DATE[8] = {"tmrw", "today", "tdy", "tomorrow", "tmr", " ", "/", "."};
+
+const int CMDateParser::NOT_FOUND = -1;
+
+bool CMDateParser::isMonth(std::string str) {
+	// Convert given string to lower case
+	boost::algorithm::to_lower(str);
+
+	// Checking if given string is a month
+	for (int i = 0; i < 24; ++i) {
+		if (str.find(MONTH[i]) != str.npos) {
+			return true;
+		}
+	}
+	return false;
+}
+
+int CMDateParser::getIndexFromWeekdayName (std::string str) {
+	boost::algorithm::to_lower(str);
+	
+	// Checking if given string is a long weekday name
+	for (int i = 0; i < 7; ++i){
+		if (str.find(LONG_WEEKDAY_NAME[i]) != str.npos) {
+			return i;
+		}
+	}
+
+	// Checking if given string is a abreviated weekday name
+	for (int j = 0; j < 7; ++j){
+		if (str.find(ABBREVIATED_WEEKDAY_NAME[j]) != str.npos) {
+			return j;
+		}
+	}
+	return NOT_FOUND;
+}
+
+bool CMDateParser::isWeekdayName (std::string str){
+	if (getIndexFromWeekdayName(str) >= 0){
+		return true;
+	} else {
+		return false;
+	}
+}
+
+boost::gregorian::date CMDateParser::getDateFromWeekdayName(std::string str) {
+	boost::gregorian::date bufferDate = today;
+	int index = getIndexFromWeekdayName(str);
+	
+	assert ((index >= 0) && (index < 7)); 
+
+	while (bufferDate.day_of_week() != index) {
+		bufferDate = bufferDate + boost::gregorian::date_duration(1);
+	}
+
+	if (str.find("next") != str.npos) {
+		bufferDate = bufferDate + boost::gregorian::date_duration(7);
+	}
+	return bufferDate;
+}
+
+
+boost::gregorian::date CMDateParser::getDate(std::string str) {
+	boost::gregorian::date bufferDate;
+	bool validDate = false;
+	bool validMonth = false; 
+	bool validYear = false;
+	std::string dateStr;
+	std::string monthStr;
+	std::string yearStr;
+
+	if (str == "today" || str == "tdy") {
+		return today;
+	} else if (str == "tomorrow" || str == "tmr" || str == "tmrw") {
+		return (today + boost::gregorian::date_duration(1));
+	}
+
+	int pos = str.find_first_of(" ./");
+	if (pos == str.npos){
+		return boost::gregorian::date();
+	}
+
+	dateStr = str.substr(0, pos);
+	
+	if (dateStr.length() > 2) {
+		dateStr.erase(dateStr.length() - 2);
+	}
+
+	str.erase(0, pos + 1);
+
+	pos = str.find_first_of(" ./");
+	monthStr = str.substr(0, pos);
+	str.erase(0, pos + 1);
+
+	if (pos == str.npos) {
+		std::ostringstream os;
+		os << today.year();
+		yearStr = os.str();
+	} else {
+		yearStr = str;
+		int yr = atoi(yearStr.c_str());
+		if (yr < 2000) {
+			yr = yr + 2000;
+		}
+		yearStr = std::to_string(yr);
+	}
+
+	std::stringstream UKFormat;
+	UKFormat << dateStr << " " << monthStr << " " << yearStr;
+
+	if ((atoi(dateStr.c_str()) >= 1)&&(atoi(dateStr.c_str()) <= 31)){
+		validDate = true; 
+	}
+	
+	for (int i = 0; i < 12; ++i) {
+		if ((atoi(monthStr.c_str()) == i + 1) || (monthStr.find(MONTH[i]) != monthStr.npos)) {
+			validMonth = true;
+		}
+	}
+
+	if (atoi(yearStr.c_str()) >= 2015){
+			validYear = true; 
+		}
+	
+	if ((validDate) && (validMonth) && (validYear)) {
+		bufferDate = boost::gregorian::from_uk_string(UKFormat.str());
+	} else {
+		bufferDate = boost::gregorian::date();
+	}
+
+	return bufferDate;
+}
+
+boost::gregorian::date CMDateParser::parseDate(std::string str) {
+	boost::gregorian::date bufferDate;
+
+	if (isWeekdayName(str)){
+		bufferDate = getDateFromWeekdayName(str);
+	} else {
+		bufferDate = getDate(str);
+	}
+	std::cout << "PARSER:: parsing date \"" << str << "\"" << " to \"" << bufferDate << "\"" <<std::endl;
+	
+	return bufferDate;
+}
+
+bool CMDateParser::isTdyOrTmr (std::string str) {
+	assert( str != "");
+
+	for (int i = 0; i < 5; ++i) {
+		if (str == VALID_DATE[i]) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CMDateParser::hasDate(std::string str) {
+	if (isWeekdayName(str)) {
+		return true;
+	}
+
+	for (int i = 0; i < 8; ++i) {
+		if (str.find(VALID_DATE[i]) != str.npos) {
+			return true;
+		}
+	}
+
+	return false;
+}
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMParser\CMDateParser.cpp
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMParser\CMDateParser.h
+	 */
+
+#ifndef CMDATEPARSER_H
+#define CMDATEPARSER_H
+
+#include <iostream> 
+#include <string> 
+#include <sstream>
+#include <boost/date_time.hpp>
+
+// This class parses a given input and returns them as a 
+// boost::gregorian::date format. It recognises several formats.
+// It also has functions that can determine if a given string is
+// a month or a weekday name.
+class CMDateParser {
+private:
+	static const std::string MONTH[24];
+	static const std::string LONG_WEEKDAY_NAME[7];
+	static const std::string ABBREVIATED_WEEKDAY_NAME[7];
+	static const std::string VALID_DATE[8];
+	static const int NOT_FOUND;
+
+	// This function returns the index of the weekday name (0 = sunday, 6 = saturday), 
+	// and -1 otherwise
+	int getIndexFromWeekdayName (std::string);
+	// This function returns a date corresponding to the weekday name. If the given string
+	// is tuesday, it will return the date of the coming tuesday. If the given string is 
+	// next tuesday, it will return the date of the next tuesday. This function will only
+	// work if the string input is a weekday name.
+	boost::gregorian::date getDateFromWeekdayName(std::string);
+	// This function will firstly check if the given input is today or tomorrow and return 
+	// the respective dates. If not, it will return the date if it is a valid date and return
+	// the default constructor ("not-a-date-time") otherwise.
+	boost::gregorian::date getDate(std::string);
+
+public:
+	// This function will parse a given string and return the respective date if it is a valid date
+	// and return the default constructor ("not-a-date-time") otherwise
+	boost::gregorian::date parseDate(std::string);
+
+	// This function checks if a given string is a valid weekday name by going through an array
+	// It is able to determine long weekday names and abbreviated weekday names. 
+	bool isWeekdayName (std::string);
+	// This function checks if a given string is a valid month by going through an array
+	// It is able to determine long month names and abbreviated month names. 
+	bool isMonth(std::string);
+	// Determines if a given string is today or tomorrow. Even able to recognise common short
+	// forms like "tmrw", "tdy", "tmr".
+	bool isTdyOrTmr (std::string str);
+	// Determines if a given string has any of the date attributes "tmrw", "today", "tdy",
+	// "tomorrow", "tmr", " ", "/", "."
+	bool hasDate(std::string);
+};
+
+#endif
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMParser\CMDateParser.h
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMParser\CMParser.cpp
+	 */
+
+#include "CMParser.h"
+
+const std::string CMParser::TIMED = "timed";
+const std::string CMParser::DEADLINE = "deadline";
+const std::string CMParser::FLOAT = "float";
+const std::string CMParser::CONNECTING_WORDS[6] = {"from", "to", "on", "by", "due", "at"};
+
+void CMParser::parseData(std::string str) {
+	std::vector<std::string> tokens;
+	std::stringstream ss(str);
+	std::string buffer;
+	std::string timeAndDate1; 
+	std::string timeAndDate2;
+	std::vector<std::string> description;
+
+	bool isDescription = true;
+	bool isStart = true;
+	bool openInvertedCommas = false;
+
+	_start = boost::posix_time::ptime();
+	_end = boost::posix_time::ptime();
+
+	try{
+		if (str.length() == 0 ) {
+			_description = "";
+			_type = "";
+
+			throw std::string("ERROR: NOTHING TO PARSE");
+		} else {
+			std::cout << "PARSER: parsing from input \"" << str << "\"" << std::endl; 
+
+			while (ss >> buffer){
+				tokens.push_back(buffer);
+			}
+
+			for (unsigned int i = 0; i < tokens.size(); ++i) {
+				std::ostringstream bufferTimeAndDate;
+				buffer = tokens[i];
+
+				if (buffer.find('"') != buffer.npos) {
+					description.push_back(buffer);
+
+					if (openInvertedCommas) {
+						openInvertedCommas = false;	
+					} else {
+						openInvertedCommas = true;
+					}
+					if (buffer.find('"') != buffer.rfind('"')) {
+						openInvertedCommas = false;
+					}
+					continue;
+				}
+
+				if (dateParser.isTdyOrTmr(tokens[i])) {
+					bufferTimeAndDate << tokens[i];
+					if ((i+1 < tokens.size()) && (timeParser.hasTime(tokens[i+1]))) {
+						bufferTimeAndDate << " " << tokens[i+1];
+						++i;
+					}
+				} else if (dateParser.isWeekdayName(tokens[i])) {
+					if (tokens[i-1] == "next") {
+						description.pop_back();
+						bufferTimeAndDate << tokens[i-1] << " ";
+					} 
+					bufferTimeAndDate << tokens[i];
+					if ((i+1 < tokens.size()) && (timeParser.hasTime(tokens[i+1]))) {
+						bufferTimeAndDate << " " << tokens[i+1];
+						++i;
+					}
+				} else if (dateParser.parseDate(buffer) != boost::gregorian::date()) {
+					bufferTimeAndDate << tokens[i];
+					if ((i+1 < tokens.size()) && (timeParser.hasTime(tokens[i+1]))) {
+						bufferTimeAndDate << " " << tokens[i+1];
+						++i;
+					}
+				} else if (dateParser.isMonth(tokens[i])) {
+					std::string dateStr = tokens[i-1];
+					if (dateStr.length() > 2) {
+						dateStr.erase(dateStr.length() - 2);
+					}
+					int date = atoi(dateStr.c_str());
+					if ((date >= 1) && (date <= 31)) {
+						if (isStart) {
+							description.pop_back();
+						}
+						bufferTimeAndDate << dateStr << " " << tokens[i];
+						if ((i+1 < tokens.size()) && (atoi(tokens[i+1].c_str()) >= 1)){
+							bufferTimeAndDate << " " << tokens[i+1];
+						}
+						if ((i+2 < tokens.size()) && (timeParser.hasTime(tokens[i+2]))) {
+							bufferTimeAndDate << " " << tokens[i+2];
+							i = i + 2;
+						} else {
+							++i;
+						}
+					}
+				} else if (timeParser.hasTime(tokens[i])) {
+					bufferTimeAndDate << tokens[i];
+				}
+
+				if (!(bufferTimeAndDate.str().empty())){
+					if (isStart) {
+						timeAndDate1 = bufferTimeAndDate.str();
+						isStart = false;
+						isDescription = false;
+					} else {
+						timeAndDate2 = bufferTimeAndDate.str();
+						isDescription = false;
+					}
+				}
+
+				if (isDescription){
+					description.push_back(buffer);
+				} 
+
+			}
+			std::cout << "PARSER: time 1 is \"" << timeAndDate1 << "\"" << std::endl;
+			std::cout << "PARSER: time 2 is \"" << timeAndDate2 << "\"" << std::endl;
+
+			_start = getDateAndTime(timeAndDate1);
+			_end = getDateAndTime(timeAndDate2);
+
+			determineType();
+			std::cout << "PARSER:: type is \"" << _type << "\"" <<std::endl;
+
+			if (_type == DEADLINE){
+				_end = _start;
+				_start = boost::posix_time::ptime();
+			}
+
+			std::cout << "PARSER: start time is \"" << _start << "\"" << std::endl;
+			std::cout << "PARSER: end time is \"" << _end << "\"" << std::endl;
+
+			if (!description.empty()){
+				if (isConnectingWord(description.back())) {
+					description.pop_back();
+				}
+			}
+
+			std::string s;
+
+			_description = vectorToString(description);
+			std::cout << "PARSER: description is \"" << _description << "\"" << std::endl << std::endl;
+		}
+	}
+	catch(std::string e) {
+		std::cerr << e << std::endl;
+	}
+}
+
+
+void CMParser::parseDataFromFile(std::string str){
+	std::vector<std::string> tokens;
+	std::stringstream ss(str);
+	std::string buffer;
+	std::string timeAndDate1; 
+	std::string timeAndDate2;
+	std::vector<std::string> description;
+
+	bool isDescription = true;
+	bool isStart = true;
+	bool openInvertedCommas = false;
+
+	boost::gregorian::date bufferDate;
+
+	_start = boost::posix_time::ptime();
+	_end = boost::posix_time::ptime();
+
+	try{
+		if (str.length() == 0 ) {
+			_description = "";
+			_type = "";
+
+			throw std::string("ERROR: NOTHING TO PARSE");
+		} else {
+			std::cout << "PARSER: parsing from file \"" << str << "\"" << std::endl; 
+
+			while (ss >> buffer){
+				tokens.push_back(buffer);
+			}
+
+			for (unsigned int i = 0; i < tokens.size(); ++i) {
+				buffer = tokens[i];
+
+				if (buffer.find('"') != buffer.npos) {
+					description.push_back(buffer);
+
+					if (openInvertedCommas) {
+						openInvertedCommas = false;	
+					} else {
+						openInvertedCommas = true;
+					}
+					if (buffer.find('"') != buffer.rfind('"')) {
+						openInvertedCommas = false;
+					}
+					continue;
+				}
+
+				std::istringstream bufferTimeAndDate(buffer);
+
+				bufferTimeAndDate >> bufferDate;
+
+				if (buffer == "--NIL--") {
+					isDescription = false;
+				} else if (bufferDate != boost::gregorian::date()){
+					if (isStart) {
+						timeAndDate1 = tokens[i] + " " + tokens[i+1];
+						_start = boost::posix_time::time_from_string(timeAndDate1);
+						isStart = false;
+					} else {
+						timeAndDate2 = tokens[i] + " " + tokens[i+1];
+						_end = boost::posix_time::time_from_string(timeAndDate2);
+					}
+					isDescription = false;
+					++i;
+				} 
+
+				if (isDescription){
+					description.push_back(buffer);
+				} 
+			}
+
+			determineType();
+			std::cout << "PARSER:: type is \"" << _type << "\"" <<std::endl;
+
+
+			if (_type == DEADLINE){
+				_end = _start;
+				_start = boost::posix_time::ptime();
+			}
+
+			std::cout << "PARSER: start time is \"" << _start << "\"" << std::endl;
+			std::cout << "PARSER: end time is \"" << _end << "\"" << std::endl;
+
+			_description = vectorToString(description);
+			std::cout << "PARSER: description is \"" << _description << "\"" << std::endl << std::endl;
+		}
+	}
+	catch(std::string e) {
+		std::cerr << e << std::endl;
+	}
+}
+
+std::string CMParser::vectorToString (std::vector<std::string> description){
+	std::string s;
+
+	for (std::vector<std::string>::const_iterator i = description.begin(); i != description.end(); ++i) {
+		if (i == description.begin()){
+			s += *i;
+		} else {
+			s += " ";
+			s += *i;
+		}
+	}
+	return s;
+}
+
+boost::posix_time::ptime CMParser::getDateAndTime(std::string str) {
+	std::string timeStr;
+	std::string dateStr;
+	boost::posix_time::ptime dateAndTime;
+	boost::gregorian::date bufferDate;
+	int hours;
+	int minutes;
+
+	int lastSpace = str.find_last_of(" ");
+
+	boost::algorithm::to_lower(str);
+
+	if (timeParser.hasTime(str) && dateParser.hasDate(str)){
+		timeStr = str.substr(lastSpace+1);
+		dateStr = str.erase(lastSpace);
+
+		timeParser.parseTime(timeStr);
+		hours = timeParser.getHour();
+		minutes = timeParser.getMin();
+
+		bufferDate = dateParser.parseDate(dateStr);
+
+		dateAndTime = boost::posix_time::ptime(bufferDate ,boost::posix_time::hours(hours) + boost::posix_time::minutes(minutes));
+	}
+	else if (dateParser.hasDate(str)) {
+		dateStr = str;
+
+		timeParser.setHour(23);
+		timeParser.setMin(59);
+
+		hours = timeParser.getHour();
+		minutes = timeParser.getMin();
+
+		bufferDate = dateParser.parseDate(dateStr);
+
+		dateAndTime = boost::posix_time::ptime(bufferDate ,boost::posix_time::hours(hours) + boost::posix_time::minutes(minutes));
+	}
+	else if (timeParser.hasTime(str)) {
+		timeStr = str;
+		timeParser.parseTime(timeStr);
+
+		hours = timeParser.getHour();
+		minutes = timeParser.getMin();
+
+		if (_start.date() == boost::gregorian::date()) {
+			_start = boost::posix_time::second_clock::local_time();
+		}
+
+		bufferDate = _start.date();
+		dateAndTime = boost::posix_time::ptime(bufferDate ,boost::posix_time::hours(hours) + boost::posix_time::minutes(minutes));
+		if (dateAndTime < boost::posix_time::second_clock::local_time() || dateAndTime < _start){
+			dateAndTime += boost::gregorian::date_duration(1);	
+		}
+	} else { // If given string has no time or date attributes
+		dateAndTime = boost::posix_time::ptime();
+	} 
+
+	std::cout << "PARSER: \"" << str << "\" is \"" << dateAndTime << "\"" << std::endl;
+
+	return dateAndTime;
+}
+
+bool CMParser::isConnectingWord(std::string str) {
+	assert( str != "");
+
+	boost::algorithm::to_lower(str);
+
+	for (int i = 0; i < 6; ++i) {
+		if (str == CONNECTING_WORDS[i]) {
+			return true;
+		}
+	}
+	return false;
+}
+
+std::string CMParser::getDescription() {
+	return _description;
+}
+
+boost::posix_time::ptime CMParser::getStart() {
+	return _start;
+}
+
+boost::posix_time::ptime CMParser::getEnd() {
+	return _end;
+}
+
+std::string CMParser::getType() {
+	return _type;
+}
+
+void CMParser::determineType(){
+	if (_start == boost::posix_time::ptime()){
+		_type = FLOAT;
+	} else if (_end == boost::posix_time::ptime()) {
+		_type = DEADLINE;
+	} else {
+		_type = TIMED;
+	}
+}
+
+std::string CMParser::getToday() {
+	boost::gregorian::date today = boost::gregorian::day_clock::local_day();
+	std::ostringstream output;	
+
+	output<<today;
+
+	return output.str();
+}
+
+std::string CMParser::getTomorrow() {
+	boost::gregorian::date tomorrow = boost::gregorian::day_clock::local_day() + boost::gregorian::date_duration(1);
+	std::ostringstream output;
+
+	output<<tomorrow;
+
+	return output.str();
+}
+
+boost::posix_time::ptime CMParser::changeTime (boost::posix_time::ptime current, std::string newTime) {
+	boost::gregorian::date currentDate = current.date();
+	timeParser.parseTime(newTime);
+
+	int hours = timeParser.getHour();
+	int minutes = timeParser.getMin();
+
+	try {
+		if (!((hours >= 0) && (hours <= 24) && (minutes >= 0) && (minutes <= 60))) {
+			hours = 0;
+			minutes = 0;
+			throw std::string ("ERROR: TRYING TO CHANGE TO INVALID TIME");
+		}
+	}
+	catch (std::string e) {
+		std::cerr << e << std::endl;
+	}
+
+	return boost::posix_time::ptime(currentDate , boost::posix_time::hours(hours) + boost::posix_time::minutes(minutes));
+}
+
+boost::posix_time::ptime CMParser::changeDate (boost::posix_time::ptime current, std::string newDateStr) {
+	int hours = current.time_of_day().hours();
+	int minutes = current.time_of_day().minutes();
+	boost::gregorian::date newDate = dateParser.parseDate(newDateStr);
+
+	try {
+		if (newDate == boost::gregorian::date()) {
+			newDate = current.date();
+			throw std::string ("ERROR: TRYING TO CHANGE TO INVALID DATE");
+		}
+	}
+	catch (std::string e) {
+		std::cerr << e << std::endl;
+	}
+
+	return boost::posix_time::ptime(newDate, boost::posix_time::hours(hours) + boost::posix_time::minutes(minutes));
+}
+
+std::string CMParser::interpretDirectoryString (std::string directory){
+	std::string newDirectory;
+
+	if (directory == ""){
+		newDirectory = directory;
+	} else {
+		if (directory.back() == '\\') {
+			newDirectory = directory;
+		} else {
+			newDirectory = directory + "\\";
+		}
+	}
+	return newDirectory;
+}
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMParser\CMParser.cpp
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMParser\CMParser.h
+	 */
+
+#ifndef CMPARSER_H
+#define CMPARSER_H
+
+#include <iostream> 
+#include <string> 
+#include <sstream>
+#include <assert.h>
+#include "boost/date_time.hpp"
+#include "CMDateParser.h"
+#include "CMTimeParser.h"
+
+// This class is able to parse a given line of user input words or line of words from 
+// the txt file into description, type, start(ptime) and end(ptime). They can be then 
+// retrieved by calling the getter functions. There are also functions that enable 
+// changing the date or time of a ptime. There are also functions that can return 
+// "today" and "tomorrow" as a date in string format
+class CMParser {
+private:
+	static const std::string TIMED;
+	static const std::string DEADLINE;
+	static const std::string FLOAT;
+	static const std::string CONNECTING_WORDS[6];
+
+	CMDateParser dateParser;
+	CMTimeParser timeParser;
+
+	std::string _description;
+	std::string _type;
+	boost::posix_time::ptime _start;
+	boost::posix_time::ptime _end;
+
+	// This function determines if the type of task by whether _start and _end are valid
+	// date and time.
+	void determineType();
+
+	// This function parses a given string into ptime format. If the given string is not
+	// a valid date and time string, the default constructor of ptime is returned. If the 
+	// given string only contains a date, the time is set at 23:59. If the given string only
+	// contains a time, the date is set as today, however, if the time has passed, the date 
+	// will be changed to tomorrow. For example, if the current time is 4pm and the string
+	// is 2pm, the date will be tomorrow instead of today.
+	boost::posix_time::ptime getDateAndTime(std::string);
+
+	// Determines if a given string is a connecting word that is not part of the description
+	// For example, in the sentence "Meeting from today 2pm to 4pm", from is a connecting word.
+	// The common connecting words are "from", "to", "on", "by", "due", "at".
+	bool isConnectingWord(std::string str);
+
+	// Combines a given vector of strings into a string
+	std::string vectorToString (std::vector<std::string>);
+
+public:
+	// Getter functions for private attributes
+	std::string getDescription();
+	boost::posix_time::ptime getStart();
+	boost::posix_time::ptime getEnd();
+	std::string getType();
+
+	// This function parses a given string into description, start time, end time and at the same
+	// time also sets the type of task. All these attributes can be retrieved through the getter 
+	// functions.
+	void parseData(std::string);
+	// This function parses a given string into description, start time, end time and at the same
+	// time also sets the type of task. The description is delimited by either a valid date or 
+	// "--NIL--". 
+	void parseDataFromFile(std::string);
+
+	// Changes the time and date of a given ptime and returns the new ptime
+	boost::posix_time::ptime changeTime (boost::posix_time::ptime, std::string);
+	boost::posix_time::ptime changeDate (boost::posix_time::ptime, std::string);
+
+	// Returns the date of today and tmr in a string
+	std::string getToday();
+	std::string getTomorrow();
+
+	// Edits the given string is a valid directory by ensuring that the end of the string is a backslash
+	std::string interpretDirectoryString (std::string);
+};
+
+#endif
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMParser\CMParser.h
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMParser\CMTimeParser.cpp
+	 */
+
+#include "CMTimeParser.h"
+
+const std::string CMTimeParser::TIME_ATTRIBUTE[3] = {":", "am", "pm"};
+
+// Firstly, the delimiters are removed from the string. Next, am or pm is found and removed, 
+// leaving only the numbers left. If the string length is less than 3, only hours remain, else,
+// hours and minutes remain, with minutes being the last 2 digits.
+void CMTimeParser::parseTime(std::string timeStr) {
+	assert(timeStr.length() != 0); // An empty string should not be passed into this function
+
+	std::string pmOrAm;
+
+	_hours = 0;
+	_minutes = 0;
+
+	// To remove the delimiter
+	int pos = timeStr.find_first_of(":");
+	if (pos != timeStr.npos) {
+		timeStr.erase(pos, 1);
+	}
+
+	// To determine if "am" or "pm" is present
+	pos = timeStr.find_first_of("apAP");
+	if (pos != timeStr.npos) {
+		pmOrAm = (timeStr.substr(pos, 1));
+		timeStr = timeStr.substr(0, pos);
+		if (pmOrAm == "p" || pmOrAm == "P") {
+			_hours = 12;
+		}	
+	}
+
+	if (timeStr.length() < 3) {
+		_hours += atoi(timeStr.c_str());
+		if ((atoi(timeStr.c_str()) == 12) && (pmOrAm != "")) {
+			_hours -= 12;
+		}
+		_minutes += 0;
+	}
+	else {
+		_hours += atoi(timeStr.substr(0, timeStr.length() - 2).c_str());
+		if ((atoi(timeStr.substr(0, timeStr.length()-2).c_str()) == 12) && (pmOrAm != "")) {
+			_hours -= 12;
+		}
+		_minutes += atoi(timeStr.substr(timeStr.length() - 2, 2).c_str());
+	}
+
+	std::cout << "PARSER:: parsing time \"" << timeStr << "\"" << " to \"" << _hours << ":" << _minutes << "\"" <<std::endl;
+}
+
+void CMTimeParser::setHour(int hours) {
+	try{
+		if ((hours <= 24) && (hours >= 0)) {
+			_hours = hours;
+		} else {
+			throw std::string ("ERROR: TRYING TO SET INVALID HOUR");
+		}
+	}
+	catch (std::string e) {
+		std::cerr << e << std::endl;
+	}
+}
+
+void CMTimeParser::setMin(int minutes) {
+	try{
+		if ((minutes <= 60) && (minutes >= 0)) {
+			_minutes = minutes;
+		} else {
+			throw std::string ("ERROR: TRYING TO SET INVALID MINUTE");
+		}
+	}
+	catch (std::string e) {
+		std::cerr << e << std::endl;
+	}
+}
+
+int CMTimeParser::getHour() {
+	return _hours;
+}
+
+int CMTimeParser::getMin() {
+	return _minutes;
+}
+
+bool CMTimeParser::hasTime(std::string str) {
+	std::string buffer;
+	std::string timeStr;
+
+	boost::algorithm::to_lower(str);
+
+	int pos = str.find_last_of(" ");
+	if (pos != str.npos){
+		str = str.substr(pos + 1);
+	}
+
+	// Checking for am/pm format time
+	for (int i = 1; i < 3; ++i) {
+		if (str.length() > 2){
+			// Removing delimiters
+			int pos = str.find_first_of(":");			
+			if (pos != str.npos) {
+				str.erase(pos, 1);
+			}
+
+			if ( std::all_of(str.begin(), str.end(), std::isdigit) ) {
+				return true;
+			} else {
+				buffer = str.substr(str.length() - 2);
+
+				if (buffer == TIME_ATTRIBUTE[i]) {
+					timeStr = str.substr(0, str.length() - 2); 
+
+					if ( std::all_of(timeStr.begin(), timeStr.end(), std::isdigit) ) {
+						return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMParser\CMTimeParser.cpp
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMParser\CMTimeParser.h
+	 */
+
+#ifndef CMTIMEPARSER_H
+#define CMTIMEPARSER_H
+
+#include <iostream> 
+#include <string> 
+#include <sstream>
+#include <boost/date_time.hpp>
+
+// This class parses a given input and separates them into 
+// the private attributes _hours and _minutes, which can be 
+// then retrieved by the getter functions. It also has functions
+// that allow you to set the time manually.
+class CMTimeParser {
+private:
+	static const std::string TIME_ATTRIBUTE[3];
+
+	int _hours;
+	int _minutes;
+
+public:
+	// This function will parse a string with valid time into _hours and _minutes. 
+	// After which they can be retrieved using the getter functions. Several valid
+	// time formats are as follow:
+	//		11am, 11pm, 1130am, 1130pm, 11:30am, 11:30pm, 11:30
+	void parseTime(std::string);
+
+	// Determines if a given string has any of the time attributes "am", "pm" or ":".
+	bool hasTime(std::string);
+
+	// These 2 functions enable to client to set the values of _hours and _minutes
+	// manually.
+	void setHour(int);
+	void setMin(int);
+
+	// Getter functions for _hours and _minutes
+	int getHour();
+	int getMin();
+};
+
+#endif
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMParser\CMTimeParser.h
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\UnitTest1\ParserUnitTest.cpp
+	 */
+
+#include "stdafx.h"
+#include "CppUnitTest.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using namespace boost::posix_time;
+using namespace boost::gregorian;
+
+namespace CMParserTest
+{		
+	TEST_CLASS(CMParserTest) {
+public:
+	TEST_METHOD(PARSERdateFormat1) {
+		CMParser parser;
+		std::string tester = "shopping 22 mar 2015 12am";
+		parser.parseData(tester);
+		std::string end = "2015-Mar-22 00:00:00";
+
+		Assert::AreEqual(end, to_simple_string(parser.getEnd()));
+	}
+
+	TEST_METHOD(PARSERdateFormat2){
+		CMParser parser;
+		std::string tester = "shopping 22 MAR 15 12:00";
+		parser.parseData(tester);
+		std::string end = "2015-Mar-22 12:00:00";
+
+		Assert::AreEqual(end, to_simple_string(parser.getEnd()));
+	}
+
+	TEST_METHOD(PARSERdateFormat3) {
+		CMParser parser;
+		std::string tester = "shopping 22/03/2015 12:34am";
+		parser.parseData(tester);
+		std::string end = "2015-Mar-22 00:34:00";
+
+		Assert::AreEqual(end, to_simple_string(parser.getEnd()));
+	}
+
+	TEST_METHOD(PARSERdateFormat4) {
+		CMParser parser;
+		std::string tester = "shopping 22/03/15 2pm";
+		parser.parseData(tester);
+		std::string end = "2015-Mar-22 14:00:00";
+
+		Assert::AreEqual(end, to_simple_string(parser.getEnd()));
+	}
+
+	TEST_METHOD(PARSERdateFormat5) {
+		CMParser parser;
+		std::string tester = "shopping 22/mar/15 2pm";
+		parser.parseData(tester);
+		std::string end = "2015-Mar-22 14:00:00";
+
+		Assert::AreEqual(end, to_simple_string(parser.getEnd()));
+	}
+
+	TEST_METHOD(PARSERdateFormat6) {
+		CMParser parser;
+		std::string tester = "shopping 22nd mar 2pm";
+		parser.parseData(tester);
+		std::string end = "2015-Mar-22 14:00:00";
+
+		Assert::AreEqual(end, to_simple_string(parser.getEnd()));
+	}
+
+	TEST_METHOD(PARSERdateFormat7) {
+		CMParser parser;
+		std::string tester = "shopping 22nd/mar 2pm";
+		parser.parseData(tester);
+		std::string end = "2015-Mar-22 14:00:00";
+
+		Assert::AreEqual(end, to_simple_string(parser.getEnd()));
+	}
+
+	TEST_METHOD(PARSERdateFormattodayTomorrow) {
+		CMParser parser;
+		std::string tester = "Shopping from today to tomorrow";
+		parser.parseData(tester);
+		ptime start (day_clock::local_day(), time_duration(23, 59, 0));
+		ptime end (day_clock::local_day()+date_duration(1), time_duration(23, 59, 0));
+
+		Assert::AreEqual(to_simple_string(start), to_simple_string(parser.getStart()));
+		Assert::AreEqual(to_simple_string(end), to_simple_string(parser.getEnd()));
+	}
+
+	TEST_METHOD(PARSERdateFormatWeekdayNames) {
+		CMParser parser;
+		std::string tester = "Shopping from tuesday to wednesday";
+		parser.parseData(tester);
+		std::string start = "2015-Apr-14 23:59:00";
+		std::string end = "2015-Apr-15 23:59:00";
+
+		Assert::AreEqual(start, to_simple_string(parser.getStart()));
+		Assert::AreEqual(end, to_simple_string(parser.getEnd()));
+	}
+
+	TEST_METHOD(PARSERdescriptionWithInvertedCommas) {
+		CMParser parser;
+		std::string tester = "meeting at \"thank god its friday\" 22 mar 15 12am 13 may 12pm";
+		parser.parseData(tester);
+		std::string desc = "meeting at \"thank god its friday\"";
+		std::string start = "2015-Mar-22 00:00:00";
+		std::string end = "2015-May-13 12:00:00";
+		std::string type = "timed";
+
+		Assert::AreEqual(start, to_simple_string(parser.getStart()));
+		Assert::AreEqual(end, to_simple_string(parser.getEnd()));
+		Assert::AreEqual(desc, parser.getDescription());
+		Assert::AreEqual(type, parser.getType());
+	}
+
+	TEST_METHOD(PARSERtimedTask) {
+		CMParser parser;
+		std::string tester = "SHOPPING 22 mar 15 12am 13 may 12pm";
+		parser.parseData(tester);
+		std::string desc = "SHOPPING";
+		std::string start = "2015-Mar-22 00:00:00";
+		std::string end = "2015-May-13 12:00:00";
+		std::string type = "timed";
+
+		Assert::AreEqual(start, to_simple_string(parser.getStart()));
+		Assert::AreEqual(end, to_simple_string(parser.getEnd()));
+		Assert::AreEqual(desc, parser.getDescription());
+		Assert::AreEqual(type, parser.getType());
+	}
+
+	TEST_METHOD(PARSERdeadlineTask) {
+		CMParser parser;
+		std::string tester = "submit report by 9 april 10pm";
+		parser.parseData(tester);
+		std::string desc = "submit report";
+		std::string end = "2015-Apr-09 22:00:00";
+		std::string start = "not-a-date-time";
+		std::string type = "deadline";
+
+		Assert::AreEqual(type, parser.getType());
+		Assert::AreEqual(start, to_simple_string(parser.getStart()));
+		Assert::AreEqual(end, to_simple_string(parser.getEnd()));
+		Assert::AreEqual(desc, parser.getDescription());
+	}
+
+	TEST_METHOD(PARSERfloatTask) {
+		CMParser parser;
+		std::string tester = "Shopping by the bay from peter to john";
+		parser.parseData(tester);
+		std::string desc = "Shopping by the bay from peter to john";
+		std::string start = "not-a-date-time";
+		std::string end = "not-a-date-time";
+		std::string type = "float";
+
+		Assert::AreEqual(type, parser.getType());
+		Assert::AreEqual(desc, parser.getDescription());
+		Assert::AreEqual(start, to_simple_string(parser.getStart()));
+		Assert::AreEqual(end, to_simple_string(parser.getEnd()));
+	}
+
+	TEST_METHOD(PARSERparseTimedFromFile) {
+		CMParser parser;
+		std::string tester = "Shopping by the bay                                2015-Apr-01 10:00:00                    2015-Apr-01 11:00:00                    ";
+		parser.parseDataFromFile(tester);
+		std::string desc = "Shopping by the bay";
+		std::string start = "2015-Apr-01 10:00:00";
+		std::string end = "2015-Apr-01 11:00:00";
+		std::string type = "timed";
+
+		Assert::AreEqual(type, parser.getType());
+		Assert::AreEqual(desc, parser.getDescription());
+		Assert::AreEqual(start, to_simple_string(parser.getStart()));
+		Assert::AreEqual(end, to_simple_string(parser.getEnd()));
+	}
+
+	TEST_METHOD(PARSERparseDeadlineFromFile) {
+		CMParser parser;
+		std::string tester = "submit CS2103 report                    2015-Apr-01 23:59:00 --NIL--                   ";
+		parser.parseDataFromFile(tester);
+		std::string desc = "submit CS2103 report";
+		std::string end = "2015-Apr-01 23:59:00";
+		std::string start = "not-a-date-time";
+		std::string type = "deadline";
+
+		Assert::AreEqual(type, parser.getType());
+		Assert::AreEqual(desc, parser.getDescription());
+		Assert::AreEqual(start, to_simple_string(parser.getStart()));
+		Assert::AreEqual(end, to_simple_string(parser.getEnd()));
+	}
+
+	TEST_METHOD(PARSERparseFloatFromFile) {
+		CMParser parser;
+		std::string tester = "do laundry                              --NIL--                   --NIL--                   ";
+		parser.parseDataFromFile(tester);
+		std::string desc = "do laundry";
+		std::string start = "not-a-date-time";
+		std::string end = "not-a-date-time";
+		std::string type = "float";
+
+		Assert::AreEqual(type, parser.getType());
+		Assert::AreEqual(desc, parser.getDescription());
+		Assert::AreEqual(start, to_simple_string(parser.getStart()));
+		Assert::AreEqual(end, to_simple_string(parser.getEnd()));
+	}
+
+	//equivalence partition 
+	TEST_METHOD(PARSERgetDescription) {
+		CMParser parser;
+		std::string tester = "Shopping 22 mar 13:00 to 23/3/15 400pm";
+		parser.parseData(tester);
+		std::string expected = "Shopping";
+
+		Assert::AreEqual(expected, parser.getDescription());
+	}
+
+	//This is the boundary case for the getPtime with both date and time partition
+	TEST_METHOD(PARSERgetPtime) {
+		CMParser parser;
+		std::string tester = "Shopping from 22 mar 15 2pm 23/3/15 400pm";
+		parser.parseData(tester);
+		ptime time (date(2015, Mar, 22), time_duration(14, 0, 0));
+		std::string type = "timed";
+
+		Assert::AreEqual(type, parser.getType());
+		Assert::AreEqual(to_simple_string(time), to_simple_string(parser.getStart()));
+	}
+
+	//This is the boundary case for the getPtime with date partition
+	TEST_METHOD(PARSERgetPtimeWithoutTime) {
+		CMParser parser;
+		std::string tester = "Shopping from 22 mar 15 to 23/3/15";
+		parser.parseData(tester);
+		ptime time (date(2015, Mar, 22), time_duration(23, 59, 0));
+
+		Assert::AreEqual(to_simple_string(time), to_simple_string(parser.getStart()));
+	}
+
+	TEST_METHOD(PARSERgetPtimeWithoutDate) {
+		CMParser parser;
+		std::string tester = "Shopping from 23:59 to 23/3/15 14:00";
+		parser.parseData(tester);
+		ptime time (day_clock::local_day(), time_duration(23, 59, 0));
+
+		Assert::AreEqual(to_simple_string(time), to_simple_string(parser.getStart()));
+	}
+
+	TEST_METHOD(PARSERgetToday) {
+		CMParser parser;
+
+		Assert::AreEqual(to_simple_string(day_clock::local_day()), parser.getToday());
+	}
+
+	TEST_METHOD(PARSERgetTomorrow) {
+		CMParser parser;
+		date expected = day_clock::local_day()+date_duration(1);
+
+		Assert::AreEqual(to_simple_string(expected), parser.getTomorrow());
+	}
+
+	TEST_METHOD(PARSERinterpretDirectoryString) {
+		CMParser parser;
+		std::string expected = "C:\\users\\desktop\\";
+		std::string directory = "C:\\users\\desktop";
+
+		Assert::AreEqual(expected, parser.interpretDirectoryString(directory));
+	}
+
+
+	TEST_METHOD(PARSERchangeTime) {
+		CMParser parser;
+		ptime current(date(2015, Mar, 23), time_duration(13, 0, 0)); 
+		std::string newTime = "10pm";
+		ptime newptime = parser.changeTime(current, newTime);
+		std::string expected = "2015-Mar-23 22:00:00";
+
+		Assert::AreEqual(expected, to_simple_string(newptime));
+	}
+
+	TEST_METHOD(PARSERchangeDate) {
+		CMParser parser;
+		ptime current(date(2015, Apr, 4), time_duration(13, 0, 0)); 
+		std::string newDate = "5 april";
+		ptime newptime = parser.changeDate(current, newDate);
+		std::string expected = "2015-Apr-05 13:00:00";
+
+		Assert::AreEqual(expected, to_simple_string(newptime));
+	}
+	};
+}
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\UnitTest1\ParserUnitTest.cpp
+
+
+
+
+

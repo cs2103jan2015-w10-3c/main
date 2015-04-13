@@ -1,0 +1,1186 @@
+//@author: a0118918w
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMGUI\CMGUI.cpp
+	 */
+
+#include "CMGUI.h"
+
+using namespace System;
+using namespace System::Windows::Forms;
+
+[STAThread]
+int main(array<String^>^ args) {
+	Application::EnableVisualStyles();
+	Application::SetCompatibleTextRenderingDefault(false);
+	
+	CMGUI::CMGUI mainWindow;
+	Application::Run(%mainWindow);
+	
+	return 0;
+	
+}
+
+
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMGUI\CMGUI.cpp
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMGUI\CMGUI.h
+	 */
+
+#pragma once
+
+
+#include <msclr\marshal_cppstd.h>
+#include "CMLogic.h"
+#include "Output.h"
+#include "Task.h"
+#include <vector>
+#include <sstream>
+//#using <mscorlib.dll>
+#include "GUIConstants.h"
+
+
+
+namespace CMGUI {
+
+	using namespace System;
+	using namespace System::ComponentModel;
+	using namespace System::Collections;
+	using namespace System::Windows::Forms;
+	using namespace System::Data;
+	using namespace System::Drawing;
+
+	/// <summary>
+	/// Summary for CMGUI
+	/// </summary>
+	public ref class CMGUI : public System::Windows::Forms::Form
+	{
+	private:
+		CMLogic* testSample;
+	private: System::Windows::Forms::Label^  label10;
+	private: System::Windows::Forms::Label^  label11;
+	private: System::Windows::Forms::Label^  label12;
+	private: System::Windows::Forms::Label^  label13;
+			 GUIConstants* constants;
+	public:
+		CMGUI(void)
+		{
+			InitializeComponent();
+			testSample = new CMLogic();
+			testSample->startUp();
+			displayOutput(0,0);
+			inputBox->Clear();
+
+			//
+			//TODO: Add the constructor code here
+			//
+		}
+
+	protected:
+		/// <summary>
+		/// Clean up any resources being used.
+		/// </summary>
+		~CMGUI()
+		{
+			if (components)
+			{
+				delete components;
+			}
+		}
+
+	private: static int _countDown = 0;
+	private: static int _countUp = 0;
+			 static int _countRight =0;
+			 static int _countLeft = 0;
+	private: static int _numOfPages = 0;
+			 static int _numOfFloatPages = 0;
+	private: static int _counter=0;
+	private: System::Windows::Forms::Label^  label1;
+	private: System::Windows::Forms::TextBox^  inputBox;
+	private: System::Windows::Forms::Label^  label2;
+	private: System::Windows::Forms::Label^  label3;
+	private: System::Windows::Forms::Label^  label6;
+	private: System::Windows::Forms::Label^  label5;
+	private: System::Windows::Forms::Label^  label4;
+	private:  System::Windows::Forms::TextBox^  textBox2;
+	private:  System::Windows::Forms::TextBox^  textBox26;
+	private:  System::Windows::Forms::TextBox^  textBox25;
+	private:  System::Windows::Forms::TextBox^  textBox27;
+	private:  System::Windows::Forms::TextBox^  textBox28;
+	private:  System::Windows::Forms::TextBox^  textBox29;
+	private:  System::Windows::Forms::TextBox^  textBox30;
+	private:  System::Windows::Forms::TextBox^  textBox1;
+	private:  System::Windows::Forms::TextBox^  textBox3;
+	private:  System::Windows::Forms::TextBox^  textBox4;
+	private:  System::Windows::Forms::TextBox^  textBox5;
+	private:  System::Windows::Forms::TextBox^  textBox6;
+	private:  System::Windows::Forms::TextBox^  textBox7;
+	private:  System::Windows::Forms::TextBox^  textBox8;
+	private:  System::Windows::Forms::TextBox^  textBox9;
+	private: System::Windows::Forms::TextBox^  textBox10;
+	private: System::Windows::Forms::TextBox^  textBox11;
+	private:  System::Windows::Forms::TextBox^  textBox12;
+	private:  System::Windows::Forms::TextBox^  textBox13;
+	private:  System::Windows::Forms::TextBox^  textBox14;
+	private:  System::Windows::Forms::TextBox^  textBox15;
+	private: System::Windows::Forms::TextBox^  textBox16;
+	private: System::Windows::Forms::TextBox^  textBox17;
+	private:   System::Windows::Forms::TextBox^  textBox18;
+	private: System::Windows::Forms::TextBox^  textBox19;
+	private: System::Windows::Forms::TextBox^  textBox20;
+	private: System::Windows::Forms::TextBox^  textBox21;
+	private:  System::Windows::Forms::TextBox^  textBox22;
+	private: System::Windows::Forms::TextBox^  textBox23;
+	private:  System::Windows::Forms::TextBox^  textBox24;
+	private: System::Windows::Forms::TableLayoutPanel^  tableLayoutPanel1;
+	private:  System::Windows::Forms::TextBox^  textBox31;
+	private:  System::Windows::Forms::TextBox^  textBox32;
+	private:  System::Windows::Forms::TextBox^  textBox33;
+	private:  System::Windows::Forms::TextBox^  textBox34;
+	private:  System::Windows::Forms::TextBox^  textBox35;
+	private:  System::Windows::Forms::TextBox^  textBox36;
+	private:  System::Windows::Forms::TextBox^  textBox37;
+	private:  System::Windows::Forms::TextBox^  textBox38;
+	private:  System::Windows::Forms::TextBox^  textBox39;
+	private:  System::Windows::Forms::TextBox^  textBox40;
+	private:  System::Windows::Forms::TextBox^  textBox41;
+	private:  System::Windows::Forms::TextBox^  textBox42;
+	private:  System::Windows::Forms::TextBox^  textBox43;
+	private:  System::Windows::Forms::TextBox^  textBox44;
+	private: System::Windows::Forms::TextBox^  textBox45;
+	private: System::Windows::Forms::TextBox^  textBox46;
+	private:  System::Windows::Forms::TextBox^  textBox47;
+	private:  System::Windows::Forms::TextBox^  textBox48;
+	private:  System::Windows::Forms::TextBox^  textBox49;
+	private:  System::Windows::Forms::TextBox^  textBox50;
+	private:  System::Windows::Forms::TextBox^  textBox51;
+	private:  System::Windows::Forms::TextBox^  textBox52;
+	private:  System::Windows::Forms::TextBox^  textBox53;
+	private:  System::Windows::Forms::TextBox^  textBox54;
+	private:  System::Windows::Forms::TextBox^  textBox55;
+	private: System::Windows::Forms::TextBox^  textBox56;
+	private: System::Windows::Forms::TextBox^  textBox57;
+	private: System::Windows::Forms::TextBox^  textBox58;
+	private: System::Windows::Forms::TextBox^  textBox59;
+	private: System::Windows::Forms::TextBox^  textBox60;
+	private: System::Windows::Forms::TextBox^  textBox61;
+	private:  System::Windows::Forms::TextBox^  textBox62;
+	private:  System::Windows::Forms::TextBox^  textBox63;
+	private:  System::Windows::Forms::TextBox^  textBox64;
+	private: System::Windows::Forms::TextBox^  textBox65;
+	private:  System::Windows::Forms::TextBox^  textBox66;
+	private: System::Windows::Forms::TextBox^  textBox67;
+	private: System::Windows::Forms::TextBox^  textBox68;
+	private:  System::Windows::Forms::TextBox^  textBox69;
+	private:  System::Windows::Forms::TextBox^  textBox70;
+	private:  System::Windows::Forms::TextBox^  textBox71;
+	private:  System::Windows::Forms::TextBox^  textBox72;
+	private:  System::Windows::Forms::TextBox^  textBox73;
+	private:  System::Windows::Forms::TextBox^  textBox74;
+	private:  System::Windows::Forms::TextBox^  textBox75;
+	private:  System::Windows::Forms::TextBox^  textBox76;
+	private:  System::Windows::Forms::TextBox^  textBox77;
+	private: System::Windows::Forms::TextBox^  textBox78;
+	private:  System::Windows::Forms::TextBox^  textBox79;
+	private:  System::Windows::Forms::TextBox^  textBox80;
+	private:  System::Windows::Forms::TextBox^  textBox81;
+	private:  System::Windows::Forms::TextBox^  textBox82;
+	private:  System::Windows::Forms::TextBox^  textBox83;
+	private: System::Windows::Forms::TextBox^  textBox84;
+	private:  System::Windows::Forms::TextBox^  textBox85;
+	private:  System::Windows::Forms::TextBox^  textBox86;
+	private:  System::Windows::Forms::TextBox^  textBox87;
+	private:  System::Windows::Forms::TextBox^  textBox88;
+	private:  System::Windows::Forms::TextBox^  textBox89;
+	private:  System::Windows::Forms::TextBox^  textBox90;
+	private:  System::Windows::Forms::TextBox^  textBox91;
+	private:  System::Windows::Forms::TextBox^  textBox92;
+	private:  System::Windows::Forms::TextBox^  textBox93;
+	private:  System::Windows::Forms::TextBox^  textBox94;
+	private:  System::Windows::Forms::TextBox^  textBox95;
+	private:  System::Windows::Forms::TextBox^  textBox96;
+	private:  System::Windows::Forms::TextBox^  textBox97;
+	private:  System::Windows::Forms::TextBox^  textBox98;
+	private:  System::Windows::Forms::TextBox^  textBox99;
+	private:  System::Windows::Forms::TextBox^  textBox100;
+	private: System::Windows::Forms::TextBox^  textBox101;
+	private:  System::Windows::Forms::TextBox^  textBox102;
+	private:  System::Windows::Forms::TextBox^  textBox103;
+	private:  System::Windows::Forms::TextBox^  textBox104;
+	private:  System::Windows::Forms::TextBox^  textBox105;
+	private:  System::Windows::Forms::TextBox^  textBox106;
+	private:  System::Windows::Forms::TextBox^  textBox107;
+	private:  System::Windows::Forms::TextBox^  textBox108;
+	private:  System::Windows::Forms::TextBox^  textBox109;
+	private:  System::Windows::Forms::TextBox^  textBox110;
+	private: System::Windows::Forms::TextBox^  textBox111;
+	private:  System::Windows::Forms::TextBox^  textBox112;
+	private:  System::Windows::Forms::TextBox^  textBox113;
+	private:  System::Windows::Forms::TextBox^  textBox114;
+	private:  System::Windows::Forms::TextBox^  textBox115;
+	private: System::Windows::Forms::TextBox^  textBox116;
+	private: System::Windows::Forms::TextBox^  textBox117;
+	private: System::Windows::Forms::TextBox^  textBox118;
+	private: System::Windows::Forms::TextBox^  textBox119;
+	private: System::Windows::Forms::TextBox^  textBox120;
+	private: System::Windows::Forms::Label^  label7;
+
+	private: System::Windows::Forms::TextBox^  promptBox;
+	private: System::Windows::Forms::TableLayoutPanel^  tableLayoutPanel2;
+	private: System::Windows::Forms::Label^  label8;
+	private: System::Windows::Forms::TextBox^  textBox121;
+	private: System::Windows::Forms::TextBox^  textBox122;
+	private: System::Windows::Forms::TextBox^  textBox123;
+	private: System::Windows::Forms::Label^  label9;
+	private: System::Windows::Forms::TextBox^  textBox124;
+	private: System::Windows::Forms::TextBox^  textBox125;
+	private: System::Windows::Forms::TextBox^  textBox126;
+	private: System::Windows::Forms::TextBox^  textBox127;
+	private: System::Windows::Forms::TextBox^  textBox128;
+	private: System::Windows::Forms::TextBox^  textBox129;
+	private: System::Windows::Forms::TextBox^  textBox130;
+	private: System::Windows::Forms::TextBox^  textBox131;
+	private: System::Windows::Forms::TextBox^  textBox132;
+	private: System::Windows::Forms::TextBox^  textBox133;
+	private: System::Windows::Forms::TextBox^  textBox134;
+	private: System::Windows::Forms::TextBox^  textBox135;
+	private: System::Windows::Forms::TextBox^  textBox136;
+	private: System::Windows::Forms::TextBox^  textBox137;
+	private: System::Windows::Forms::TextBox^  textBox138;
+	private: System::Windows::Forms::TextBox^  textBox139;
+	private: System::Windows::Forms::TextBox^  textBox140;
+	private: System::Windows::Forms::TextBox^  textBox141;
+	private: System::Windows::Forms::TextBox^  textBox142;
+	private: System::Windows::Forms::RichTextBox^  helpBox;
+	private: System::Windows::Forms::MonthCalendar^  monthCalendar1;
+	private: System::Windows::Forms::TextBox^  textBox143;
+	private: System::Windows::Forms::TextBox^  textBox144;
+
+
+
+	protected: 
+
+	private:
+		/// <summary>
+		/// Required designer variable.
+		/// </summary>
+		System::ComponentModel::Container ^components;
+
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMGUI\CMGUI.h
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMGUI\CMGUI.h
+	 */
+
+	//Accept User Input when the user types enter key
+	private: System::Void inputBox_KeyPress(System::Object^  sender, System::Windows::Forms::KeyPressEventArgs^  e) {
+				 if(e->KeyChar == (char)13) {
+					 promptBox->Visible = false;
+					 std::string input = acceptInput();
+					 std::string inputCopy = input;
+					// boost::algorithm::to_lower(inputCopy);
+					 if(input == "exit")	{
+						 Application::Exit();
+					 } else if(inputCopy == "help")	{
+						 activateHelp();
+					 }	else {
+						 initializeCounts();
+				 helpBox->Visible = false;
+				 tableLayoutPanel1->Visible = true;				
+				 testSample->executeCommand(input);
+				 displayOutput(0,0);
+				 inputBox->Clear();
+				 _counter = 0;
+					 }
+					 e->Handled = true;
+				 }
+			 }
+
+
+			 void initializeCounts()	{
+				 _countDown =0;
+				 _countUp = 0;
+				 _countLeft =0;
+				 _countRight =0;
+			 }
+
+
+
+			 void activateHelp()	{
+				 helpBox->Visible =true;
+				 Controls->Add(helpBox);
+				 helpBoxText();
+				 helpBox->BringToFront();
+				 tableLayoutPanel1->Visible = true;
+				 inputBox->Clear();
+			 }
+
+
+			 std::string acceptInput()	{
+				 System::String ^ Input = inputBox->Text;
+				 std::string actualInput = msclr::interop::marshal_as<std::string>(Input);
+				 return actualInput;
+			 }
+
+
+			 void setNumOfPages(int floatTaskIndex)	{
+				 _numOfPages = (floatTaskIndex/20);
+				 int remainder = floatTaskIndex%20;
+				 if(remainder > 0)	{
+					 _numOfPages++;
+				 }
+			 }
+
+			 void setNumOfFloatPages(int sizeOfList, int floatTaskIndex)	{
+				 _numOfFloatPages = (sizeOfList-floatTaskIndex)/12;
+				 int floatremainder = (sizeOfList-floatTaskIndex)%12;
+				 if(floatremainder > 0)	{
+					 _numOfFloatPages++;
+				 }
+			 }
+
+
+
+	public : void displayOutput(int start, int startFloat)	{
+				 Output* obj = testSample->getDisplay();
+				 std::vector<Task*> TaskList = obj->getDisplay();
+				 int sizeOfList = TaskList.size();
+				 int floatTaskIndex = obj->getFirstFloat();
+				 setNumOfPages(floatTaskIndex);
+				 setNumOfFloatPages(sizeOfList, floatTaskIndex);
+				 feedback(obj);
+				 array<TextBox ^, 1> ^ mainTask = initializeMainArray();
+				 array<TextBox ^, 1> ^ floatTask = initializeFloatArray();
+				 clearMainArray(mainTask);
+				 clearFloatArray(floatTask);
+				 int end = endValue(floatTaskIndex, start);
+				 int tempCounter=0;
+				 for(int i=start;i<end;i++)	{
+					 boost::posix_time::ptime buffer = (*TaskList[i]).getStart();
+					 std::ostringstream oss1 = getDate(buffer);
+					 std::ostringstream oss2 = getTime(buffer);
+					 buffer = (*TaskList[i]).getEnd();
+					 std::ostringstream oss3 = getDate(buffer);
+					 std::ostringstream oss4 = getTime(buffer);
+					 std::string Description = TaskList[i]->getDescription();
+					 setFont(i, tempCounter, mainTask, obj); 
+					 mainTask[6*tempCounter]->Text = gcnew System::String((std::to_string(i+1)).c_str());
+					 mainTask[(6*tempCounter)+1]->Text = gcnew System::String(Description.c_str());
+					 mainTask[(6*tempCounter)+2]->Text = gcnew System::String((oss1.str()).c_str());
+					 mainTask[(6*tempCounter)+3]->Text = gcnew System::String((oss2.str()).c_str());
+					 mainTask[(6*tempCounter)+4]->Text = gcnew System::String((oss3.str()).c_str());
+					 mainTask[(6*tempCounter)+5]->Text = gcnew System::String((oss4.str()).c_str());
+					 tempCounter++;
+				 }
+				 displayFloatTask(startFloat, floatTaskIndex, floatTask, TaskList, obj );
+			 }
+
+			 void feedback(Output* obj)	{
+				 std::string feedback = obj->getFeedback();
+				 int feedbackIndex = obj->getLastAction();
+				 promptBox->Text = gcnew System::String(feedback.c_str());
+				 feedbackTest(feedback);
+			 }
+
+			 void setFont(int i,  int j, array<TextBox ^, 1> ^ &mainTask, Output* obj)	{
+				 int feedbackIndex = obj->getLastAction();
+				 if(i==feedbackIndex) {
+					 setFontGreen(mainTask, j);	
+				 }	else {
+					 if(obj->getListType() == true)	{
+						 setFontGrey(mainTask, j);
+					 } else {
+						 setFontBlack(mainTask, j);
+					 }
+				 }	  
+			 }
+
+
+			 std::ostringstream getDate(boost::posix_time::ptime buffer)	{
+				 std::ostringstream oss1;
+				 boost::posix_time::time_facet* date_output_facet = new boost::posix_time::time_facet ("%d %b %Y");
+				 oss1.imbue(std::locale(oss1.getloc(), date_output_facet));
+				 if (buffer!=boost::posix_time::ptime()){
+					 oss1 << buffer;
+				 }
+				 else {
+					 oss1 << constants->HYPHEN;
+				 }
+				 return oss1;
+			 }
+
+			 std::ostringstream getTime(boost::posix_time::ptime buffer)	{
+				 std::ostringstream oss2;
+				 boost::posix_time::time_facet* time_output_facet = new boost::posix_time::time_facet ("%I:%M %p");
+				 oss2.imbue(std::locale(oss2.getloc(), time_output_facet));
+				 if (buffer!=boost::posix_time::ptime()){
+					 oss2 << buffer;
+				 }
+				 else {
+					 oss2 << constants->HYPHEN;
+				 }
+				 return oss2;
+			 }
+
+			 void displayFloatTask(int startFloat, int floatTaskIndex, array<TextBox ^, 1> ^ &floatTask, std::vector<Task*> &TaskList, Output* obj)	{
+				int feedbackIndex = obj->getLastAction();
+				 int tempCounter = 0;
+				 int sizeOfList = TaskList.size();
+				 startFloat = floatTaskIndex + startFloat;
+				 int endFloat = endFloatValue(sizeOfList, startFloat);
+
+				 for(int i=startFloat;i<endFloat; i++)	
+				 {
+					 setfeedbackFont(i, feedbackIndex, tempCounter, floatTask);
+					 std::string Description = TaskList[i]->getDescription();
+					 floatTask[tempCounter]->Text = gcnew System::String((std::to_string(i+1)).c_str());
+					 floatTask[tempCounter+1]->Text = gcnew System::String(Description.c_str());
+					 tempCounter = tempCounter + 2;
+				 }
+			 }
+
+
+			 void setfeedbackFont(int i, int feedbackIndex, int tempCounter, array<TextBox ^, 1> ^ &floatTask)	{
+				 if(i==feedbackIndex) {
+					 setFeedbackFontGreen(floatTask, tempCounter);
+				 }else	{
+					 setFeedbackFontBlack(floatTask, tempCounter);
+				 }
+			 }
+
+			 void setFeedbackFontGreen(array<TextBox ^, 1> ^ &floatTask, int index)	{
+				 floatTask[index]->ForeColor = System::Drawing::Color::Green;
+				 floatTask[index+1]->ForeColor = System::Drawing::Color::Green;
+			 }
+
+			 void setFeedbackFontBlack(array<TextBox ^, 1> ^ &floatTask, int index)	{
+				 floatTask[index]->ForeColor = System::Drawing::Color::Black;
+				 floatTask[index+1]->ForeColor = System::Drawing::Color::Black;
+			 }
+
+			 int endValue(int floatTaskIndex, int start)	{
+				 int end;
+				 if((floatTaskIndex-start)<20)	{
+					 end = floatTaskIndex;
+				 }
+				 else {
+					 end = start + 20;
+				 }
+				 return end;
+			 }
+
+
+			 int endFloatValue(int sizeOfList, int startFloat)	{
+				 int endFloat;
+				 if((sizeOfList-startFloat)<12)	{
+					 endFloat = sizeOfList;
+				 }
+				 else
+					 endFloat = startFloat + 12;
+				 return endFloat;
+			 }
+
+
+			 void feedbackTest(std::string feedback)	{
+				 if(feedback != constants->COMPLETED_TASK_MSG)	{
+					 label2->Text = gcnew System::String(constants->DESCRIPTION1.c_str());
+					 promptBox->Visible = true;
+					 promptBox->Font = (gcnew System::Drawing::Font(gcnew System::String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+					 promptBox->Location = System::Drawing::Point(146, 58);
+					 promptBox->Multiline = true;
+					 promptBox->Size = System::Drawing::Size(690, 20);
+				 }	else	{
+					 label2->Text = gcnew System::String(constants->DESCRIPTION2.c_str());
+				 }
+			 }
+
+
+			 array<TextBox ^, 1> ^ initializeMainArray()	{
+				 array<TextBox ^, 1> ^ mainTask = {textBox1, textBox2, textBox3, textBox4, textBox5, textBox6, textBox7, textBox8, textBox9, textBox10, 
+					 textBox11, textBox12, textBox13, textBox14, textBox15, textBox16, textBox17, textBox18, textBox19, textBox20,
+					 textBox21, textBox22, textBox23, textBox24, textBox25, textBox26, textBox27, textBox28, textBox29, textBox30,
+					 textBox31, textBox32, textBox33, textBox34, textBox35, textBox36, textBox37, textBox38, textBox39, textBox40,
+					 textBox41, textBox42, textBox43, textBox44, textBox45, textBox46, textBox47, textBox48, textBox49, textBox50,
+					 textBox51, textBox52, textBox53, textBox54, textBox55, textBox56, textBox57, textBox58, textBox59, textBox60,
+					 textBox61, textBox62, textBox63, textBox64, textBox65, textBox66, textBox67, textBox68, textBox69, textBox70,
+					 textBox71, textBox72, textBox73, textBox74, textBox75, textBox76, textBox77, textBox78, textBox79, textBox80, 
+					 textBox81, textBox82, textBox83, textBox84, textBox85, textBox86, textBox87, textBox88, textBox89, textBox90,
+					 textBox91, textBox92, textBox93, textBox94, textBox95, textBox96, textBox97, textBox98, textBox99, textBox100,
+					 textBox101, textBox102, textBox103, textBox104, textBox105, textBox106, textBox107, textBox108, textBox109, textBox110, 
+					 textBox111, textBox112, textBox113, textBox114, textBox115, textBox116, textBox117, textBox118, textBox119, textBox120 };
+				 return mainTask;
+			 }
+
+			 array<TextBox ^,1>^ initializeFloatArray()	{
+				 array<TextBox ^,1>^ floatTask = { textBox121, textBox122, textBox123, textBox124, textBox125, textBox126, textBox127, textBox128, textBox129,textBox130,
+					 textBox131, textBox132, textBox133, textBox134, textBox135, textBox136, textBox137, textBox138, textBox139, textBox140, 
+					 textBox141, textBox142, textBox143, textBox144};
+				 return floatTask;
+			 }
+
+			 void clearMainArray(array<TextBox ^, 1> ^ &mainTask)	{
+				 for(int i=0;i<120;i++)	{
+					 mainTask[i]->Clear();
+				 }
+			 }
+
+			 void clearFloatArray(array<TextBox ^, 1> ^ &floatTask)	{
+				 for(int i=0;i<24;i++)	{
+					 floatTask[i]->Clear();
+				 }
+			 }
+
+
+			 void setFontGreen(array<TextBox ^, 1> ^ &tempArray, int index)	{
+				 tempArray[6*index]->ForeColor = System::Drawing::Color::Green;
+				 tempArray[(6*index)+1]->ForeColor = System::Drawing::Color::Green;
+				 tempArray[(6*index)+2]->ForeColor = System::Drawing::Color::Green;
+				 tempArray[(6*index)+3]->ForeColor = System::Drawing::Color::Green;
+				 tempArray[(6*index)+4]->ForeColor = System::Drawing::Color::Green;
+				 tempArray[(6*index)+5]->ForeColor = System::Drawing::Color::Green;
+			 }
+
+			 void setFontGrey(array<TextBox ^, 1> ^ &tempArray, int index)	{
+				 tempArray[6*index]->ForeColor = System::Drawing::Color::Gray;
+				 tempArray[(6*index)+1]->ForeColor = System::Drawing::Color::Gray;
+				 tempArray[(6*index)+2]->ForeColor = System::Drawing::Color::Gray;
+				 tempArray[(6*index)+3]->ForeColor = System::Drawing::Color::Gray;
+				 tempArray[(6*index)+4]->ForeColor = System::Drawing::Color::Gray;
+				 tempArray[(6*index)+5]->ForeColor = System::Drawing::Color::Gray;
+			 }
+
+			 void setFontBlack(array<TextBox ^, 1> ^ &tempArray, int index)	{
+				 tempArray[6*index]->ForeColor = System::Drawing::Color::Black;
+				 tempArray[(6*index)+1]->ForeColor = System::Drawing::Color::Black;
+				 tempArray[(6*index)+2]->ForeColor = System::Drawing::Color::Black;
+				 tempArray[(6*index)+3]->ForeColor = System::Drawing::Color::Black;
+				 tempArray[(6*index)+4]->ForeColor = System::Drawing::Color::Black;
+				 tempArray[(6*index)+5]->ForeColor = System::Drawing::Color::Black;
+			 }
+
+
+			 //Directs toggling between pages
+			 System::Void inputBox_KeyDown(System::Object^  sender, System::Windows::Forms::KeyEventArgs^  e) {
+				 if(e->KeyData == Keys::Down)	 {
+					 downArrowKey();
+				 }
+				 if(e->KeyData == Keys::Up)		 {
+					 upArrowKey();
+				 }
+				 if(e->KeyData == Keys::Right)	 {
+					 rightArrowKey();
+				 }
+				 if(e->KeyData == Keys::Left)	 {
+					 leftArrowKey();
+				 }
+			 }
+
+			 void downArrowKey()	{
+				 _countDown++;
+				 if(_countDown<_numOfPages) {
+					 displayOutput(_countDown*20,0);
+					 _countUp++;
+				 } else {
+					 displayOutput((_numOfPages-1)*20,0);
+					 _countDown = _numOfPages-1;
+					 _countUp = _numOfPages-1;
+				 }
+			 }
+
+			 void upArrowKey()	{
+				 _countUp--;
+				 if(_countUp>=0)	{
+					 displayOutput(_countUp*20,0);
+					 _countDown--;
+				 } else  {
+					 displayOutput(0,0);
+					 _countUp=-2;
+					 _countDown=0;
+				 }
+			 }
+
+			 void rightArrowKey()	{
+				 _countRight++;
+				 if(_countRight<_numOfFloatPages) {
+					 displayOutput(0,_countRight*12);
+					 _countLeft++;
+				 } else {
+					 displayOutput(0,(_numOfFloatPages-1)*12);
+					 _countRight = _numOfFloatPages-1;
+					 _countLeft = _numOfFloatPages-1;
+				 }
+			 }
+
+			 void leftArrowKey()	{
+				 _countLeft--;
+				 if(_countLeft>=0)	{
+					 displayOutput(0,_countLeft*12);
+					 _countRight--;
+				 }  else {
+					 displayOutput(0,0);
+					 _countLeft=-2;
+					 _countRight=0;
+				 }
+			 }
+	//Directs output to prompt and help box
+	private: System::Void inputBox_KeyUp(System::Object^  sender, System::Windows::Forms::KeyEventArgs^  e) {
+				 if((e->KeyData == Keys::Space) && (_counter==0))	{
+					 if(inputBox->Text->Length != 0)	{
+						 System::String ^ Input = inputBox->Text;	
+						 std::string actualInput = msclr::interop::marshal_as<std::string>(Input);
+						 boost::algorithm::to_lower(actualInput);
+						 if(actualInput == constants->INPUT_ADD)	{
+							 promptAdd();
+						 }	else if (actualInput == constants->INPUT_EDIT)	{
+							 promptEdit();
+						 }	else if (actualInput == constants->INPUT_DELETE)	{
+							 promptDelete();
+						 }	else if (actualInput == constants->INPUT_SEARCH)	{
+							 promptSearch();
+						 }	else if (actualInput == constants->INPUT_CHECK)	{
+							 promptCheck();
+						 }	else if(actualInput == constants->INPUT_UNCHECK)	{
+							 promptUncheck();
+						 }	else if(actualInput == constants->INPUT_CLEAR)	{
+							 promptClear();
+						 }	else if(actualInput == constants->INPUT_COMPLETED)	{
+							 promptCompleted();
+						 }	else if(actualInput == constants->INPUT_UNDO)	{
+							 promptUndo();
+						 }	else if(actualInput == constants->INPUT_REDO) {
+							 promptRedo();
+						 }	else if(actualInput == constants->INPUT_HOME)	{
+							 promptHome();
+						 }	else if(actualInput == constants->INPUT_TODAY) {
+							 promptToday();
+						 }	else if(actualInput == constants->INPUT_TOMORROW)	{
+							 promptTomorrow();
+						 }	else {
+							 removePrompt();
+						 }
+					 }
+					 Controls->Add(promptBox);
+					 _counter++; 
+				 }
+
+				 if(e->KeyData == Keys::Back)	{
+					 promptBox->Clear();
+					 promptBox->Visible = false;
+					 _counter = 0;		
+				 }
+
+			 }
+
+			 void promptAdd()	{
+				 promptBox->Text = gcnew String(constants->PROMPT_ADD.c_str());
+				 promptBox->Visible = true;
+			 }
+
+			 void promptEdit()	{
+				 promptBox->Text = gcnew String(constants->PROMPT_EDIT.c_str());
+				 promptBox->Visible = true;
+			 }
+
+			 void promptDelete()	{
+				 promptBox->Text = gcnew String(constants->PROMPT_DELETE.c_str());
+				 promptBox->Visible = true;
+			 }
+
+			 void promptSearch()	{
+				 promptBox->Text = gcnew String(constants->PROMPT_SEARCH.c_str());
+				 promptBox->Visible = true;
+			 }
+
+			 void promptCheck()	{
+				 promptBox->Text = gcnew String(constants->PROMPT_CHECK.c_str());
+				 promptBox->Visible = true;
+			 }
+
+			 void promptUncheck()	{
+				 promptBox->Text = gcnew String(constants->PROMPT_UNCHECK.c_str());
+				 promptBox->Visible = true;
+			 }
+
+			 void promptClear()	{
+				 promptBox->Text = gcnew String(constants->PROMPT_CLEAR.c_str());
+				 promptBox->Visible = true;
+			 }
+
+			 void promptCompleted()	{
+				 promptBox->Text = gcnew String(constants->PROMPT_COMPLETED.c_str());
+				 promptBox->Visible = true;
+			 }
+
+			 void promptUndo()	{
+				 promptBox->Text = gcnew String(constants->PROMPT_UNDO.c_str());
+				 promptBox->Visible = true;
+			 }
+
+			 void promptRedo()	{
+				 promptBox->Text = gcnew String(constants->PROMPT_REDO.c_str());
+				 promptBox->Visible = true;
+			 }
+
+			 void promptHome()	{
+				 promptBox->Text = gcnew String(constants->PROMPT_HOME.c_str());
+				 promptBox->Visible = true;
+			 }
+
+			 void promptToday()	{
+				 promptBox->Text = gcnew String(constants->PROMPT_TODAY.c_str());
+				 promptBox->Visible = true;
+			 }
+
+			 void promptTomorrow()	{
+				 promptBox->Text = gcnew String(constants->PROMPT_TOMORROW.c_str());
+				 promptBox->Visible = true;
+			 }
+
+			 void removePrompt()	{
+				 promptBox->Clear();	
+				 promptBox->Visible = false;
+			 }
+
+			 void helpBoxText()	{
+				 helpBox->Clear();
+				 helpBoxAdd();
+				 helpBoxEdit();
+				 helpBoxDelete(); 
+				 helpBoxSearch();
+				 helpBoxStorage();
+				 helpBoxCheckUncheck();
+				 helpBoxCompleted();
+				 helpBoxUndoRedo();
+				 helpBoxTdyTmr();		  
+			 }
+
+			 void helpBoxAdd()	{
+				 helpBox->SelectionFont = (gcnew System::Drawing::Font(gcnew String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+				 helpBox->SelectedText= gcnew String(constants->HELP_MAIN.c_str());
+				 helpBox->Font = (gcnew System::Drawing::Font(gcnew String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+				 helpBox->AppendText(gcnew String(constants->HELP_ADD1.c_str()));
+				 helpBox->AppendText(gcnew String(constants->HELP_ADD2.c_str()));
+				 helpBox->AppendText(gcnew String(constants->HELP_ADD3.c_str()));
+			 }
+
+			 void helpBoxEdit()	{
+				 helpBox->SelectionFont = (gcnew System::Drawing::Font(gcnew String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+				 helpBox->AppendText(gcnew String(constants->HELP_EDIT1.c_str()));
+				 helpBox->Font = (gcnew System::Drawing::Font(gcnew String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+				 helpBox->AppendText(gcnew String(constants->HELP_EDIT2.c_str()));
+			 }
+
+			 void helpBoxDelete()	{
+				 helpBox->SelectionFont = (gcnew System::Drawing::Font(gcnew String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+				 helpBox->AppendText(gcnew String(constants->HELP_DELETE1.c_str()));
+				 helpBox->Font = (gcnew System::Drawing::Font(gcnew String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+				 helpBox->AppendText(gcnew String(constants->HELP_DELETE2.c_str()));
+			 }
+
+			 void helpBoxSearch()	{
+				 helpBox->SelectionFont = (gcnew System::Drawing::Font(gcnew String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+				 helpBox->AppendText(gcnew String(constants->HELP_SEARCH1.c_str()));
+				 helpBox->Font = (gcnew System::Drawing::Font(gcnew String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+				 helpBox->AppendText(gcnew String(constants->HELP_SEARCH2.c_str()));
+			 }
+
+			 void helpBoxStorage()	{
+				 helpBox->SelectionFont = (gcnew System::Drawing::Font(gcnew String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+				 helpBox->AppendText(gcnew String(constants->HELP_STORAGE1.c_str()));
+				 helpBox->Font = (gcnew System::Drawing::Font(gcnew String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+				 helpBox->AppendText(gcnew String(constants->HELP_STORAGE2.c_str()));
+				 helpBox->AppendText(gcnew String(constants->HELP_STORAGE3.c_str()));
+			 }
+
+			 void helpBoxCheckUncheck()	{
+				 helpBox->SelectionFont = (gcnew System::Drawing::Font(gcnew String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+				 helpBox->AppendText(gcnew String(constants->HELP_CHECK1.c_str()));
+				 helpBox->Font = (gcnew System::Drawing::Font(gcnew String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+				 helpBox->AppendText(gcnew String(constants->HELP_CHECK2.c_str()));
+			 }
+
+			 void helpBoxCompleted()	{
+				 helpBox->SelectionFont = (gcnew System::Drawing::Font(gcnew String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+				 helpBox->AppendText(gcnew String(constants->HELP_COMPLETED1.c_str()));
+				 helpBox->Font = (gcnew System::Drawing::Font(gcnew String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+				 helpBox->AppendText(gcnew String(constants->HELP_COMPLETED2.c_str()));
+			 }
+
+			 void helpBoxUndoRedo()	{
+				 helpBox->SelectionFont = (gcnew System::Drawing::Font(gcnew String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+				 helpBox->AppendText(gcnew String(constants->HELP_UNRE1.c_str()));
+				 helpBox->Font = (gcnew System::Drawing::Font(gcnew String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+				 helpBox->AppendText(gcnew String(constants->HELP_UNRE2.c_str()));
+			 }
+
+			 void helpBoxTdyTmr()	{
+				 helpBox->SelectionFont = (gcnew System::Drawing::Font(gcnew String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+				 helpBox->AppendText(gcnew String(constants->HELP_TDYTMR1.c_str()));
+				 helpBox->Font = (gcnew System::Drawing::Font(gcnew String(constants->FONT.c_str()), 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+				 helpBox->AppendText(gcnew String(constants->HELP_TDYTMR2.c_str()));
+			 }
+};
+}
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMGUI\CMGUI.h
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMGUI\GUIConstants.cpp
+	 */
+
+#include "GUIConstants.h"
+
+const std::string GUIConstants::INPUT_ADD = "add ";
+const std::string GUIConstants::INPUT_EDIT = "edit ";
+const std::string GUIConstants::INPUT_DELETE = "delete ";
+const std::string GUIConstants::INPUT_SEARCH = "search ";
+const std::string GUIConstants::INPUT_CHECK = "check ";
+const std::string GUIConstants::INPUT_UNCHECK = "uncheck ";
+const std::string GUIConstants::INPUT_CLEAR = "clear ";
+const std::string GUIConstants::INPUT_COMPLETED = "completed ";
+const std::string GUIConstants::INPUT_UNDO = "undo ";
+const std::string GUIConstants::INPUT_REDO = "redo ";
+const std::string GUIConstants::INPUT_HOME = "home ";
+const std::string GUIConstants::INPUT_TODAY = "today ";
+const std::string GUIConstants::INPUT_TOMORROW = "tomorrow ";
+const std::string GUIConstants::PROMPT_ADD = "add <description> <Start Date> <Start Time> <End Date> <End Time>";
+const std::string GUIConstants::PROMPT_EDIT = "edit <index> <category> <new statement>";
+const std::string GUIConstants::PROMPT_DELETE = "delete <index>";
+const std::string GUIConstants::PROMPT_SEARCH = "search <keyword(s)>";
+const std::string GUIConstants::PROMPT_CHECK = "check <index>";
+const std::string GUIConstants::PROMPT_UNCHECK = "uncheck <index>";
+const std::string GUIConstants::PROMPT_CLEAR = "clear";
+const std::string GUIConstants::PROMPT_COMPLETED = "completed";
+const std::string GUIConstants::PROMPT_UNDO = "undo";
+const std::string GUIConstants::PROMPT_REDO = "redo";
+const std::string GUIConstants::PROMPT_HOME = "home";
+const std::string GUIConstants::PROMPT_TODAY = "today";
+const std::string GUIConstants::PROMPT_TOMORROW = "tomorrow";
+const std::string GUIConstants::HELP_MAIN = "\t\t\tHELP BOX\r\n\r\n1.Add\r\n";
+const std::string GUIConstants::HELP_ADD1 = "add <description> <Start Date> <Start Time> <End Date> <End Time>";
+const std::string GUIConstants::HELP_ADD2 = "\r\nadd <description> <End Date> <End Time>";
+const std::string GUIConstants::HELP_ADD3 = "\r\nadd <description>";
+const std::string GUIConstants::HELP_EDIT1 = "\r\n2. Edit\r\n";
+const std::string GUIConstants::HELP_EDIT2 = "edit <index> <category> <new text>";
+const std::string GUIConstants::HELP_DELETE1 = "\r\n3. Delete\r\n";
+const std::string GUIConstants::HELP_DELETE2 = "delete <index>";
+const std::string GUIConstants::HELP_SEARCH1 = "\r\n4. Search\r\n";
+const std::string GUIConstants::HELP_SEARCH2 = "search <keyword(s)>";
+const std::string GUIConstants::HELP_STORAGE1 = "\r\n5. Change Storage Location\r\n";
+const std::string GUIConstants::HELP_STORAGE2 = "changestore <location>\r\n";
+const std::string GUIConstants::HELP_STORAGE3 = "example: changestore C://Users//SONY//Desktop";
+const std::string GUIConstants::HELP_CHECK1 = "\r\n6. Check/Uncheck tasks that you have completed\r\n";
+const std::string GUIConstants::HELP_CHECK2 = "check/uncheck <index>";
+const std::string GUIConstants::HELP_COMPLETED1 = "\r\n7. View all completed tasks\r\n";
+const std::string GUIConstants::HELP_COMPLETED2 = "completed";
+const std::string GUIConstants::HELP_UNRE1 = "\r\n8. Undo/Redo the last action \r\n";
+const std::string GUIConstants::HELP_UNRE2 = "undo/redo";
+const std::string GUIConstants::HELP_TDYTMR1 =  "\r\n9. View all tasks for today/tomorrow \r\n";
+const std::string GUIConstants::HELP_TDYTMR2 = "today/tdy/tomorrow/tmrw/tmr";
+const std::string GUIConstants::FONT = "Microsoft Sans Serif";
+const std::string GUIConstants::HYPHEN = "-";
+const std::string GUIConstants::COMMAND_HELP = "help";
+const std::string GUIConstants::COMMAND_EXIT = "exit";
+const std::string GUIConstants::COMPLETED_TASK_MSG = "These are the Completed Task.";
+const std::string GUIConstants::DESCRIPTION1 = "Description";
+const std::string GUIConstants::DESCRIPTION2 = "Description of Completed Tasks";
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMGUI\GUIConstants.cpp
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMGUI\GUIConstants.h
+	 */
+
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+#include <string>
+class GUIConstants	{
+public:
+static const std::string INPUT_ADD;
+static const std::string INPUT_EDIT; 
+static const std::string INPUT_DELETE; 
+static const std::string INPUT_SEARCH; 
+static const std::string INPUT_CHECK; 
+static const std::string INPUT_UNCHECK; 
+static const std::string INPUT_CLEAR; 
+static const std::string INPUT_COMPLETED;
+static const std::string INPUT_UNDO; 
+static const std::string INPUT_REDO; 
+static const std::string INPUT_HOME; 
+static const std::string INPUT_TODAY; 
+static const std::string INPUT_TOMORROW; 
+static const std::string PROMPT_ADD; 
+static const std::string PROMPT_EDIT; 
+static const std::string PROMPT_DELETE; 
+static const std::string PROMPT_SEARCH; 
+static const std::string PROMPT_CHECK; 
+static const std::string PROMPT_UNCHECK; 
+static const std::string PROMPT_CLEAR; 
+static const std::string PROMPT_COMPLETED; 
+static const std::string PROMPT_UNDO;
+static const std::string PROMPT_REDO; 
+static const std::string PROMPT_HOME; 
+static const std::string PROMPT_TODAY; 
+static const std::string PROMPT_TOMORROW;
+static const std::string HELP_MAIN; 
+static const std::string HELP_ADD1; 
+static const std::string HELP_ADD2; 
+static const std::string HELP_ADD3;
+static const std::string HELP_EDIT1;
+static const std::string HELP_EDIT2; 
+static const std::string HELP_DELETE1; 
+static const std::string HELP_DELETE2; 
+static const std::string HELP_SEARCH1;
+static const std::string HELP_SEARCH2; 
+static const std::string HELP_STORAGE1;
+static const std::string HELP_STORAGE2;
+static const std::string HELP_STORAGE3; 
+static const std::string HELP_CHECK1; 
+static const std::string HELP_CHECK2; 
+static const std::string HELP_COMPLETED1; 
+static const std::string HELP_COMPLETED2; 
+static const std::string HELP_UNRE1; 
+static const std::string HELP_UNRE2; 
+static const std::string HELP_TDYTMR1; 
+static const std::string HELP_TDYTMR2; 
+static const std::string FONT; 
+static const std::string HYPHEN; 
+static const std::string COMMAND_HELP; 
+static const std::string COMMAND_EXIT;
+static const std::string COMPLETED_TASK_MSG;
+static const std::string DESCRIPTION1;
+static const std::string DESCRIPTION2;
+
+};
+#endif
+
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMGUI\GUIConstants.h
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\UnitTest1\OverallIntegrationTest.cpp
+	 */
+
+#include "stdafx.h"
+#include "CppUnitTest.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace UnitTest1
+{		
+	TEST_CLASS(UnitTest1)
+	{
+	public:
+		
+		TEST_METHOD(OVERALLAddDeadlineTaskTest)	{
+			CMLogic* sample1;
+			sample1 = new CMLogic();
+			sample1->executeCommand("add finish assn by 23/10/2015 7pm");
+			Output* obj1 = sample1->getDisplay();
+			std::vector<Task*> TaskList = obj1->getDisplay();
+			std::string actualFeedback = TaskList[0]->getInfo();
+			std::string expectedFeedback = "finish assn                                                       --NIL--                 2015-Oct-23 19:00:00          ";	
+			Assert::AreEqual(actualFeedback, expectedFeedback);	
+		}
+
+		TEST_METHOD(OVERALLAddFloatingTaskTest)	{
+			CMLogic* sample1;
+			sample1 = new CMLogic();
+			sample1->executeCommand("add Meet Elaine for lunch");
+			Output* obj1 = sample1->getDisplay();
+			std::vector<Task*> TaskList = obj1->getDisplay();
+			std::string actualFeedback = TaskList[0]->getInfo();
+			std::string expectedFeedback = "Meet Elaine for lunch                                             --NIL--                       --NIL--                 ";	
+			Assert::AreEqual(actualFeedback, expectedFeedback);
+
+		}
+
+		TEST_METHOD(OVERALLAddTimedTaskTest)	{
+			CMLogic* sample1;
+			sample1 = new CMLogic();
+			sample1->executeCommand("add Do Math assignment 23/10/2015 7pm to 8pm");
+			Output* obj1 = sample1->getDisplay();
+			std::vector<Task*> TaskList = obj1->getDisplay();
+			std::string actualFeedback = TaskList[0]->getInfo();
+			std::string expectedFeedback = "Do Math assignment                                          2015-Oct-23 19:00:00          2015-Oct-23 20:00:00          ";	
+			Assert::AreEqual(actualFeedback, expectedFeedback);
+		}
+
+		TEST_METHOD(OVERALLEditDescriptionTest)	{
+			CMLogic* sample1;
+			sample1 = new CMLogic();
+			sample1->executeCommand("add Do Math assignment from 23/10/2015 7pm to 8pm");
+			sample1->executeCommand("edit 1 desc Do Econs assignment");
+			Output* obj1 = sample1->getDisplay();
+			std::vector<Task*> TaskList = obj1->getDisplay();
+			std::string actualFeedback = TaskList[0]->getInfo();
+			std::string expectedFeedback = "Do Econs assignment                                         2015-Oct-23 19:00:00          2015-Oct-23 20:00:00          ";
+			Assert::AreEqual(actualFeedback, expectedFeedback);
+		}
+
+
+		TEST_METHOD(OVERALLDeleteTest)	{
+			CMLogic* sample1;
+			sample1 = new CMLogic();
+			sample1->executeCommand("add Do Math assignment from 23 oct 7pm to 8pm");
+			sample1->executeCommand("add Do Econs assignment from 25 oct 3pm to 4pm");
+			sample1->executeCommand("delete 2");
+			Output* obj1 = sample1->getDisplay();
+			std::vector<Task*> TaskList = obj1->getDisplay();
+			std::string actualFeedback = TaskList[0]->getInfo();
+			std::string expectedFeedback = "Do Math assignment                                          2015-Oct-23 19:00:00          2015-Oct-23 20:00:00          ";
+			Assert::AreEqual(actualFeedback, expectedFeedback);
+		}
+
+		TEST_METHOD(OVERALLEditStartDateTest)	{
+			CMLogic* sample1;
+			sample1 = new CMLogic();
+			sample1->executeCommand("add Do Math assignment from 23 oct 8pm to 9pm");
+			sample1->executeCommand("edit 1 sdate 28 oct");
+			Output* obj1 = sample1->getDisplay();
+			std::vector<Task*> TaskList = obj1->getDisplay();
+			std::string actualFeedback = TaskList[0]->getInfo();
+			std::string expectedFeedback = "Do Math assignment                                          2015-Oct-28 20:00:00          2015-Oct-23 21:00:00          ";
+			Assert::AreEqual(actualFeedback, expectedFeedback);
+		}
+
+		TEST_METHOD(OVERALLSearchTest)	{
+			CMLogic* sample1;
+			sample1 = new CMLogic();
+			sample1->executeCommand("add Do Math assignment from 23 oct 7pm to 8pm");
+			sample1->executeCommand("add Do Econs assignment from 25 oct 3pm to 4pm");
+			sample1->executeCommand("search assignment");
+			Output* obj1 = sample1->getDisplay();
+			std::vector<Task*> TaskList = obj1->getDisplay();
+			std::string actualFeedback1 = TaskList[0]->getInfo();
+			std::string expectedFeedback1 = "Do Math assignment                                          2015-Oct-23 19:00:00          2015-Oct-23 20:00:00          ";
+			std::string actualFeedback2 = TaskList[1]->getInfo();
+			std::string expectedFeedback2 = "Do Econs assignment                                         2015-Oct-25 15:00:00          2015-Oct-25 16:00:00          ";			
+			Assert::AreEqual(actualFeedback1, expectedFeedback1);
+			Assert::AreEqual(actualFeedback2, expectedFeedback2);
+		}
+
+		TEST_METHOD(OVERALLCheckTest)	{
+			CMLogic* sample1;
+			sample1 = new CMLogic();
+			sample1->executeCommand("add Do Math assignment from 23 oct 7pm to 8pm");
+			sample1->executeCommand("add Do Econs assignment from 25 oct 3pm to 4pm");
+			sample1->executeCommand("check 1");
+			sample1->executeCommand("completed");
+			Output* obj1 = sample1->getDisplay();
+			std::vector<Task*> TaskList = obj1->getDisplay();
+			std::string actualFeedback = TaskList[0]->getInfo();
+			std::string expectedFeedback = "Do Math assignment                                          2015-Oct-23 19:00:00          2015-Oct-23 20:00:00          ";
+			Assert::AreEqual(actualFeedback, expectedFeedback);
+		}
+
+
+		TEST_METHOD(OVERALLUncheckTest)	{
+			CMLogic* sample1;
+			sample1 = new CMLogic();
+			sample1->executeCommand("add Do Math assignment from 23 oct 7pm to 8pm");
+			sample1->executeCommand("add Do Econs assignment from 25 oct 3pm to 4pm");
+			sample1->executeCommand("check 1");
+			sample1->executeCommand("completed");
+			sample1->executeCommand("uncheck 1");
+			sample1->executeCommand("home");
+			Output* obj1 = sample1->getDisplay();
+			std::vector<Task*> TaskList = obj1->getDisplay();
+			std::string actualFeedback1 = TaskList[0]->getInfo();
+			std::string expectedFeedback1 = "Do Math assignment                                          2015-Oct-23 19:00:00          2015-Oct-23 20:00:00          ";
+			std::string actualFeedback2 = TaskList[1]->getInfo();
+			std::string expectedFeedback2 = "Do Econs assignment                                         2015-Oct-25 15:00:00          2015-Oct-25 16:00:00          ";			
+			Assert::AreEqual(actualFeedback1, expectedFeedback1);
+			Assert::AreEqual(actualFeedback2, expectedFeedback2);
+		}
+
+
+		TEST_METHOD(OVERALLClearTest)	{
+			CMLogic* sample1;
+			sample1 = new CMLogic();
+			sample1->executeCommand("add Do Math assignment from 23 oct 7pm to 8pm");
+			sample1->executeCommand("add Do Econs assignment from 25 oct 3pm to 4pm");
+			sample1->executeCommand("clear");
+			Output* obj1 = sample1->getDisplay();
+			std::vector<Task*> TaskList = obj1->getDisplay();
+			int expectedFeedback = 0;
+			int actualFeedback = TaskList.size();
+			Assert::AreEqual(actualFeedback, expectedFeedback);
+		}
+
+		TEST_METHOD(OVERALLUndoTest)	{
+			CMLogic* sample1;
+			sample1 = new CMLogic();
+			sample1->executeCommand("add Do Math assignment from 23 oct 7pm to 8pm");
+			sample1->executeCommand("add Do Econs assignment from 25 oct 3pm to 4pm");
+			sample1->executeCommand("delete 1");
+			sample1->executeCommand("undo");
+			Output* obj1 = sample1->getDisplay();
+			std::vector<Task*> TaskList = obj1->getDisplay();
+			std::string actualFeedback1 = TaskList[0]->getInfo();
+			std::string expectedFeedback1 = "Do Math assignment                                          2015-Oct-23 19:00:00          2015-Oct-23 20:00:00          ";
+			std::string actualFeedback2 = TaskList[1]->getInfo();
+			std::string expectedFeedback2 = "Do Econs assignment                                         2015-Oct-25 15:00:00          2015-Oct-25 16:00:00          ";			
+			Assert::AreEqual(actualFeedback1, expectedFeedback1);
+			Assert::AreEqual(actualFeedback2, expectedFeedback2);
+		}
+
+		TEST_METHOD(OVERALLRedoTest)	{
+			CMLogic* sample1;
+			sample1 = new CMLogic();
+			sample1->executeCommand("add Do Math assignment from 23 oct 7pm to 8pm");
+			sample1->executeCommand("add Do Econs assignment from 25 oct 3pm to 4pm");
+			sample1->executeCommand("delete 1");
+			sample1->executeCommand("undo");
+			sample1->executeCommand("redo");
+			Output* obj1 = sample1->getDisplay();
+			std::vector<Task*> TaskList = obj1->getDisplay();
+			std::string actualFeedback = TaskList[0]->getInfo();
+			std::string expectedFeedback = "Do Econs assignment                                         2015-Oct-25 15:00:00          2015-Oct-25 16:00:00          ";
+			Assert::AreEqual(actualFeedback, expectedFeedback);
+		}
+
+		TEST_METHOD(OVERALLHomeTest)	{
+			CMLogic* sample1;
+			sample1 = new CMLogic();
+			sample1->executeCommand("add Do Math assignment from 23 oct 7pm to 8pm");
+			sample1->executeCommand("add Do Econs assignment from 25 oct 3pm to 4pm");
+			sample1->executeCommand("search Math");
+			sample1->executeCommand("home");
+			Output* obj1 = sample1->getDisplay();
+			std::vector<Task*> TaskList = obj1->getDisplay();
+			std::string actualFeedback1 = TaskList[0]->getInfo();
+			std::string expectedFeedback1 = "Do Math assignment                                          2015-Oct-23 19:00:00          2015-Oct-23 20:00:00          ";
+			std::string actualFeedback2 = TaskList[1]->getInfo();
+			std::string expectedFeedback2 = "Do Econs assignment                                         2015-Oct-25 15:00:00          2015-Oct-25 16:00:00          ";			
+			Assert::AreEqual(actualFeedback1, expectedFeedback1);
+			Assert::AreEqual(actualFeedback2, expectedFeedback2);
+		}
+	};
+}
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\UnitTest1\OverallIntegrationTest.cpp
+
+
+
+
+

@@ -1,0 +1,1308 @@
+//@author: a0115990b
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CheckMateStorage.cpp
+	 */
+
+
+#include "checkmatestorage.h"
+
+const std::string CMStorage:: DISPLAYS_HOME_PAGE = "home";
+const std::string CMStorage:: DISPLAYS_SEARCHED_PAGE = "searched";
+const std::string CMStorage:: DISPLAYS_ARCHIVED_PAGE = "archive";
+const std::string CMStorage:: CHECKED_OR_UNCHECKED = "checkedOrUnchecked";
+
+//---------------------------------------------------------------//
+
+void CMStorage:: addDeadline (Deadline* newDeadline) {
+	
+	_active.addActiveDeadline(newDeadline);
+    std::cout<<"STORAGE: "<<"Added "<<newDeadline->Task::getInfo();
+	
+}
+
+void CMStorage:: addTimedTask (TimedTask* newTimedTask){
+	
+    _active.addActiveTimedTask(newTimedTask);
+	
+}
+
+void CMStorage:: addFloatingTask (FloatingTask* newFloatingTask) {
+
+	_active.addActiveFloatingTask(newFloatingTask);
+
+}
+
+//---------------------------------------------------------------//
+
+void CMStorage:: addArchivedDeadline (Deadline* newDeadline) {
+
+	_completed.addArchivedDeadline(newDeadline);
+	
+}
+
+void CMStorage:: addArchivedTimedTask (TimedTask* newTimedTask) {
+	
+	_completed.addArchivedTimedTask(newTimedTask);
+	
+}
+
+void CMStorage:: addArchivedFloatingTask (FloatingTask* newFloatingTask) {
+	
+	_completed.addArchivedFloatingTask(newFloatingTask);
+	
+}
+
+//---------------------------------------------------------------//
+
+
+std:: string CMStorage:: deleteTask (int index) {
+
+	if (_displayMarker!=DISPLAYS_ARCHIVED_PAGE){
+		int realIndex= _subIndexes[index-1];
+		return _active.deleteActiveTask(realIndex);
+	} else {
+		int realIndex= index - 1;
+		return _completed.deleteCompletedTask(realIndex);
+	}
+	
+}
+
+Task* CMStorage:: getTask(int index){ //linked to logic's edit function
+	
+	int realIndex= _subIndexes[index-1];
+	return _active.getTask(realIndex);
+	
+}
+
+void CMStorage:: writeEditedFile () { //linked to logic's edit function
+	
+	_active.writeActiveFile();
+	
+}
+
+void CMStorage:: clearTasks(){
+	
+	_active.clearActiveTasks();
+	_completed.clearCompletedTasks();
+	
+}
+
+//---------------------------------------------------------------//
+
+
+std::vector<Task*> CMStorage:: getActiveDisplay (void) {
+
+	_subIndexes.clear();
+	std::vector<Task*> _displayTasks; 
+	sortAllTasks();
+		
+	for (unsigned int i = 0; i <_active.getActiveTasks().size(); i++){
+		_displayTasks.push_back(_active.getActiveTasks()[i]);
+		_subIndexes.push_back(i);
+	}
+
+	_displayMarker=DISPLAYS_HOME_PAGE;
+	return _displayTasks;
+
+}
+
+std::vector<Task*> CMStorage:: getArchivedDisplay (void) {
+	
+	_displayMarker=DISPLAYS_ARCHIVED_PAGE;
+	return _completed.getArchivedDisplay();
+	
+}
+
+std::vector<Task*> CMStorage:: getSearchedTasks(std::string keyword) {
+
+	_subIndexes.clear();
+	_searchedTasks.clear();
+	
+	for (unsigned int i = 0; i < _active.getActiveTasks().size(); i++ ) {
+		if (_active.getActiveTasks()[i]->isFound(keyword)){
+			_searchedTasks.push_back(_active.getActiveTasks()[i]);
+			_subIndexes.push_back(i);
+		}
+	}
+    
+    sortSearchedTasks();
+	_displayMarker=DISPLAYS_SEARCHED_PAGE;
+	return _searchedTasks; //will be sorted
+
+}
+
+//---------------------------------------------------------------//
+
+std::vector<std::string> CMStorage:: readFile() {
+
+	return _active.readActiveFile();
+	
+}
+
+
+void CMStorage:: changeStorageLocation(std::string newLocation) {
+
+	_active.changeStorageLocation(newLocation);
+	
+}
+
+std::string CMStorage:: getStorageLocation(){
+	
+	return _active.getStorageLocation();
+	
+}
+
+std::vector<std::string> CMStorage:: readArchivedFile() {
+	
+	return _completed.readArchivedFile();
+	
+}
+
+//---------------------------------------------------------------//
+
+std::string CMStorage:: check(int index){
+
+	_checkUncheckMarker = CHECKED_OR_UNCHECKED;
+	int realIndex= _subIndexes[index-1];
+	_completed.checkInArchive(_active.getActiveTasks()[realIndex]);
+	return _active.checkActive(realIndex);
+	
+}
+
+std::string CMStorage:: uncheck (int index){ //if the task has been checked as completed, now uncheck it and it becomes active again
+
+	_checkUncheckMarker = CHECKED_OR_UNCHECKED;
+	int realIndex=index - 1;
+	return _completed.uncheckInArchive(realIndex); //return unchecked task
+
+}
+
+//---------------------------------------------------------------//
+
+
+int CMStorage:: getIndexFirstFloat () {
+	
+	if (_displayMarker==DISPLAYS_HOME_PAGE){
+		
+		return getDefaultIndexFirstFloat();
+
+	} else if (_displayMarker==DISPLAYS_SEARCHED_PAGE){
+	
+		return getSearchedIndexFirstFloat();
+	
+	} else {
+		
+		return 0;
+	}
+	
+}
+
+int CMStorage:: getDefaultIndexFirstFloat () { //the whole _allActiveTasks vector
+	
+	return _active.getActiveIndexFirstFloat();
+		
+}
+
+int CMStorage:: getSearchedIndexFirstFloat() {
+	
+	for (unsigned int i=0;i<_searchedTasks.size();i++){
+		
+		if (_searchedTasks[i]->isFloat()) {
+			return i;
+		}
+	}
+	
+	int index = _searchedTasks.size();
+	return index;
+
+}
+
+//---------------------------------------------------------------//
+
+
+int CMStorage:: getEditedIndex(std::string desc,boost::posix_time::ptime start,boost::posix_time::ptime end){
+	
+	return _active.getEditedIndex (desc, start, end);
+	
+}
+
+int CMStorage:: getAddedIndex () {
+	
+	return _active.getAddedActiveTaskIndex();
+    
+}
+
+//---------------------------------------------------------------//
+
+void CMStorage:: sortAllTasks () { //no need to sort archived/completed tasks
+	
+	_active.sortAllActiveTasks();
+	
+}
+
+void CMStorage:: sortSearchedTasks () {
+	
+	_searchedTasks= _storageSort.sortTasks(_searchedTasks, getSearchedIndexFirstFloat());
+	
+}
+
+//---------------------------------------------------------------//
+
+void CMStorage:: updateHistory(){
+	
+	_active.updateActiveHistory();
+	
+}
+
+void CMStorage:: updateArchivedHistory(){
+	
+	_completed.updateArchiveHistory();
+	
+}
+
+//---------------------------------------------------------------//
+
+void CMStorage:: undoAction() {
+	
+	if (_checkUncheckMarker==CHECKED_OR_UNCHECKED){
+		
+		_active.undoActiveTaskAction();
+		_completed.undoArchivedTaskAction();
+		
+	} else if (_displayMarker!=DISPLAYS_ARCHIVED_PAGE){
+		
+		_active.undoActiveTaskAction();
+		
+	} else {
+		
+		_completed.undoArchivedTaskAction();
+		
+	}
+	
+}
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CheckMateStorage.cpp
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CheckMateStorage.h
+	 */
+
+
+#ifndef CHECKMATESTORAGE_H
+#define CHECKMATESTORAGE_H
+
+#include <iostream>
+#include <vector>
+#include <sstream>
+#include <fstream>
+#include <string>
+#include "Task.h"
+#include "FloatingTask.h"
+#include "TimedTask.h"
+#include "Deadline.h" 
+#include "CMHistory.h"
+#include "CMArchive.h"
+#include "CMTextFile.h"
+#include "CMStorageSort.h"
+#include "CMActive.h"
+
+//CMStorage is the only class in Storage being called by the Logic component;
+//Within itself, it calls the objects from 2 main classes, the active/current tasks and the archive/completed tasks;
+//CMStorage mainly calls these 2 classes for concrete actions, while itself is focused on determining the
+//screen the user is on and act accordingly. Also, it is responsible for getting the right displaying tasks including
+//searched tasks back to the Logic component
+
+class CMStorage {
+
+private: 
+	
+	std::vector<Task*> _searchedTasks; //all searched tasks as Task pointers
+	std::vector<int> _subIndexes; //to hold all the realIndexes (different from what the user sees on screen)
+	
+	std::string _displayMarker;
+	std::string _checkUncheckMarker;
+
+	CMActive _active; //active tasks object
+	CMArchive _completed; //completed tasks object
+	CMStorageSort _storageSort;
+	
+	static const std::string DISPLAYS_HOME_PAGE;
+	static const std::string DISPLAYS_SEARCHED_PAGE;
+	static const std::string DISPLAYS_ARCHIVED_PAGE;
+	static const std::string CHECKED_OR_UNCHECKED;
+	
+public:
+
+	void addDeadline (Deadline*);
+	void addTimedTask (TimedTask*);
+	void addFloatingTask (FloatingTask*);
+	
+	void addArchivedDeadline (Deadline*); //Ar
+	void addArchivedTimedTask (TimedTask*); //Ar
+	void addArchivedFloatingTask (FloatingTask*); //Ar
+	
+	std:: string  deleteTask (int );
+	Task* getTask(int); //for edit
+	void writeEditedFile();
+	void clearTasks();
+	
+	std::vector<Task*> getActiveDisplay();
+	std::vector<Task*> getArchivedDisplay(); //Ar
+	std::vector<Task*> getSearchedTasks(std::string);
+
+	std::vector<std::string> readFile(); //TF
+	void changeStorageLocation(std::string); //TF
+	std::string getStorageLocation(); //TF
+	std::vector<std::string> readArchivedFile(); //Ar
+	
+	std::string check(int);
+	std::string uncheck(int);
+	
+	int getIndexFirstFloat ();
+	int getDefaultIndexFirstFloat ();
+	int getSearchedIndexFirstFloat ();
+	
+	int getEditedIndex(std::string,boost::posix_time::ptime,boost::posix_time::ptime);
+	int getAddedIndex ();
+
+	void sortAllTasks(); //no need to sort archived/completed tasks
+	void sortSearchedTasks();
+
+	void updateHistory();
+	void updateArchivedHistory();//Ar
+	
+	void undoAction();
+
+};
+
+#endif
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CheckMateStorage.h
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMActive.cpp
+	 */
+
+
+#include "CMActive.h"
+
+const std::string CMActive:: FILENAME = "Checkmate.txt";
+
+void CMActive:: addActiveDeadline (Deadline* NewDeadline) {
+	
+    bool isFound=false;
+    
+	updateActiveHistory();
+	if (_allActiveTasks.size()==0) { //empty vector
+        
+		_allActiveTasks.push_back(NewDeadline);
+		_addedIndex=0;
+        
+	} else {
+		
+		int i=0;
+		
+		while ((i<getActiveIndexFirstFloat())&&(!isFound)){
+			
+			if (_allActiveTasks[i]->isTimed()) {
+				
+				if (NewDeadline->getEnd()<_allActiveTasks[i]->getStart()){	//end of deadline compared with start of timedtask
+
+					
+					isFound=true;
+					break;
+				
+				}
+                
+			} else if (_allActiveTasks[i]->isDeadline()){
+
+				
+				if (NewDeadline->getEnd()<_allActiveTasks[i]->getEnd()){  //end of deadline compared with end of deadline
+					
+					isFound=true;
+					break;
+				
+				}
+			}
+			i++;
+		}
+		
+		_allActiveTasks.insert(_allActiveTasks.begin()+i, NewDeadline);
+		_addedIndex=i;
+		
+	}
+	
+	writeActiveFile();
+	
+}
+
+void CMActive:: addActiveTimedTask (TimedTask* NewTimedTask){
+	
+    bool isFound=false;
+    
+	updateActiveHistory();
+	if (_allActiveTasks.size()==0) { //empty vector
+        
+		_allActiveTasks.push_back(NewTimedTask);
+		_addedIndex=0;
+        
+	} else {
+		
+		int i=0;
+		
+		while ((i<getActiveIndexFirstFloat())&&(!isFound)){
+            
+			if (_allActiveTasks[i]->isTimed()) {
+                
+                if (NewTimedTask->getStart()<_allActiveTasks[i]->getStart()){  //start of timedtask compared with start of timedtask
+
+                    isFound=true;
+					break;
+					
+                }
+                
+            } else if (_allActiveTasks[i]->isDeadline()) {
+                
+                if (NewTimedTask->getStart()<_allActiveTasks[i]->getEnd()){  //start of timedtask compared with end of deadline
+                    
+					isFound=true;
+					break;
+					
+                }
+            }
+			i++;
+        }
+		
+		_allActiveTasks.insert(_allActiveTasks.begin()+i, NewTimedTask);
+		_addedIndex=i;
+		
+	}
+	
+	writeActiveFile();
+}
+
+void CMActive:: addActiveFloatingTask (FloatingTask* NewFloatingTask) {
+	
+	updateActiveHistory();
+	_allActiveTasks.push_back(NewFloatingTask);
+	writeActiveFile();
+	int index = _allActiveTasks.size()-1;
+	_addedIndex= index;
+	
+}
+
+//---------------------------------------------------------------//
+
+std:: string CMActive:: deleteActiveTask (int realIndex) {
+
+	//lack of updateActivehistory() in the case of multiple delete
+	std::string deletedTask= _allActiveTasks[realIndex]->getInfo();
+		eraseTask(realIndex);
+		writeActiveFile();
+		return deletedTask;
+	
+}
+
+void CMActive:: eraseTask(int realIndex){
+	
+	_allActiveTasks [realIndex] =  NULL;
+	delete _allActiveTasks[realIndex]; //deleting the pointer
+	_allActiveTasks.erase(_allActiveTasks.begin()+realIndex); //erasing the vector item containing the pointer
+	
+}
+
+
+Task* CMActive:: getTask(int realIndex){ //linked to logic's edit function
+	
+	updateActiveHistory();
+	Task* taskPointer= _allActiveTasks[realIndex];
+	return taskPointer;
+	
+}
+
+void CMActive:: clearActiveTasks(){
+	
+	updateActiveHistory();
+	_allActiveTasks.clear();
+	writeActiveFile();
+	
+}
+
+std::string CMActive:: checkActive(int realIndex){
+	
+	//lack of updateActivehistory() in the case of multiple check
+	std::string checkedTask= _allActiveTasks[realIndex]->getInfo();
+	eraseTask(realIndex);
+	writeActiveFile();
+	return checkedTask;
+	
+}
+
+void CMActive:: sortAllActiveTasks () {
+	
+	_allActiveTasks=_storageSort.sortTasks(_allActiveTasks, getActiveIndexFirstFloat());
+	
+}
+
+void CMActive:: undoActiveTaskAction(){
+	
+	std::vector<Task*> _newAllTasks;
+	_newAllTasks = _history.swapCopy(_allActiveTasks);
+	_allActiveTasks = _newAllTasks;
+	writeActiveFile();
+	
+}
+
+//---------------------------------------------------------------//
+
+int CMActive:: getAddedActiveTaskIndex () {
+	
+	return _addedIndex;
+
+}
+
+int CMActive:: getActiveIndexFirstFloat () {
+	
+	for (unsigned int i=0;i<_allActiveTasks.size();i++){
+		
+		if (_allActiveTasks[i]->isFloat()) {
+			return i;
+		}
+	}
+	
+	int index=_allActiveTasks.size();
+	return index;
+	
+}
+
+int CMActive:: getEditedIndex(std::string desc,boost::posix_time::ptime start,boost::posix_time::ptime end){
+	
+	for (unsigned int i=0; i< _allActiveTasks.size() ; i++){
+		
+		if (_allActiveTasks[i]->isEditedTask(desc,start,end)){
+			return i;
+		}
+	}
+	
+	return 0;
+}
+
+std::vector<Task*> CMActive:: getActiveTasks(){
+	
+	return _allActiveTasks;
+	
+}
+
+//---------------------------------------------------------------//
+
+void CMActive:: updateActiveHistory(){
+	
+	_history.updateCopy(_allActiveTasks);
+	
+}
+
+//---------------------------------------------------------------//
+
+void CMActive:: writeActiveFile() {
+	
+	_textFile.writeFile(_allActiveTasks, FILENAME);
+	
+}
+
+std::vector<std::string> CMActive:: readActiveFile() {
+	
+	return _textFile.readFile(FILENAME);
+	
+}
+
+void CMActive:: changeStorageLocation(std::string NewLocation) {
+	
+	_textFile.changeStorageLocation(NewLocation);
+	writeActiveFile();
+	
+}
+
+std::string CMActive:: getStorageLocation(){
+	
+	return _textFile.getStorageLocation();
+	
+}
+
+
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMActive.cpp
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMActive.h
+	 */
+
+
+#ifndef CMACTIVE_H
+#define CMACTIVE_H
+
+#include <iostream>
+#include <vector>
+#include <sstream>
+#include <fstream>
+#include <string>
+#include "Task.h"
+#include "FloatingTask.h"
+#include "TimedTask.h"
+#include "Deadline.h"
+#include "CMHistory.h"
+#include "CMArchive.h"
+#include "CMTextFile.h"
+#include "CMStorageSort.h"
+
+//CMActive is responsible for all the active tasks. basic functions such as add,delete,etc are performed here.
+//typically, have to make sure that everything is sorted according to the time and date;
+//a CMHistory object is called to store the history of previous vector for undo/redo function,
+//a CMTextFile object is called to write the information into a textfile
+//a CMStorageSort object is called to sort the tasks chronologically
+
+class CMActive {
+
+private:
+
+	std::vector<Task*> _allActiveTasks;
+	int _addedIndex;
+	
+	CMHistory _history;
+	CMTextFile _textFile;
+	CMStorageSort _storageSort;
+	
+	static const std::string FILENAME;
+	
+public:
+	
+	void addActiveDeadline (Deadline*);
+	void addActiveTimedTask (TimedTask*);
+	void addActiveFloatingTask (FloatingTask*);
+	
+	std:: string  deleteActiveTask (int );
+	void eraseTask(int); //not returning anything
+	Task* getTask(int); //linked to main storage to logic's edit function
+	void clearActiveTasks();
+	std::string checkActive(int);
+	void sortAllActiveTasks(); 
+	void undoActiveTaskAction();
+	
+	int getAddedActiveTaskIndex ();
+	int getActiveIndexFirstFloat ();
+	int getEditedIndex(std::string,boost::posix_time::ptime,boost::posix_time::ptime);
+	std::vector<Task*> getActiveTasks();
+	
+	void updateActiveHistory();
+		
+	void writeActiveFile();
+	std::vector<std::string> readActiveFile();
+	void changeStorageLocation(std::string);
+	std::string getStorageLocation();
+
+};
+
+#endif
+
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMActive.h
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMArchive.cpp
+	 */
+
+
+#include "CMArchive.h"
+
+const std::string CMArchive:: ARCHIVE_FILENAME = "ArchivedCheckmate.txt";
+
+
+void CMArchive:: addArchivedDeadline (Deadline* NewDeadline) {
+	
+	updateArchiveHistory();
+	_completedTasks.push_back(NewDeadline);
+	writeArchivedFile();
+	
+}
+
+void CMArchive:: addArchivedTimedTask (TimedTask* NewTimedTask) {
+	
+	updateArchiveHistory();
+	_completedTasks.push_back(NewTimedTask);
+	writeArchivedFile();
+	
+}
+
+void CMArchive:: addArchivedFloatingTask (FloatingTask* NewFloatingTask) {
+	
+	updateArchiveHistory();
+	_completedTasks.push_back(NewFloatingTask);
+	writeArchivedFile();
+	
+}
+
+std::string CMArchive:: deleteCompletedTask (int realIndex){
+	
+	//lack of updateArchivehistory() in the case of multiple delete
+	std::string deletedTask= _completedTasks[realIndex]->getInfo();
+	eraseTask(realIndex);
+	writeArchivedFile();
+	return deletedTask;
+	
+}
+
+void CMArchive:: eraseTask(int realIndex){
+	
+	_completedTasks [realIndex] =  NULL;
+	delete _completedTasks[realIndex]; //deleting the pointer
+	_completedTasks.erase(_completedTasks.begin()+realIndex); //erasing the vector item containing the pointer
+	
+}
+
+void CMArchive:: clearCompletedTasks(){
+	
+	updateArchiveHistory();
+	_completedTasks.clear();
+	writeArchivedFile();
+	
+}
+
+void CMArchive:: undoArchivedTaskAction() {
+	
+	std::vector<Task*> _newCompletedTasks;
+	_newCompletedTasks = _completedTasksHistory.swapCopy(_completedTasks);
+	_completedTasks = _newCompletedTasks;
+	writeArchivedFile();
+	
+}
+
+std::vector<Task*> CMArchive:: getArchivedDisplay (void) {
+	
+	std::vector<Task*> _displayCompletedTasks;
+	
+	for (unsigned int i = 0; i < _completedTasks.size(); i++){
+		
+		_displayCompletedTasks.push_back(_completedTasks[i]);
+	
+	}
+	
+	return _displayCompletedTasks;
+	
+}
+
+std::vector<Task*> CMArchive:: getCompletedTasks(){
+	
+	return _completedTasks;
+
+}
+
+
+void CMArchive:: writeArchivedFile() {
+	
+	_archiveTextFile.writeFile(_completedTasks, ARCHIVE_FILENAME);
+	
+}
+
+std::vector<std::string> CMArchive:: readArchivedFile() {
+	
+	return _archiveTextFile.readFile(ARCHIVE_FILENAME);
+	
+}
+
+void CMArchive:: checkInArchive(Task* task){
+	
+	//lack of updateArchivehistory() in the case of multiple check
+	_completedTasks.push_back(task);
+	writeArchivedFile();
+	
+}
+
+std::string CMArchive:: uncheckInArchive (int realIndex){ 
+	
+	//lack of updateArchivehistory() in the case of multiple uncheck
+	std::string uncheckedTask= _completedTasks[realIndex]->getInfo();
+	eraseTask(realIndex);
+	writeArchivedFile();
+	return uncheckedTask;
+	
+}
+
+void CMArchive:: updateArchiveHistory(){
+	
+	_completedTasksHistory.updateCopy(_completedTasks);
+	
+}
+
+
+
+
+
+
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMArchive.cpp
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMArchive.h
+	 */
+
+
+#ifndef CMARCHIVE_H
+#define CMARCHIVE_H
+
+#include <iostream>
+#include <vector>
+#include <sstream>
+#include <fstream>
+#include <string>
+#include "Task.h"
+#include "FloatingTask.h"
+#include "TimedTask.h"
+#include "Deadline.h"
+#include "CMHistory.h"
+#include "CMTextFile.h"
+
+class CMArchive {
+	
+private:
+	
+	std::vector<Task*> _completedTasks; //all completed tasks as Task pointers
+	CMHistory _completedTasksHistory; //object in Archive
+	CMTextFile _archiveTextFile;
+	static const std::string ARCHIVE_FILENAME;
+
+public:
+	
+	void addArchivedDeadline (Deadline*);
+	void addArchivedTimedTask (TimedTask*);
+	void addArchivedFloatingTask (FloatingTask*);
+	std::string deleteCompletedTask (int);
+	void eraseTask(int);
+	void clearCompletedTasks();
+	void undoArchivedTaskAction();
+	
+	std::vector<Task*> getArchivedDisplay();
+	std::vector<Task*> getCompletedTasks();
+
+	void writeArchivedFile();
+	std::vector<std::string> readArchivedFile();
+	
+	void checkInArchive(Task*);
+	std::string uncheckInArchive(int);
+	
+	void updateArchiveHistory();
+	
+};
+
+#endif
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMArchive.h
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMHistory.cpp
+	 */
+
+
+#include "CMHistory.h"
+
+CMHistory:: CMHistory(void){}
+
+CMHistory:: ~CMHistory(void){}
+
+void CMHistory:: updateCopy( std::vector<Task*> _allTasks) {
+	
+	_allTasksCopy=_allTasks;
+
+}
+
+std::vector<Task*> CMHistory:: swapCopy(std::vector<Task*> _allTasks){
+
+	std::vector<Task*> _previousTaskCopy;
+	_previousTaskCopy= _allTasksCopy;
+	_allTasksCopy=	_allTasks;
+	return _previousTaskCopy;
+
+}
+
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMHistory.cpp
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMHistory.h
+	 */
+
+
+#ifndef CHECKMATEHISTORY_H
+#define CHECKMATEHISTORY_H
+
+#include <iostream>
+#include <vector>
+#include <sstream>
+#include <fstream>
+#include <string>
+#include "Task.h"
+#include "FloatingTask.h"
+#include "TimedTask.h"
+#include "Deadline.h" 
+
+class CMHistory {
+
+private:
+	
+	std::vector<Task*> _allTasksCopy;
+
+public:
+	
+	CMHistory(void);
+	~CMHistory();
+	void updateCopy(std::vector<Task*>); //if no undo or redo action
+	std::vector<Task*> swapCopy(std::vector<Task*>); //if undo or redo action is being called 
+
+};
+
+#endif
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMHistory.h
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMStorageSort.cpp
+	 */
+
+
+#include "CMStorageSort.h"
+
+std::vector<Task*> CMStorageSort:: sortTasks (std::vector<Task*> _allTasks, int firstFloatIndex) {
+	
+	for (int i=0; i<firstFloatIndex;i++) {
+		
+		for (int j=0; j<firstFloatIndex;j++){
+			
+			Task* a= _allTasks[i];
+			Task* b= _allTasks[j];
+			
+			if (a->isTimed()){
+				if (b->isTimed()){
+					if (a->getStart()<b->getStart()){
+						swap(_allTasks[i],_allTasks[j]);
+					}
+				} else if (b->isDeadline()){
+					if (a->getStart()<b->getEnd()){
+						swap(_allTasks[i],_allTasks[j]);
+					}
+				}
+			} else if (a->isDeadline()){
+				if (b->isTimed()) {
+					if (a->getEnd()<b->getStart()){
+						swap(_allTasks[i],_allTasks[j]);
+					}
+				} else if (b->isDeadline()){ 
+					if (a->getEnd()<b->getEnd()){
+						swap(_allTasks[i],_allTasks[j]);
+					}
+				}
+			}
+		}
+	}
+	
+	return _allTasks;
+}
+
+void CMStorageSort:: swap (Task* &a, Task* &b){
+	
+	Task* temp = a;
+	a=b;
+	b=temp;
+	
+}
+
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMStorageSort.cpp
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMStorageSort.h
+	 */
+
+
+#ifndef CMSTORAGESORT_H
+#define CMSTORAGESORT_H
+
+#include <iostream>
+#include <vector>
+#include <sstream>
+#include <fstream>
+#include <string>
+#include "Task.h"
+#include "FloatingTask.h"
+#include "TimedTask.h"
+#include "Deadline.h"
+
+class CMStorageSort {
+	
+public:
+	
+	std::vector<Task*>  sortTasks(std::vector<Task*>, int);
+	void swap(Task*&,Task*&);
+	
+};
+
+
+#endif
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMStorageSort.h
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMTextFile.cpp
+	 */
+
+
+#include "CMTextFile.h"
+
+const std::string CMTextFile:: PARTITION_LINE = "===========================================================================================================================";
+const std::string CMTextFile:: DESCRIPTION = "DESCRIPTION" ;
+const std::string CMTextFile:: START_DATE_AND_TIME = "START";
+const std::string CMTextFile:: END_DATE_AND_TIME = "END";
+const std::string CMTextFile:: STORAGE_FILE = "StorageLocation.txt";
+
+void CMTextFile:: writeFile(std::vector<Task*> _allTasks, std::string fileName) {
+	
+	std::ofstream file;
+	file.open(getStorageLocation()+ fileName);
+	
+	file<<headings();
+	
+	int size=_allTasks.size();
+	for(int i = 0; i < size; i++){
+		
+        file<<_allTasks[i]->getInfo()<<std::endl;
+	
+	}
+	file.close();
+	
+}
+
+std::vector<std::string> CMTextFile:: readFile(std::string fileName) {
+		
+	std::ifstream read (getStorageLocation()+fileName);
+	
+	std::string buffer; //buffer to get rid of the first three lines for headings
+	getline(read,buffer);
+	getline(read,buffer);
+	getline(read,buffer);
+
+	for (std::string line; getline(read,line);){
+		
+		_textFileStrings.push_back(line);
+	
+	}
+	
+	return _textFileStrings;
+	
+}
+
+std::string CMTextFile:: headings () {
+	
+	std::ostringstream oss;
+	oss << PARTITION_LINE << std::endl << std::left << std::setw(60) <<
+	DESCRIPTION << std::setw(36) << START_DATE_AND_TIME << std::setw(38) <<
+	END_DATE_AND_TIME << std::endl << PARTITION_LINE << std::endl;
+	
+	return oss.str();
+
+}
+
+void CMTextFile:: changeStorageLocation(std::string NewLocation) {
+	
+	std::ofstream file;
+	file.open(STORAGE_FILE);
+	file << NewLocation;
+	file.close();
+	
+}
+
+std::string CMTextFile:: getStorageLocation(){
+	
+	std::ifstream read (STORAGE_FILE);
+	std::string line;
+	getline(read,line);
+	return line;
+	
+}
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMTextFile.cpp
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMTextFile.h
+	 */
+
+
+#ifndef CMTEXTFILE_H
+#define CMTEXTFILE_H
+
+#include <iostream>
+#include <vector>
+#include <sstream>
+#include <fstream>
+#include <string>
+#include "Task.h"
+#include "FloatingTask.h"
+#include "TimedTask.h"
+#include "Deadline.h"
+
+class CMTextFile {
+
+private:
+	
+	std::vector<std::string> _textFileStrings;
+	static const std::string PARTITION_LINE;
+	static const std::string DESCRIPTION;
+	static const std::string START_DATE_AND_TIME;
+	static const std::string END_DATE_AND_TIME;
+	static const std::string STORAGE_FILE;
+
+public:
+	
+	void writeFile(std::vector<Task*>, std::string);
+	std::vector<std::string> readFile(std::string);
+	std::string headings();
+	void changeStorageLocation(std::string);
+	std::string getStorageLocation();
+
+};
+
+#endif
+
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\CMStorage\CMTextFile.h
+
+
+
+
+
+	/**
+	 * origin: C:\users\joseph\desktop\v0.5\cmcode\UnitTest1\StorageUnitTest.cpp
+	 */
+
+#include "stdafx.h"
+#include "CppUnitTest.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using namespace boost::posix_time;
+using namespace boost::gregorian;
+
+namespace UnitTesting
+{
+	TEST_CLASS(StorageUnitTest)
+	{
+	public:
+
+		TEST_METHOD(STORAGEAddActiveFloatTask)
+		{
+			FloatingTask* task = new FloatingTask("Go to library");
+			CMActive active;
+			active.addActiveFloatingTask(task);
+			std::string actual = active.getActiveTasks()[0]->getInfo();
+
+			std::ostringstream expected;
+
+			expected << std::left << std::setw(60)<<"Go to library"
+				<<std::setw(30)<<"      --NIL--"
+				<<std::setw(30)<<"      --NIL--";
+
+			Assert::AreEqual(expected.str(),actual);
+		}
+
+		TEST_METHOD(STORAGEAddActiveDeadlineTask)
+		{
+			Deadline* task = new Deadline("Do assignment",ptime(date(2015,4,19),time_duration(1,2,3)));
+			CMActive active;
+			active.addActiveDeadline(task);
+			ptime expected(date(2015,4,19), time_duration(1,2,3));
+			ptime actual = active.getActiveTasks()[0]->getEnd();
+
+			Assert::AreEqual(to_simple_string(expected), to_simple_string(actual));
+		}
+
+		TEST_METHOD(STORAGEAddActiveTimedTask)
+		{
+			TimedTask* task = new TimedTask("CS exam",ptime(date(2015,4,19),time_duration(1,2,3)),ptime(date(2015,4,20),time_duration(1,2,3)));
+			CMActive active;
+			active.addActiveTimedTask(task);
+			ptime expected(date(2015,4,19), time_duration(1,2,3));
+			ptime actual = active.getActiveTasks()[0]->getStart();
+
+			Assert::AreEqual(to_simple_string(expected), to_simple_string(actual));
+		}
+
+		
+		TEST_METHOD(STORAGEEditActiveTimedTask)
+		{
+		TimedTask* task = new TimedTask("CS exam",ptime(date(2015,4,19),time_duration(1,2,3)),ptime(date(2015,4,20),time_duration(1,2,3)));
+
+		CMStorage storage;
+		storage.addTimedTask(task);
+		storage.getActiveDisplay();
+		storage.getTask(1); //take out the edit task for logic to edit
+	
+		std::string actual = storage.getTask(1)->getInfo();
+		std::string expected = task -> getInfo();
+
+		Assert::AreEqual(expected,actual);
+		}
+		
+
+		TEST_METHOD(STORAGEDeleteTask)
+		{
+			TimedTask* task1 = new TimedTask("CS exam",ptime(date(2015,4,19),time_duration(1,2,3)),ptime(date(2015,4,20),time_duration(1,2,3)));
+			TimedTask* task2 = new TimedTask("MKT exam",ptime(date(2015,5,19),time_duration(1,2,3)),ptime(date(2015,5,20),time_duration(1,2,3)));
+			TimedTask* task3 = new TimedTask("MATHS exam",ptime(date(2015,6,19),time_duration(1,2,3)),ptime(date(2015,6,20),time_duration(1,2,3)));
+
+			CMStorage storage;
+			storage.addTimedTask(task1);
+			storage.addTimedTask(task1);
+			storage.addTimedTask(task1);
+			std::string expected = storage.getActiveDisplay()[1]->getInfo();
+			std::string actual= storage.deleteTask(2);
+
+			Assert::AreEqual(expected, actual);
+		}
+	};
+}
+	// End of segment: C:\users\joseph\desktop\v0.5\cmcode\UnitTest1\StorageUnitTest.cpp
+
+
+
+
+
