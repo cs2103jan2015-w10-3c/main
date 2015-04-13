@@ -1,3 +1,4 @@
+//@author A0111448M
 #include <iostream>
 #include <vector>
 #include <string>
@@ -7,102 +8,28 @@
 
 
 CMLogic::CMLogic(){
-<<<<<<< HEAD
-	_IsActive= true;
-}
-
-void CMLogic :: startUp(){
-		_Display=_CommandExecutor.retrieveData();
-		return;
-}
-
-
-void CMLogic :: ExecuteCommand(std::string input){
-
-	Command* NewCommand = _CommandReader.interpretCommand(input);
-
-	switch(NewCommand->getCommandIndex()){
-		//AddTask
-	case INDEXADD :{ 
-		_Display= _CommandExecutor.addTask(NewCommand->getCommandDescription()); 
-					   }
-					   break;
-
-					  //Search Case
-	case INDEXSEARCH:{   
-		_Display  = _CommandExecutor.searchTask(NewCommand->getCommandDescription());
-					 }
-					 break;
-
-					 //Edit Case
-	case INDEXEDIT:{
-		_Display = _CommandExecutor.EditTask(NewCommand->getCommandDescription());
-				   }
-				   break;
-
-				   //Delete Case
-	case INDEXDELETE:{ 
-		_Display = _CommandExecutor.deleteTask(NewCommand->getCommandDescription());
-					 }
-					 break;
-
-					 //Search for task today
-	case INDEXTODAY:{
-		_Display = _CommandExecutor.DisplayToday();
-					}
-					break;
-
-					//Search for task tommorrow
-	case INDEXTOMMORROW:{
-		_Display = _CommandExecutor.DisplayTomorrow();
-						}
-						break;
-						//Undo previous action
-	case INDEXUNDO	:{
-		_Display=_CommandExecutor.UndoAction();
-					 }
-					 break;
-
-	case INDEXCHECKTASK	:{
-		_Display=(_CommandExecutor.CheckTask(NewCommand->getCommandDescription()));
-					 }
-					 break;
-
-					 // View help function commands
-	/*case INDEXHELP	:{
-					 }
-					 break;
-					 */
-
-						 // Close Program
-	case INDEXEXIT:{
-		_IsActive = false;
-		std::cout << GOODBYE << std::endl;}
-					 break;
-
-					 //Invalid Input
-	default:{
-		std::cout << INVALID_INPUT << std::endl;
-=======
 	_isActive= true;
 }
 
 void CMLogic :: startUp(){
 	_display=_commandExecutor.retrieveData();
+	std::cout<<"CMLOGIC :"<<"Retrieved Data"<<std::endl;
 	return;
 }
 
 
 void CMLogic :: executeCommand(std::string input){
+	std::cout<<"1. CMLOGIC :"<<"Executing Command"<<std::endl;
 	//Obtains index for switch and Description behind
 	Command* newCommand = _commandReader.interpretCommand(input);
 	int commandIndex = newCommand->getCommandIndex();
 	std::string commandDescription=newCommand->getCommandDescription();
-
+	
 	switch(commandIndex){
-		//AddTask
+					//AddTask
 	case INDEXADD :{ 
-		_display= _commandExecutor.addTask(commandDescription,FROMUSER,UNCOMPLETEDTASK); 
+		_display= _commandExecutor.addTask(commandDescription,FROMUSER,ACTIVETASK); 
+
 				   }
 				   break;
 
@@ -141,12 +68,8 @@ void CMLogic :: executeCommand(std::string input){
 		_display=_commandExecutor.undoAction();
 					 }
 					 break;
-					 //redo undone action
-	case INDEXREDO:{
-		_display=_commandExecutor.redoAction();
-				   }
-				   break;
-				   //redo undone action
+					
+				   //Clear all Task
 	case INDEXCLEAR:{
 		_display=_commandExecutor.clearTask();
 					}
@@ -169,13 +92,16 @@ void CMLogic :: executeCommand(std::string input){
 					  break;
 	case INDEXCHANGESTORE:{
 		_display=_commandExecutor.changeStorageDirectory(commandDescription);
-					  }
-					  break;
+						  }
+						  break;
+	case INDEXHOME:{
+		_display=_commandExecutor.returnToHomePage();
+						  }
+						  break;
 
-					  //Invalid Input
+						  //Invalid Input
 	default:{
 		_display->editFeedback(INVALID_INPUT);
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
 			}
 			break;
 	}
@@ -185,11 +111,7 @@ void CMLogic :: executeCommand(std::string input){
 }
 
 Output*  CMLogic :: getDisplay(){
-<<<<<<< HEAD
-
-	return _Display;
-=======
+	std::cout<<"CMLogic :"<<"Sends output to GUI"<<std::endl;
 	return _display;
->>>>>>> c362e76c48e8505b12b61bf0ff5e09c006a3d56e
 }
 
